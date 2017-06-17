@@ -1,0 +1,26 @@
+#!/usr/bin/expect
+set ca_conf_file [lindex $argv 0]
+set sign_req_name [lindex $argv 1]
+set cn [lindex $argv 2]
+set selection [lindex $argv 3]
+set expiration_planned_ts [lindex $argv 4]
+set pass [lindex $argv 5]
+set policy [lindex $argv 6]
+spawn openssl ca \
+    -config ${ca_conf_file} \
+    -in ${sign_req_name} \
+    -out ${cn} \
+    -extensions ${selection}_ext \
+    -policy ${policy} \
+    -enddate ${expiration_planned_ts}Z
+
+expect -re "Enter pass phrase for *" {send "$pass\r"}
+expect -re "Sign the certificate? *" {send \003}
+lassign [wait] pid spawnid os_error_flag value
+exit $value
+#expect eof
+#expect {
+#  "Password changed." {puts stdout "\nPaßwort erfolgreich geändert"}
+#  default {puts stdout "\nHat nicht funktioniert!"}
+#}
+

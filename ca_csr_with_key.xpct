@@ -1,0 +1,15 @@
+#!/usr/bin/expect
+set new_ca_name [lindex $argv 0]
+set keypass [lindex $argv 1]
+set keyfile [lindex $argv 2]
+spawn openssl req -new \
+    -config $new_ca_name/etc/$new_ca_name-ca.conf \
+    -out $new_ca_name/ca/${new_ca_name}-ca.csr \
+    -key $keyfile
+expect "Enter pass phrase for $keyfile:" {send "$keypass\r"}
+expect eof
+#expect {
+#  "Password changed." {puts stdout "\nPaßwort erfolgreich geändert"}
+#  default {puts stdout "\nHat nicht funktioniert!"}
+#}
+
