@@ -243,9 +243,14 @@ condition=1
 fi
 done
 
-echo "expect ${script_dir}/sign_csr_dry.xpct ${ca_conf_file}  ${sign_req_name}  ca/${cn}.crt  ${selection} ${expiration_planned_ts} ${priv_key_pass} ${policy}" >/tmp/stmt.txt
+mode="-verbose"
+if [ $selection = "root_ca" ]; then
+mode="-selfsign"
+fi
 
-expect "${script_dir}/sign_csr_dry.xpct" "${ca_conf_file}"  "${sign_req_name}"  "ca/${cn}.crt"  "${selection}" "${expiration_planned_ts}" "${priv_key_pass}" "${policy}">/tmp/dry_run.log 2>&1
+echo "expect ${script_dir}/sign_csr_dry.xpct ${ca_conf_file}  ${sign_req_name}  ca/${cn}.crt  ${selection} ${expiration_planned_ts} ${priv_key_pass} ${policy} ${mode}">/tmp/stmt.txt
+
+expect "${script_dir}/sign_csr_dry.xpct" "${ca_conf_file}"  "${sign_req_name}"  "ca/${cn}.crt"  "${selection}" "${expiration_planned_ts}" "${priv_key_pass}" "${policy}" "${mode}">/tmp/dry_run.log 2>&1
 
 rv=$?
 
@@ -274,7 +279,7 @@ if [ ${?} -ne 0 ]; then exit 127; fi
 
 #Anschließend wird der Request per Openssl signiert
 
-expect "${script_dir}/sign_csr.xpct" "${ca_conf_file}"  "${sign_req_name}"  "ca/${cn}.crt"  "${selection}" "${expiration_planned_ts}" "${priv_key_pass}" "${policy}"
+expect "${script_dir}/sign_csr.xpct" "${ca_conf_file}"  "${sign_req_name}"  "ca/${cn}.crt"  "${selection}" "${expiration_planned_ts}" "${priv_key_pass}" "${policy}" "${mode}"
 
 #openssl ca \
 #    -config ${ca_conf_file} \

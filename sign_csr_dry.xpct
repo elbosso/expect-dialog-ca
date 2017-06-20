@@ -6,7 +6,9 @@ set selection [lindex $argv 3]
 set expiration_planned_ts [lindex $argv 4]
 set pass [lindex $argv 5]
 set policy [lindex $argv 6]
+set mode [lindex $argv 7]
 spawn openssl ca \
+${mode} \
     -config ${ca_conf_file} \
     -in ${sign_req_name} \
     -out ${cn} \
