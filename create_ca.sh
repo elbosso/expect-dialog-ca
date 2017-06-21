@@ -169,6 +169,7 @@ case $ca_type in
       cp -a $template_dir/etc/"component-ca.conf" $new_ca_name/etc
 #      cp -a $template_dir/etc/".conf" $new_ca_name/etc
 #      cp -a $template_dir/etc/".conf" $new_ca_name/etc
+	  sed -i -- "s/basicConstraints *= critical,CA:true/basicConstraints        = critical,CA:true,pathlen:1/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
       ;;
 	identity)
       cp -a $template_dir/etc/"identity.conf" $new_ca_name/etc
@@ -215,7 +216,8 @@ $dialog_exe --backtitle "CA configuration" \
 	    "countryName" 2 4 "DE" 2 25 40 0\
 	    "organizationName" 4 4 "" 4 25 40 0\
 	    "organizationalUnitName" 6 4 "" 6 25 40 0\
-	    "base_url" 8 4 "http://" 8 25 40 0\
+	    "commonName" 8 4 "" 8 25 40 0\
+	    "base_url" 10 4 "http://" 10 25 40 0\
 	    2>$_temp
 	
 	if [ ${?} -ne 0 ]; then exit 127; fi   
@@ -228,9 +230,11 @@ organizationName=`cat $_temp |cut -d"
 " -f 2`
 organizationalUnitName=`cat $_temp |cut -d"
 " -f 3`
-base_url=`cat $_temp |cut -d"
+commonName=`cat $_temp |cut -d"
 " -f 4`
-if [ "$countryName" = "" ] || [ "$organizationName" = "" ] || [ "$organizationalUnitName" = "" ] || [ "$base_url" = "" ]; then
+base_url=`cat $_temp |cut -d"
+" -f 5`
+if [ "$countryName" = "" ] || [ "$organizationName" = "" ] || [ "$organizationalUnitName" = "" ] || [ "$commonName" = "" ] || [ "$base_url" = "" ]; then
 echo "You must fill out all the fields!"
 $dialog_exe --backtitle "Error" --msgbox "You must fill out all the fields!" 9 52
 condition=1
@@ -239,12 +243,12 @@ done
 
 arg=`echo -n "s/organizationalUnitName  = \".*?\"/organizationalUnitName  = \"${organizationalUnitName}\"/g"`
 #$dialog_exe --backtitle "Info" --msgbox "$arg" 9 52
-sed -i -E -- "s/# ([^ ]*) ([^ ]*) CA.*/# ${commonName} / ${organizationName} / ${organizationalUnitName}  \2 CA/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+sed -i -E -- "s/# ([^ ]*) ([^ ]*) CA.*/# ${commonName} . ${organizationName} . ${organizationalUnitName}  \2 CA/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- "s|base_url *= .*|base_url = ${base_url}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- "s/countryName *= \".*\"/countryName = \"${countryName}\"/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- "s/organizationName *= \".*\"/organizationName = \"${organizationName}\"/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- "s/organizationalUnitName *= \".*\"/organizationalUnitName  = \"${organizationalUnitName}\"/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
-sed -i -- "s/commonName *= \".*\"/commonName  = \"${organizationalUnitName}\"/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+sed -i -- "s/commonName *= \".*\"/commonName  = \"${commonName}\"/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- 's/certificatePolicies/#certificatePolicies/g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- 's_$dir/ca/$ca_$dir/ca_g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- 's_$dir/ca.crt_$dir/ca/$ca.crt_g' $new_ca_name/etc/$new_ca_name"-ca.conf"
