@@ -130,10 +130,34 @@ they should live in sibling directories.
 ## Use Cases
 
 ### Building a new Certificate Authority
+Building an new CA is done in several steps:
+* laying down the policy of the ca
+* creation of a private key for the CA
+* creation of the infrastructure of the CA (directory structure, serial number, database,...)
+* creation of the basic configuration files of the ca
+* creation of a certificate signing request and shipping it to a ca for signing
+* installation of the certificate and thus commencing normal operation
 
-### Signing Certificate Requests
+### Signing Certificate Signing Requests
+Signing certificate signing requests is done by using the script `sign_request.sh`.
+It needs the CSR of course as well as the private key of the CA itself.
+The user has to specify the password protecting the CAs private key.
+Additionally, the user has to decide, what kind of certificate he wants to issue: 
+For example the identity CA configuration allows to issue
+* Encryption
+* Identity and
+* S/Mime 
+certificates.
+
+The certificate is then packaged with additional files into a ZIP-Archive
+ready to be shipped to the end-user.
 
 ### Revoking Certificates
+The revocation is done by receiving information about the party whose
+certificate should be invalidated. Once the script `revoke_crl.sh` is started,
+a scrollable list of all valid certificates is displayed. The user selects 
+the one matching the request and is then asked for confirmation. If he 
+gives it, the revocation is executed and the CRL of the CA updated
 
 ### Managing Certificate Lifecycle
 
