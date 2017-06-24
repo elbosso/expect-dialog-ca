@@ -2,6 +2,8 @@
 This repository contains scripts meant to make managing an openssl ca less painful inside a terminal environment
 
 ## Scope
+
+### Overview
 The components contained inside this project ease the use of openssl to create and maintain
 essential parts of a public key infrastructure (PKI) - 
 namely the certificate Authorities (CAs). The scripts 
@@ -23,6 +25,36 @@ The project does explicitely *not* aim to support the "on behalf of" strategy
   
 We strictly endorse policies where the CA never even sees a private key of an end user,
 let alone create those.
+
+### Types of CAs
+
+#### Root CA
+The root CA is the trust anchor inside our PKI hierarchy. It can issue certificates
+for intermediate CAs
+#### Intermediate CA
+The intermediate CAs (or network CAs) are the link in the trust chain between the root CA and
+our issuing CAs.
+#### Issuing CAs
+The issuing CAs are CAs that actually issue certificates for end users. Those
+certificates are each meant for a certain purpose - depending of the configuration
+of the CAs and - in part - of the actual CSRs:
+<dl>
+<dt>Identity CA issues certificates for</dt>
+<dd>
+
+* Encryption
+* Identity and
+* S/Mime 
+</dd>
+<dt>Component CA issues certificates for</dt>
+<dd>
+
+* client authentication
+* server authentication
+* OCSP signing (OCSP stands for online certificate status protocol)
+* timestamp authorities
+</dd>
+</dl>
 
 ## Content
 This project consists of Linux shell scripts - some of them are meant to be run from inside 
@@ -138,6 +170,27 @@ Building an new CA is done in several steps:
 * creation of a certificate signing request and shipping it to a ca for signing
 * installation of the certificate and thus commencing normal operation
 
+This process is rather lengthy and there are several scripts involved: After
+the policy is written down, you should have all information for customizing the 
+CA about to be created. Now, you need to use `create_ca.sh`. This script
+guides you through all the steps needed for 
+* creation of a private key for the CA
+* creation of the infrastructure of the CA (directory structure, serial number, database,...)
+* creation of the basic configuration files of the ca
+* creation of a certificate signing request and shipping it to a ca for signing
+The user has to answer quite a lot of questions - for example key length
+for the private key (if none is provided), the Hash or Signing algorithmus
+to be used as part of the Message Authentication Code (MAC) among others.
+
+After the script is done, you have a fully populated directory structure
+for your CA as well as a CSR you need to get signed by another CA. When this is done,
+you get a certificate back ready for installation. The script `install_ca_certificate.sh`
+helps with that: it
+* installs of the certificate,
+* creates the initial CRL and
+* creates the certificate chain in PEM-format.
+Now, you can start to use this CA for issuing certificates
+
 ### Signing Certificate Signing Requests
 Signing certificate signing requests is done by using the script `sign_request.sh`.
 It needs the CSR of course as well as the private key of the CA itself.
@@ -160,5 +213,35 @@ the one matching the request and is then asked for confirmation. If he
 gives it, the revocation is executed and the CRL of the CA updated
 
 ### Managing Certificate Lifecycle
+It is crucial for a well-managed CA to watch out for certificates about
+to reach their end-of-validity date. If this is monitored closely, one
+can remember the end users of the impending end of the certificates validity
+and remind them of applying for a renewal. 
+
+For this, the script `reneq_cert_req.sh` was made: The end user can
+use it to create a new CSR using his private key. He can send this new CSR to the 
+CA and get his certificate renewed.
+
+To get information about certificates soon to become invalid,
+the script `manage_certs.sh` is used: The user can choose a certain day and the 
+script presents a list with certificates expiring before that date. This
+makes it possible for example to get a list of all certificates expiring 
+within the next two months.
 
 ### Requesting Certificates
+To apply for a certificate, the script `manage_certs.sh` is used: 
+The end user has to give his
+private key and the password for unlocking it as well as 
+the name of the file the new CSR is to be saved into. 
+An important additional
+parameter is the kind of certificate he wishes to obtain - the identity CA for example
+is able to issue the following flavours:
+* Encryption
+* Identity and
+* S/Mime 
+
+<!--
+If the end user already has a certificate and only wants to renew it without
+also creating a new private key, the script `reneq_cert_req.sh` supports
+this: 
+-->
