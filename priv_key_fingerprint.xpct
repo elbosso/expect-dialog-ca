@@ -1,0 +1,8 @@
+#!/usr/bin/expect
+set key_name [lindex $argv 0]
+set mac_name [lindex $argv 1]
+set pass [lindex $argv 2]
+spawn bash -c "openssl rsa -noout -modulus -in ${key_name} | openssl ${mac_name} |cut -d ' ' -f2>/tmp/${mac_name}"
+
+expect -re "Enter pass phrase for ${key_name}" {send "$pass\r"}
+expect eof

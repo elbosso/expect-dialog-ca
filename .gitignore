@@ -3,3 +3,5 @@
 /test1/
 *.tsv
 /__template__/
+/test/
+/test2/

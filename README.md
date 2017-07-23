@@ -127,6 +127,7 @@ executable to manipulate components of the PKI
 * ca_csr_with_key.xpct
 * cange_ca_password.xpct
 * gen_crl.xpct
+* priv_key_fingerprint.xpct
 * req_from_cert.xpct
 * revoke_cert.xpct
 * sign_csr.xpct

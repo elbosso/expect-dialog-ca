@@ -460,15 +460,24 @@ openssl req -text -in ${new_ca_name}/ca/${new_ca_name}-ca.csr -out /tmp/csr.pem
 
 $dialog_exe --backtitle "Certificate Request" --textbox /tmp/csr.pem 0 0
 
-$dialog_exe --backtitle "Info" --msgbox "The key is in ${new_ca_name}/ca/private/${new_ca_name}-ca.key\nThe Cert Req is in ${new_ca_name}/ca/${new_ca_name}-ca.csr\n\nYou can now ask your CA to sign the request!\n\nThe configurations needed by clients to generate certificate signing requests are in ${new_ca_name}/ca/etc. Available are: $conf_files" 16 52
+$(expect priv_key_fingerprint.xpct "${new_ca_name}/ca/private/${new_ca_name}-ca.key" md5 ${Password})
+mac_md5=$(cat /tmp/md5)
+$(expect priv_key_fingerprint.xpct "${new_ca_name}/ca/private/${new_ca_name}-ca.key" sha1 ${Password})
+mac_sha1=$(cat /tmp/sha1)
+$(expect priv_key_fingerprint.xpct "${new_ca_name}/ca/private/${new_ca_name}-ca.key" sha256 ${Password})
+mac_sha256=$(cat /tmp/sha256)
+$(expect priv_key_fingerprint.xpct "${new_ca_name}/ca/private/${new_ca_name}-ca.key" sha512 ${Password})
+mac_sha512=$(cat /tmp/sha512)
+
+$dialog_exe --backtitle "Info" --msgbox "The key is in ${new_ca_name}/ca/private/${new_ca_name}-ca.key\n\nMD5-Fingerprint: ${mac_md5}\nSHA1-Fingerprint: ${mac_sha1}\nSHA256-Fingerprint: ${mac_sha256}\nSHA512-Fingerprint: ${mac_sha512}\n\nThe Cert Req is in ${new_ca_name}/ca/${new_ca_name}-ca.csr\n\nYou can now ask your CA to sign the request!\n\nThe configurations needed by clients to generate certificate signing requests are in ${new_ca_name}/ca/etc. Available are: $conf_files" 16 52
 
 $dialog_exe --backtitle "Custom Policies" --msgbox "At this time, two policies are defined in the CA configuration file $new_ca_name/etc/$new_ca_name-ca.conf. If you want to add more or add some of your own - feel free to add them using the one named minimal_pol as a template. You are free when naming them but if the names do not end with _pol, the script for signing CSRs will not pick them up so you will not be able to use them when actually signing CSRs!" 14 64
 
 #log schreiben
 
 if [ "$log_file_name" != "" ]; then
-echo "name\tCN\tprivate key pass" > ${log_file_name}
-echo "${new_ca_name}\t${organizationalUnitName}\t${Password}" >> ${log_file_name}
+echo "name\tCN\tprivate key pass\tMD5\tSHA1\tSHA256\tSHA512" > ${log_file_name}
+echo "${new_ca_name}\t${organizationalUnitName}\t****\t${mac_md5}\t${mac_sha1}\t${mac_sha256}\t${mac_sha512}" >> ${log_file_name}
 chmod 600 ${log_file_name}
 $dialog_exe --backtitle "Info" --msgbox "log file written to ${log_file_name}" 0 0
 fi
