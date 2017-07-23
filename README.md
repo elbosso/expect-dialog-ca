@@ -63,6 +63,11 @@ This project consists of Linux shell scripts - some of them are meant to be run 
  
 ### Linux scripts for the user
 <dl>
+  <dt>change_ca_password.sh</dt>
+  <dd>This script changes the password for the private key of a certificate
+  authority. The old private key is backed up prior to 
+  creation of the new key with the new password.
+  </dd>
   <dt>create_ca.sh</dt>
   <dd>This script lets the user create a CA. It asks for the kind of CA
   (Root, Intermediate, ...) and some configuration options. Then, it builds
@@ -109,7 +114,9 @@ This project consists of Linux shell scripts - some of them are meant to be run 
 ### Linux helper scripts
 <dl>
   <dt>configure_gui.sh</dt>
-  <dd></dd>
+  <dd>This script is sourced by all other scripts used on the issuer side of
+  things. It sets some basic environment bariables needed in all the scripts
+  and does some other supporting stuff too.</dd>
 </dl>
 
 ### Expect scripts
@@ -118,6 +125,7 @@ command line program. They automate the interactive process when using the opens
 executable to manipulate components of the PKI
 * ca_csr.xpct
 * ca_csr_with_key.xpct
+* cange_ca_password.xpct
 * gen_crl.xpct
 * req_from_cert.xpct
 * revoke_cert.xpct
@@ -222,7 +230,21 @@ For certificate authorities it is crucial that the digital identity
 The project supports this use case by means of the script
 `reneq_cert_req.sh`: It constructs a Certificate signing request from
 an existing private key and certificate to be signed by the certificate 
-authority that signed the soon-to-be-expiring certificate
+authority that signed the soon-to-be-expiring certificate.
+
+### Changing the Password for the Private Key of a Certificate Authority
+At the first glance many people might think that there should never be 
+a need for this use case - however: When an authorized operator of the
+certificate authority gets her privileges removed, she must not be
+able to act on behalf of the certificate authority. If the key is
+not on some kind of hardware token management could withdraw, the password
+needs to be changed - and this is where the script `change_ca_password`
+comes into play. 
+
+It asks for the current password and for the new password. It then backs up the old
+key file and secures the key using the given password and aes256. The
+new key is written back into a file with the original name. After checking that the 
+key file works - the backup file must be immediately destroyed!!
 
 #### Responding to Certificate Signing Requests
 Responding to certificate signing requests is done by using the script `sign_request.sh`.
