@@ -82,7 +82,20 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   <dd>This script is for end users: They can use it in conjunction with
   configuration files provided by the CA to request a certificate. It creates
   the appropriate CSR from a private key provided by the user. If she has none, the
-  private key can be generated as well.</dd>
+  private key can be generated as well.
+  
+  This script runs without a GUI so as to put as few dependencies and preconditions
+  in the way of a user getting her certificate.
+  </dd>
+  <dt>request_certificate_renewal.sh</dt>
+  <dd>This script is for end users: They can use it to renew their certificate - meaning to
+  extend the validity of an already obtained certificate from the same 
+  certificate authority. To do so, the user must have her old certificate as well as
+  her private key (and the password for unlocking it) available.
+  
+  This script runs without a GUI so as to put as few dependencies and preconditions
+  in the way of a user getting her certificate.
+  </dd>
   <dt>revoke_crl.sh</dt>
   <dd>This script shows all currently valid certificates. The user 
   can choose one of them. This is then revoked and the certificate revocation list 
@@ -191,8 +204,26 @@ helps with that: it
 * creates the certificate chain in PEM-format.
 Now, you can start to use this CA for issuing certificates
 
-### Signing Certificate Signing Requests
-Signing certificate signing requests is done by using the script `sign_request.sh`.
+### Renewal of a certificate of a Certificate Authority
+A certificate authority needs a private key an a valid certificate to
+operate. Certificates however always have an expiration date. So every
+certficate authority gets sooner or later to a point in time where 
+ the certificate needs to be renewed.
+ 
+For certificate authorities it is crucial that the digital identity 
+ does not change when it gets a new certificate. This is only possible
+ if the private key does not change. 
+ 
+The project supports this use case by means of the script
+`reneq_cert_req.sh`: It constructs a Certificate signing request from
+an existing private key and certificate to be signed by the certificate 
+authority that signed the soon-to-be-expiring certificate
+
+### Responding to Certificate Signing Requests
+Responding to certificate signing requests is done by using the script `sign_request.sh`.
+A Certificate signing request essentially asks a certificate authority to
+certify the association between a certain private key and whatever 
+claims the CSR holds (canonical name, server adresses, email adresses and so on).
 It needs the CSR of course as well as the private key of the CA itself.
 The user has to specify the password protecting the CAs private key.
 Additionally, the user has to decide, what kind of certificate he wants to issue: 
