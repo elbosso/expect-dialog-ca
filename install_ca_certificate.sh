@@ -93,6 +93,8 @@ done
 expect "${script_dir}/gen_crl.xpct" "etc/${ca_name}-ca.conf" "crl/${ca_name}-ca.crl" "${priv_key_pass}"
 #openssl ca -gencrl -config etc/${ca_name}-ca.conf -out crl/${ca_name}-ca.crl
 
+priv_key_pass=""
+
 openssl crl -noout -text  -in crl/${ca_name}-ca.crl > /tmp/crl.pem
 
 $dialog_exe --backtitle "CRL" --textbox /tmp/crl.pem 0 0

@@ -411,6 +411,7 @@ $dialog_exe --backtitle "Error" --msgbox "A password must be at least 4 characte
 condition=1
 fi
 done
+proposed_pass=""
 else
 while [ $condition -eq 1 ]
 do
@@ -471,7 +472,7 @@ echo "${new_ca_name}\t${organizationalUnitName}\t${Password}" >> ${log_file_name
 chmod 600 ${log_file_name}
 $dialog_exe --backtitle "Info" --msgbox "log file written to ${log_file_name}" 0 0
 fi
-
+Password=""
 #am Ende wird gecheckt, ob die Variable offline_template_dir gesetzt war
 #falls nicht, wird versucht, die ausgecheckte expert-pki  
 #wieder zu löschen

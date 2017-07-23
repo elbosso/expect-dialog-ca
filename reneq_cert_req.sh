@@ -89,4 +89,5 @@ echo "${ca_name}\t${cn}\t${priv_key_pass}" >> ${log_file_name}
 chmod 600 ${log_file_name}
 $dialog_exe --backtitle "Info" --msgbox "log file written to ${log_file_name}" 0 0
 fi
+private_key_pass=""
 

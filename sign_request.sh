@@ -281,6 +281,8 @@ if [ ${?} -ne 0 ]; then exit 127; fi
 
 expect "${script_dir}/sign_csr.xpct" "${ca_conf_file}"  "${sign_req_name}"  "ca/${cn}.crt"  "${selection}" "${expiration_planned_ts}" "${priv_key_pass}" "${policy}" "${mode}"
 
+priv_key_pass=""
+
 #openssl ca \
 #    -config ${ca_conf_file} \
 #    -in ${sign_req_name} \
