@@ -174,7 +174,12 @@ they should live in sibling directories.
 
 ## Use Cases
 
-### Building a new Certificate Authority
+###Certificate Authorities
+
+Here, the use cases for issuing Entities also known as 
+certificate authorities are collected.
+
+#### Building a new Certificate Authority
 Building an new CA is done in several steps:
 * laying down the policy of the ca
 * creation of a private key for the CA
@@ -204,7 +209,7 @@ helps with that: it
 * creates the certificate chain in PEM-format.
 Now, you can start to use this CA for issuing certificates
 
-### Renewal of a certificate of a Certificate Authority
+#### Renewal of a certificate of a Certificate Authority
 A certificate authority needs a private key an a valid certificate to
 operate. Certificates however always have an expiration date. So every
 certficate authority gets sooner or later to a point in time where 
@@ -219,7 +224,7 @@ The project supports this use case by means of the script
 an existing private key and certificate to be signed by the certificate 
 authority that signed the soon-to-be-expiring certificate
 
-### Responding to Certificate Signing Requests
+#### Responding to Certificate Signing Requests
 Responding to certificate signing requests is done by using the script `sign_request.sh`.
 A Certificate signing request essentially asks a certificate authority to
 certify the association between a certain private key and whatever 
@@ -236,14 +241,23 @@ certificates.
 The certificate is then packaged with additional files into a ZIP-Archive
 ready to be shipped to the end-user.
 
-### Revoking Certificates
+#### Revoking Certificates
 The revocation is done by receiving information about the party whose
 certificate should be invalidated. Once the script `revoke_crl.sh` is started,
 a scrollable list of all valid certificates is displayed. The user selects 
 the one matching the request and is then asked for confirmation. If he 
-gives it, the revocation is executed and the CRL of the CA updated
+gives it, the revocation is executed and the CRL of the CA updated.
 
-### Managing Certificate Lifecycle
+However, attention is required from the administrator or operator of the certificate
+authority: Depending on the policies implemented, it is the duty
+of the operator to ascertain that the entity that made the request is 
+actually the rightful owner and therefore permitted to actually do so.
+This can be done for example by checking the Fingerprint of the private
+key obtained from the requestor with the fingerprint of the certificate to be revoked.
+The equality alone is *-one can not stress this enough-* however depending
+ on the policy not sufficient to actually revoke the certificate in question.
+
+#### Managing Certificate Lifecycle
 It is crucial for a well-managed CA to watch out for certificates about
 to reach their end-of-validity date. If this is monitored closely, one
 can remember the end users of the impending end of the certificates validity
@@ -259,7 +273,14 @@ script presents a list with certificates expiring before that date. This
 makes it possible for example to get a list of all certificates expiring 
 within the next two months.
 
-### Requesting Certificates
+### Non-issuing Entities
+
+Here, all use cases for Subjects are collected that do not issue 
+ certificates themselves but use them for a variety of possible uses (
+ establishing the identity of a web server or email sender for example
+ ). Those uses are not in the scop of this project and neither of this document.
+  
+#### Requesting Certificates
 To apply for a certificate, the script `request_certificate.sh` is used: 
 The end user has to give his
 private key and the password for unlocking it as well as 
@@ -271,7 +292,7 @@ is able to issue the following flavours:
 * Identity and
 * S/Mime 
 
-### Renewal of Certificates
+#### Renewal of Certificates
 If the end user already has a certificate and only wants to renew it without
 also creating a new private key, the script `request_certificate_renewal.sh` supports
 this: The user has to provide her private key and the soon-to-be-expired certificate.
@@ -281,6 +302,13 @@ acted as issuer for the old certificate for renewal.
 This method has the benefit of not changing the digital identity of the subject by
  keeping the private key.
 
+#### Revocation request 
+A nin-issuing entity needs to check that their private key is not compromised.
+If it is, it should request that the issuing certificate authority revokes the
+associated certificate. How exactly this request is made depends strongly
+on the policies implemented by the certificate authority in question and for this reason,
+no script is contained in this project to address this particular
+use case.
 
 # Some useful OpenSSL commands
 <dl>
