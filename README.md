@@ -260,7 +260,7 @@ makes it possible for example to get a list of all certificates expiring
 within the next two months.
 
 ### Requesting Certificates
-To apply for a certificate, the script `manage_certs.sh` is used: 
+To apply for a certificate, the script `request_certificate.sh` is used: 
 The end user has to give his
 private key and the password for unlocking it as well as 
 the name of the file the new CSR is to be saved into. 
@@ -271,8 +271,35 @@ is able to issue the following flavours:
 * Identity and
 * S/Mime 
 
-<!--
+### Renewal of Certificates
 If the end user already has a certificate and only wants to renew it without
-also creating a new private key, the script `reneq_cert_req.sh` supports
-this: 
--->
+also creating a new private key, the script `request_certificate_renewal.sh` supports
+this: The user has to provide her private key and the soon-to-be-expired certificate.
+The resulting CSR can then be sent to the certificate authority that
+acted as issuer for the old certificate for renewal.
+
+This method has the benefit of not changing the digital identity of the subject by
+ keeping the private key.
+
+
+# Some useful OpenSSL commands
+<dl>
+<dt>Print out the private key details</dt>
+<dd>openssl rsa -check -text -in privateKey.key</dd>
+<dt>Print out the hashes of the private key</dt>
+<dd><ul>
+<li>openssl rsa -noout -modulus -in privateKey.key | openssl md5</li>
+<li>openssl rsa -noout -modulus -in privateKey.key | openssl sha1</li>
+<li>openssl rsa -noout -modulus -in privateKey.key | openssl sha256</li>
+<li>openssl rsa -noout -modulus -in privateKey.key | openssl sha512</li>
+</ul>
+</dd>
+<dt>Print out the hashes of the certificate</dt>
+<dd><ul>
+<li>openssl x509 -noout -modulus -in certificate.crt | openssl md5</li>
+<li>openssl x509 -noout -modulus -in certificate.crt | openssl sha1</li>
+<li>openssl x509 -noout -modulus -in certificate.crt | openssl sha256</li>
+<li>openssl x509 -noout -modulus -in certificate.crt | openssl sha512</li>
+</ul>
+</dd>
+</dl>
