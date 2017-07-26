@@ -198,8 +198,8 @@ case $ca_type in
 #Anschließend wird in den kopierten Dateien der Name der CA durch den vom Nutzer gewählten ersetzt
 #$dialog_exe --backtitle "Info" --msgbox "s/${ca_type}-ca/${new_ca_name}-ca/g\n$new_ca_name/etc/$ca_type"-ca.conf"" 9 52
 
-sed -i -- "s/${ca_type}-ca/${new_ca_name}-ca/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
-sed -i -- "s/${ca_type}_ca/${new_ca_name}_ca/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+sed -i -- "s/${ca_type}-ca /${new_ca_name}-ca /g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+sed -i -- "s/${ca_type}_ca /${new_ca_name}_ca /g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 
 #An den Policies wird ein wenig herumgefeilt
 sed -i -E -- "s/(countryName *= *)match(.*)/\1supplied\2/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"

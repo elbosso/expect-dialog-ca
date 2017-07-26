@@ -80,6 +80,14 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   <dd>This script lists all certificates ever issued by this CA and their 
   current state or - if a date is given - all valid certificates with 
   an end date of their validity befor this given date.</dd>
+  <dt>refresh_crl.sh</dt>
+  <dd>This script renews the Certificate Revocation List of the 
+  current Certificate Authority: Inside crls there is always 
+  information about the end of its validity. A crls validity period is always 
+   limited. The PKI or CA is responsible for refreshing the CRL before
+   the validity of the last one is up. This script offers
+   a convenient method of doing so.
+  </dd>
   <dt>reneq_cert_req.sh</dt>
   <dd>This script issues a CSR for renewal of a soon to be expiring certificate:
   If the private key should stay the same - thats the option to choose!</dd>
@@ -279,6 +287,12 @@ This can be done for example by checking the Fingerprint of the private
 key obtained from the requestor with the fingerprint of the certificate to be revoked.
 The equality alone is *-one can not stress this enough-* however depending
  on the policy not sufficient to actually revoke the certificate in question.
+
+#### Keeping the CRLs valid
+The validity period of a certificate revocation list is always 
+   limited. The PKI or CA is responsible for refreshing the CRL before
+   the validity of the last one is up. The script `refresh_crl.sh`offers
+   a convenient method of doing so.
 
 #### Managing Certificate Lifecycle
 It is crucial for a well-managed CA to watch out for certificates about
