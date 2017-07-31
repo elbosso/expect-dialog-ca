@@ -123,9 +123,13 @@ n=0
 ca_type=`echo -n $selection |cut -d - -f 1`
 #$dialog_exe --msgbox "type --> $ca_type" 6 42
 
+condition=1
+while [ $condition -eq 1 ]
+do
+condition=0
 #Der Anwender wird aufgefordert, den Namen der neuen CA zu bestimmen
 $dialog_exe --backtitle "CA name"\
-           --inputbox "Name for the new CA" 8 52 "test" 2>$_temp
+           --inputbox "Name for the new CA\n Please do not use root, network, identity, or component!" 8 52 "test" 2>$_temp
 
     if [ $? -eq 0 ]; then
     new_ca_name=`cat $_temp`
@@ -134,11 +138,21 @@ if [ "$new_ca_name" = "" ]; then
 echo "You must provide a name!"
 $dialog_exe --backtitle "Error" \
            --msgbox "You must provide a name!" 9 52
-exit 2
+condition=1
+else
+case "$new_ca_name" in
+   root|network|identity|component)
+     $dialog_exe --backtitle "Error" \
+           --msgbox "The name must not be among these reserved values: root, network, identity, component!" 9 52
+     condition=1;;
+   *)
+     ;;
+esac
 fi
 	else
 		exit 255
     fi
+done
 
 #Mit diesem Namen wird ein Verzeichnis angelegt
 mkdir -p $new_ca_name
