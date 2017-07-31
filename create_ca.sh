@@ -184,6 +184,11 @@ case $ca_type in
 #      cp -a $template_dir/etc/".conf" $new_ca_name/etc
 #      cp -a $template_dir/etc/".conf" $new_ca_name/etc
 	  sed -i -- "s/basicConstraints *= critical,CA:true/basicConstraints        = critical,CA:true,pathlen:1/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+	  sed -n "/\[ signing_ca_ext \]/,/^$/p" $new_ca_name/etc/$new_ca_name"-ca.conf">/tmp/tt
+	  sed -i -- "s/\[ signing_ca_ext \]/\[ identity_ca_ext \]/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+	  echo "" >> $new_ca_name/etc/$new_ca_name"-ca.conf"
+	  cat /tmp/tt >> $new_ca_name/etc/$new_ca_name"-ca.conf"
+	  sed -i -- "s/\[ signing_ca_ext \]/\[ component_ca_ext \]/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
       ;;
 	identity)
       cp -a $template_dir/etc/"identity.conf" $new_ca_name/etc
