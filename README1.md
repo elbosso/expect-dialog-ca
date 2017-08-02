@@ -21,7 +21,7 @@ The project is prepared for a full fledged 3-tier CA hierarchy:
 The project does explicitely *not* aim to support the "on behalf of" strategy
  when issuing certificates: Neither the CAs created with nor the scripts 
  provided by this projects will facilitate the creation of private keys 
-  for end users.
+  for end users.[README1.md](testlink)
   
 We strictly endorse policies where the CA never even sees a private key of an end user,
 let alone create those.
