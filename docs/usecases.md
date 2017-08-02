@@ -1,6 +1,6 @@
 ## Use Cases
 
-###Certificate Authorities
+### Certificate Authorities
 
 Here, the use cases for issuing Entities also known as 
 certificate authorities are collected.

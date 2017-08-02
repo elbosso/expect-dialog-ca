@@ -31,6 +31,10 @@ and start signing its signing request:
 
 `../sign_request.sh`
 
+During the execution of this script it asks what kind of certificate you
+want to issue and shows you a menu with the available choices. Because
+we are currently self-signing, you have to choose root at this point.
+
 When this is done - remember what was said earlier about selecting files? - 
 a file is created inside the directory you are currently in called deliverables_<whatever you choose as CN for your root CA>.zip.
 Now - without leaving the directory, you install the certificate inside
@@ -52,7 +56,10 @@ Now we start over by executing the script for CA creation again:
 
 `create_ca.sh`
 
-Now we dont chose a root CA but an intermediate CA as its type but always remember:
+Now we dont chose a root CA but an intermediate CA as its type.
+You may be confused because there is no "intermediate" to choose.
+The reason for this: it is called network CA here. So lets
+create a network CA next - and always remember:
 you must not name it after its type - so as was the name root when creating the root CA,
 this time the name intermediate is forbidden!
 
@@ -67,6 +74,8 @@ and start signing its signing request:
 
 `../sign_request.sh`
 
+Again - choose the right kind of certificate to be issued - this time,
+that will be intermediate.
 When this is done, a file named
 deliverables_<whatever you choose as CN for your intermediate CA>.zip.
 is created. Now you have to change directory into the directory that holds
