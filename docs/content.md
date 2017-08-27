@@ -4,8 +4,13 @@ This project consists of Linux shell scripts - some of them are meant to be run 
  scripts. Additionally, there is also a number of expect scripts:
  
 ### Linux scripts for the user
+* [change_ca_password.sh](../change_ca_password.sh)  
+ksdjfajkfasg
+kasjghasg
+afsgasdf
+
 <dl>
-  <dt>change_ca_password.sh</dt>
+  <dt>[change_ca_password.sh](../change_ca_password.sh)</dt>
   <dd>This script changes the password for the private key of a certificate
   authority. The old private key is backed up prior to 
   creation of the new key with the new password.
