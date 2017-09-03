@@ -60,7 +60,13 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   This script is sourced by all other scripts used on the issuer side of
   things. It sets some basic environment bariables needed in all the scripts
   and does some other supporting stuff too.
-
+* [ask_for_password.sh](../ask_for_password.sh)  
+  This script is sourced by all scripts needing the user to specify 
+  a new secret pasword. It displays the usual "please give new password/please type it
+  again to verify"-GUI and does basic verification:
+  * are both fields non-empty
+  * are password and password verification equal
+  
 ### Expect scripts
 These scripts are needed to hide the complexities of calling and interacting with the openssl 
 command line program. They automate the interactive process when using the openssl
