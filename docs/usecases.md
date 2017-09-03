@@ -16,7 +16,7 @@ Building an new CA is done in several steps:
 
 This process is rather lengthy and there are several scripts involved: After
 the policy is written down, you should have all information for customizing the 
-CA about to be created. Now, you need to use `create_ca.sh`. This script
+CA about to be created. Now, you need to use [create_ca.sh](../create_ca.sh). This script
 guides you through all the steps needed for 
 * creation of a private key for the CA
 * creation of the infrastructure of the CA (directory structure, serial number, database,...)
@@ -28,7 +28,7 @@ to be used as part of the Message Authentication Code (MAC) among others.
 
 After the script is done, you have a fully populated directory structure
 for your CA as well as a CSR you need to get signed by another CA. When this is done,
-you get a certificate back ready for installation. The script `install_ca_certificate.sh`
+you get a certificate back ready for installation. The script [install_ca_certificate.sh](../install_ca_certificate.sh)
 helps with that: it
 * installs of the certificate,
 * creates the initial CRL and
@@ -46,7 +46,7 @@ For certificate authorities it is crucial that the digital identity
  if the private key does not change. 
  
 The project supports this use case by means of the script
-`reneq_cert_req.sh`: It constructs a Certificate signing request from
+[reneq_cert_req.sh](../reneq_cert_req.sh): It constructs a Certificate signing request from
 an existing private key and certificate to be signed by the certificate 
 authority that signed the soon-to-be-expiring certificate.
 
@@ -56,7 +56,7 @@ a need for this use case - however: When an authorized operator of the
 certificate authority gets her privileges removed, she must not be
 able to act on behalf of the certificate authority. If the key is
 not on some kind of hardware token management could withdraw, the password
-needs to be changed - and this is where the script `change_ca_password`
+needs to be changed - and this is where the script [change_ca_password.sh](../change_ca_password.sh)
 comes into play. 
 
 It asks for the current password and for the new password. It then backs up the old
@@ -65,7 +65,7 @@ new key is written back into a file with the original name. After checking that 
 key file works - the backup file must be immediately destroyed!!
 
 #### Responding to Certificate Signing Requests
-Responding to certificate signing requests is done by using the script `sign_request.sh`.
+Responding to certificate signing requests is done by using the script [sign_request.sh](../sign_request.sh).
 A Certificate signing request essentially asks a certificate authority to
 certify the association between a certain private key and whatever 
 claims the CSR holds (canonical name, server adresses, email adresses and so on).
@@ -83,7 +83,7 @@ ready to be shipped to the end-user.
 
 #### Revoking Certificates
 The revocation is done by receiving information about the party whose
-certificate should be invalidated. Once the script `revoke_crl.sh` is started,
+certificate should be invalidated. Once the script [revoke_crl.sh](../revoke_crl.sh) is started,
 a scrollable list of all valid certificates is displayed. The user selects 
 the one matching the request and is then asked for confirmation. If he 
 gives it, the revocation is executed and the CRL of the CA updated.
@@ -100,7 +100,7 @@ The equality alone is *-one can not stress this enough-* however depending
 #### Keeping the CRLs valid
 The validity period of a certificate revocation list is always 
    limited. The PKI or CA is responsible for refreshing the CRL before
-   the validity of the last one is up. The script `refresh_crl.sh`offers
+   the validity of the last one is up. The script [refresh_crl.sh](../refresh_crl.sh)offers
    a convenient method of doing so.
 
 #### Managing Certificate Lifecycle
@@ -109,12 +109,12 @@ to reach their end-of-validity date. If this is monitored closely, one
 can remember the end users of the impending end of the certificates validity
 and remind them of applying for a renewal. 
 
-For this, the script `reneq_cert_req.sh` was made: The end user can
+For this, the script [reneq_cert_req.sh](../reneq_cert_req.sh) was made: The end user can
 use it to create a new CSR using his private key. He can send this new CSR to the 
 CA and get his certificate renewed.
 
 To get information about certificates soon to become invalid,
-the script `manage_certs.sh` is used: The user can choose a certain day and the 
+the script [manage_certs.sh](../manage_certs.sh) is used: The user can choose a certain day and the 
 script presents a list with certificates expiring before that date. This
 makes it possible for example to get a list of all certificates expiring 
 within the next two months.
@@ -127,7 +127,7 @@ Here, all use cases for Subjects are collected that do not issue
  ). Those uses are not in the scop of this project and neither of this document.
   
 #### Requesting Certificates
-To apply for a certificate, the script `request_certificate.sh` is used: 
+To apply for a certificate, the script [request_certificate.sh](../request_certificate.sh) is used: 
 The end user has to give his
 private key and the password for unlocking it as well as 
 the name of the file the new CSR is to be saved into. 
@@ -140,7 +140,7 @@ is able to issue the following flavours:
 
 #### Renewal of Certificates
 If the end user already has a certificate and only wants to renew it without
-also creating a new private key, the script `request_certificate_renewal.sh` supports
+also creating a new private key, the script [request_certificate_renewal.sh](../request_certificate_renewal.sh) supports
 this: The user has to provide her private key and the soon-to-be-expired certificate.
 The resulting CSR can then be sent to the certificate authority that
 acted as issuer for the old certificate for renewal.
