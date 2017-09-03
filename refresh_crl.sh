@@ -107,5 +107,6 @@ openssl crl -noout -text  -in crl/${ca_name}-ca.crl > /tmp/crl.pem
 
 $dialog_exe --backtitle "CRL" --textbox /tmp/crl.pem 0 0
 
+openssl crl -inform PEM -outform DER -in crl/${ca_name}-ca.crl -out crl/${ca_name}-ca.der
 
 clear

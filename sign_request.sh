@@ -299,8 +299,9 @@ priv_key_pass=""
 serial=`openssl x509 -noout -serial -in "ca/${cn}.crt" |cut -d "=" -f 2`
 expiration=`openssl x509 -noout -dates -in "ca/${cn}.crt" |grep notAfter|cut -d "=" -f 2`
 start=`openssl x509 -noout -dates -in "ca/${cn}.crt" |grep notBefore|cut -d "=" -f 2`
+openssl x509 -inform PEM -outform DER -in "ca/${cn}.crt" -out "ca/${cn}.der"
 
-$dialog_exe --backtitle "Info" --msgbox "The issuer certificate is in issuer.crt\nThe certificate is in ca/${cn}.crt\nThe certificate will expire on ${expiration}\n\nYou can now send the archive\ndeliverables_${cn}.zip\nback to the requestor!" 0 0
+$dialog_exe --backtitle "Info" --msgbox "The issuer certificate is in issuer.crt\nThe certificate is in ca/${cn}.crt (PEM) and in ca/${cn}.der (DER)\nThe certificate will expire on ${expiration}\n\nYou can now send the archive\ndeliverables_${cn}.zip\nback to the requestor!" 0 0
 
 # eventuell sogar zip/tar draus machen?
 
@@ -312,13 +313,15 @@ echo "issuer=\"${cn}/issuer.crt\"" >index.txt
 cp ${ca_cert} "${cn}/issuer.crt"
 echo "zert=\"${cn}/${cn}.crt\"" >>index.txt
 cp "ca/${cn}.crt" "${cn}/"
+echo "zert (DER)=\"${cn}/${cn}.der\"" >>index.txt
+cp "ca/${cn}.der" "${cn}/"
 zip "deliverables_${cn}.zip" "${cn}"/* index.txt
 #rm -rf "deliverables_${cn}"
 
 #log schreiben: minimum: aktuelles Datum, Ende-Datum, Serien-Nummer, Subject
 if [ "$log_file_name" != "" ]; then
 echo -e "CN\tcert file\tissuer cert file\tnotBefore\tnotAfter" > "${log_file_name}"
-echo -e "${cn}\tca/${cn}.crt\t${ca_cert}\t${start}\t${expiration}" >> "${log_file_name}"
+echo -e "${cn}\tca/${cn}.crt\tca/${cn}.der\t${ca_cert}\t${start}\t${expiration}" >> "${log_file_name}"
 chmod 600 "${log_file_name}"
 $dialog_exe --backtitle "Info" --msgbox "log file written to ${log_file_name}" 0 0
 fi

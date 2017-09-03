@@ -97,6 +97,8 @@ priv_key_pass=""
 
 openssl crl -noout -text  -in crl/${ca_name}-ca.crl > /tmp/crl.pem
 
+openssl crl -inform PEM -outform DER -in crl/${ca_name}-ca.crl -out crl/${ca_name}-ca.der
+
 $dialog_exe --backtitle "CRL" --textbox /tmp/crl.pem 0 0
 
 cat "ca/${ca_name}-ca.crt" "/tmp/ca-rollout/${issuer}" > ca/${ca_name}-ca-chain.pem
