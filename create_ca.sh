@@ -341,11 +341,19 @@ sed -i -E -- "s/(default_bits *= *)2048(.*)/\1$key_length\2/g"  $new_ca_name/etc
 #Welche Defaults sollen das Erstellen eines CSR erleichtern?
 conf_files=`find $new_ca_name/etc/ -maxdepth 1 ! -name '*ca.conf' ! -name '.'|rev|cut -d / -f 1|rev`
 menuitems=""
+emptySpace=""
 for item in ${conf_files}
     do
-            menuitems="$menuitems ${item} \"\" off " # subst. Blanks with "_"
+            menuitems="$menuitems ${item} '' off " # subst. Blanks with "_"
 
 done
+$dialog_exe --msgbox "The next form shows a list with the different flavors of certificates this new CA is able to issue. You are prompted \
+to select all of those flavors you want to specify default values for. These default values are stored inside the generated
+client configurations an end user can use to create certificate signing requests. With this you can make the life
+of your end users easier. If for example you create a CA for identity management, the end users must provide details such as country,
+locality, organization and so on. If the CA is meant to manage digital identities for the employees of a company, chances are
+that each and every one of them will enter the same for organization - why not save them the hassle and fill it out beforehand? This
+is what these default values are for." 16 60
 $dialog_exe --backtitle "Available CA configurations" \
            --title "Select some" --checklist \
            "Choose some of the available CA types" 16 40 8 $menuitems 2> $_temp
@@ -355,18 +363,24 @@ if [ $? -eq 0 ]; then
 	else
 		exit 255
     fi
-
+countryName=""
+stateOrProvinceName=""
+localityName=""
+organizationName=""
+organizationalUnitName=""
+commonName=""
+emailAddress=""
 for item in ${sel}
     do
 $dialog_exe --backtitle "CSR defaults for $item" \
 	    --form " Specify defaults for $item - use [up] [down] to select input field " 0 0 0 \
-	    "countryName" 2 4 "DE" 2 25 40 0\
-	    "stateOrProvinceName" 4 4 "" 4 25 40 0\
-	    "localityName" 6 4 "" 6 25 40 0\
-	    "organizationName" 8 4 "" 8 25 40 0\
-	    "organizationalUnitName" 10 4 "" 10 25 40 0\
-	    "commonName" 12 4 "" 12 25 64 0\
-	    "emailAddress" 14 4 "" 14 25 40 0\
+	    "countryName" 2 4 "${countryName}" 2 25 40 0\
+	    "stateOrProvinceName" 4 4 "${stateOrProvinceName}" 4 25 40 0\
+	    "localityName" 6 4 "${localityName}" 6 25 40 0\
+	    "organizationName" 8 4 "${organizationName}" 8 25 40 0\
+	    "organizationalUnitName" 10 4 "${organizationalUnitName}" 10 25 40 0\
+	    "commonName" 12 4 "${commonName}" 12 25 64 0\
+	    "emailAddress" 14 4 "${emailAddress}" 14 25 40 0\
 	    2>$_temp
 	
 	if [ ${?} -ne 0 ]; then exit 127; fi   
@@ -388,25 +402,25 @@ commonName=`cat $_temp |cut -d"
 emailAddress=`cat $_temp |cut -d"
 " -f 7`
 if [ ! "$countryName" = "" ]; then
-sed -i -E -- "/countryName *=.*/a countryName_default = \"$countryName\""  $new_ca_name/etc/$item
+sed -i -E -- "/countryName *=.*/a countryName_default = \"${countryName}\""  $new_ca_name/etc/$item
 fi
 if [ ! "$stateOrProvinceName" = "" ]; then
-sed -i -E -- "/stateOrProvinceName *=.*/a stateOrProvinceName_default = \"$stateOrProvinceName\""  $new_ca_name/etc/$item
+sed -i -E -- "/stateOrProvinceName *=.*/a stateOrProvinceName_default = \"${stateOrProvinceName}\""  $new_ca_name/etc/$item
 fi
 if [ ! "$localityName" = "" ]; then
-sed -i -E -- "/localityName *=.*/a localityName_default = \"$localityName\""  $new_ca_name/etc/$item
+sed -i -E -- "/localityName *=.*/a localityName_default = \"${localityName}\""  $new_ca_name/etc/$item
 fi
 if [ ! "$organizationName" = "" ]; then
-sed -i -E -- "/organizationName *=.*/a organizationName_default = \"$organizationName\""  $new_ca_name/etc/$item
+sed -i -E -- "/organizationName *=.*/a organizationName_default = \"${organizationName}\""  $new_ca_name/etc/$item
 fi
 if [ ! "$organizationalUnitName" = "" ]; then
-sed -i -E -- "/organizationalUnitName *=.*/a organizationalUnitName_default = \"$organizationalUnitName\""  $new_ca_name/etc/$item
+sed -i -E -- "/organizationalUnitName *=.*/a organizationalUnitName_default = \"${organizationalUnitName}\""  $new_ca_name/etc/$item
 fi
 if [ ! "$commonName" = "" ]; then
-sed -i -E -- "/commonName *=.*/a commonName_default = \"$commonName\""  $new_ca_name/etc/$item
+sed -i -E -- "/commonName *=.*/a commonName_default = \"${commonName}\""  $new_ca_name/etc/$item
 fi
 if [ ! "$emailAddress" = "" ]; then
-sed -i -E -- "/emailAddress *=.*/a emailAddress_default = \"$emailAddress\""  $new_ca_name/etc/$item
+sed -i -E -- "/emailAddress *=.*/a emailAddress_default = \"${emailAddress}\""  $new_ca_name/etc/$item
 fi
 done
 
