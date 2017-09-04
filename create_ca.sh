@@ -340,7 +340,23 @@ sed -i -E -- "s/(default_bits *= *)2048(.*)/\1$key_length\2/g"  $new_ca_name/etc
 
 #Welche Defaults sollen das Erstellen eines CSR erleichtern?
 conf_files=`find $new_ca_name/etc/ -maxdepth 1 ! -name '*ca.conf' ! -name '.'|rev|cut -d / -f 1|rev`
+menuitems=""
 for item in ${conf_files}
+    do
+            menuitems="$menuitems ${item} \"\" off " # subst. Blanks with "_"
+
+done
+$dialog_exe --backtitle "Available CA configurations" \
+           --title "Select some" --checklist \
+           "Choose some of the available CA types" 16 40 8 $menuitems 2> $_temp
+if [ $? -eq 0 ]; then
+         sel=`cat $_temp`
+		echo $sel
+	else
+		exit 255
+    fi
+
+for item in ${sel}
     do
 $dialog_exe --backtitle "CSR defaults for $item" \
 	    --form " Specify defaults for $item - use [up] [down] to select input field " 0 0 0 \
@@ -392,8 +408,7 @@ fi
 if [ ! "$emailAddress" = "" ]; then
 sed -i -E -- "/emailAddress *=.*/a emailAddress_default = \"$emailAddress\""  $new_ca_name/etc/$item
 fi
-
-    done
+done
 
 if [ "$preexisting_key_file" = "" ]; then
 . ./ask_for_passwd.sh
