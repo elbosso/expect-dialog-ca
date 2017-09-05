@@ -170,7 +170,9 @@ echo 01 > $new_ca_name/ca/db/$new_ca_name-ca.crl.srl
 
 mkdir -p $new_ca_name/etc
 chmod 700 $new_ca_name/etc
-cp -a $template_dir/etc/$ca_type"-ca.conf" $new_ca_name/etc/$new_ca_name"-ca.conf"
+#cp -a $template_dir/etc/$ca_type"-ca.conf" $new_ca_name/etc/$new_ca_name"-ca.conf"
+cat $template_dir/etc/$ca_type"-ca.conf" | head -n -3 >$new_ca_name/etc/$new_ca_name"-ca.conf"
+
 case $ca_type in
     component)
       cp -a $template_dir/etc/"ocspsign.conf" $new_ca_name/etc
@@ -183,7 +185,12 @@ case $ca_type in
       cp -a $template_dir/etc/"component-ca.conf" $new_ca_name/etc
 #      cp -a $template_dir/etc/".conf" $new_ca_name/etc
 #      cp -a $template_dir/etc/".conf" $new_ca_name/etc
-	  sed -i -- "s/basicConstraints *= critical,CA:true/basicConstraints        = critical,CA:true,pathlen:1/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+	  sed -ie -- "s/basicConstraints *= critical,CA:true$/basicConstraints        = critical,CA:true,pathlen:1/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+#	  i confess i do not know why this is: the options to the sed call above have exactly to be as is given there -
+# "-e -i" works not, neither does "-i -e" or "-ei"
+# the call works but for reasons unknown to man it creates a file i dont want to have so i have to remove it afterwards
+# that is what the next line is for:
+      rm $new_ca_name/etc/$new_ca_name"-ca.confe"
 	  sed -n "/\[ signing_ca_ext \]/,/^$/p" $new_ca_name/etc/$new_ca_name"-ca.conf">/tmp/tt
 	  sed -i -- "s/\[ signing_ca_ext \]/\[ identity_ca_ext \]/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 	  echo "" >> $new_ca_name/etc/$new_ca_name"-ca.conf"
@@ -213,6 +220,42 @@ case $ca_type in
 #      cp -a $template_dir/etc/".conf" $new_ca_name/etc
       ;;
   esac
+echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "[ additional_oids ]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+$dialog_exe --msgbox "It is possible to give text descriptions for any proprietary OIDs you want to use in your issued certificates.\
+The next form gives you the opportunity to specify them and their associated description together with an identifier (must not contain spaces) one by one. Once you entered
+all your OIDs and their descriptions - just leave the form blank and the script will automatically proceed to the next step" 16 60
+condition=1
+Identifier="CustomOid1"
+OID=""
+Description=""
+while [ $condition -eq 1 ]
+do
+condition=1
+$dialog_exe --backtitle "Custom OID descriptions" \
+	    --form " Please give your OID and their description - use [up] [down] to select input field " 0 0 0 \
+	    "Identifier" 2 4 "${Identifier}" 2 25 40 0\
+	    "OID" 4 4 "${OID}" 4 25 40 0\
+	    "Description" 6 4 "${Description}" 6 25 40 0\
+	    2>$_temp
+
+	if [ ${?} -ne 0 ]; then exit 127; fi
+    result=`cat $_temp`
+    echo "Result=$result"
+#    $dialog_exe --title "Items are separated by \\n" --cr-wrap --msgbox "\nYou entered:\n$result" 12 52
+Identifier=`cat $_temp |cut -d"
+" -f 1`
+OID=`cat $_temp |cut -d"
+" -f 2`
+Description=`cat $_temp |cut -d"
+" -f 3`
+if [ "$OID" = "" ] || [ "$Description" = "" ] || [ "$Identifier" = "" ]; then
+condition=0
+else
+echo "${Identifier} = ${OID}, ${Description}" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+fi
+done
+
 
 #Anschließend wird in den kopierten Dateien der Name der CA durch den vom Nutzer gewählten ersetzt
 #$dialog_exe --backtitle "Info" --msgbox "s/${ca_type}-ca/${new_ca_name}-ca/g\n$new_ca_name/etc/$ca_type"-ca.conf"" 9 52
@@ -238,8 +281,8 @@ $dialog_exe --backtitle "CA configuration" \
 	    "commonName" 8 4 "" 8 25 40 0\
 	    "base_url" 10 4 "http://" 10 25 40 0\
 	    2>$_temp
-	
-	if [ ${?} -ne 0 ]; then exit 127; fi   
+
+	if [ ${?} -ne 0 ]; then exit 127; fi
     result=`cat $_temp`
     echo "Result=$result"
 #    $dialog_exe --title "Items are separated by \\n" --cr-wrap --msgbox "\nYou entered:\n$result" 12 52
@@ -347,6 +390,9 @@ for item in ${conf_files}
             menuitems="$menuitems ${item} '' off " # subst. Blanks with "_"
 
 done
+if [ "$menuitems" = "" ];then
+echo "no issuing cas need to be configured - skipping this part"
+else
 $dialog_exe --msgbox "The next form shows a list with the different flavors of certificates this new CA is able to issue. You are prompted \
 to select all of those flavors you want to specify default values for. These default values are stored inside the generated
 client configurations an end user can use to create certificate signing requests. With this you can make the life
@@ -423,6 +469,7 @@ if [ ! "$emailAddress" = "" ]; then
 sed -i -E -- "/emailAddress *=.*/a emailAddress_default = \"${emailAddress}\""  $new_ca_name/etc/$item
 fi
 done
+fi
 
 if [ "$preexisting_key_file" = "" ]; then
 . ./ask_for_passwd.sh
