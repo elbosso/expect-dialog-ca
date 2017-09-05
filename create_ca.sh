@@ -205,19 +205,57 @@ case $ca_type in
       awk '/\[ component_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = componentCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
+###################
 caconfig="component"
-blah="certificatePolicies = @${caconfig}CPS\n\n\
+cpsoid=""
+cpsuri=""
+cpsexplicit=""
+cpsorg=""
+cpsnumbers=""
+$dialog_exe --backtitle "CPS onformation" \
+	    --form " Specify information for ${caconfig}- use [up] [down] to select input field " 0 0 0 \
+	    "OID" 2 4 "${cpsoid}" 2 25 40 0\
+	    "CPS URI" 4 4 "${cpsuri}" 4 25 40 0\
+	    "User notice - Text" 6 4 "${cpsexplicit}" 6 25 40 0\
+	    "User notice - Org" 8 4 "${cpsorg}" 8 25 40 0\
+	    "User notice - Notice numbers" 10 4 "${cpsnumbers}" 10 25 40 0\
+	    2>$_temp
+
+	if [ ${?} -ne 0 ]; then exit 127; fi
+    result=`cat $_temp`
+    echo "Result=$result"
+#    $dialog_exe --title "Items are separated by \\n" --cr-wrap --msgbox "\nYou entered:\n$result" 12 52
+cpsoid=`cat $_temp |cut -d"
+" -f 1`
+cpsuri=`cat $_temp |cut -d"
+" -f 2`
+cpsexplicit=`cat $_temp |cut -d"
+" -f 3`
+cpsorg=`cat $_temp |cut -d"
+" -f 4`
+cpsnumbers=`cat $_temp |cut -d"
+" -f 5`
+if [ ! "$cpsoid" = "" ]; then
+cpsfragment="certificatePolicies = @${caconfig}CPS\n\n\
 [ ${caconfig}CPS ]\n\
-policyIdentifier=1.3.6.1.4.1.0.1.7.8\n\
-CPS=\"http://www.ca.de/policy.html\"\n\
-userNotice=@${caconfig}CPSNotice\n\n\
+policyIdentifier=${cpsoid}\n"
+if [ ! "$cpsuri" = "" ]; then
+cpsfragment="${cpsfragment}CPS=\"http://www.ca.de/policy.html\"\n"
+if [ ! "$cpsexplicit" = "" ]; then
+cpsfragment="${cpsfragment}userNotice=@${caconfig}CPSNotice\n\n\
 [ ${caconfig}CPSNotice ]\n\
-explicitText=\"Nur zur Verschluesselung von E-Mail (S/MIME)\"\n\
-#notice=@${caconfig}CPSNoticeref\n\n\
-#[ ${caconfig}CPSNoticeref ]\n\
-#organisation=\"CA Org.\"\n\
-#noticeNumbers=4, 2\n"
-#      sed -i -- "s|#certificatePolicies = ${caconfig}CPS|${blah}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+explicitText=\"${cpsexplicit}\"\n"
+if [ ! "$cpsorg" = "" ] && [ ! "$cpsnumbers" = "" ]; then
+cpsfragment="${cpsfragment}notice=@${caconfig}CPSNoticeref\n\n\
+[ ${caconfig}CPSNoticeref ]\n\
+organisation=\"${cpsorg}\"\n\
+noticeNumbers=${cpsnumbers}\n"
+fi
+fi
+fi
+sed -i -- "s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+fi
+###################
       ;;
 	identity)
       cp -a $template_dir/etc/"identity.conf" $new_ca_name/etc
