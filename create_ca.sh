@@ -196,6 +196,28 @@ case $ca_type in
 	  echo "" >> $new_ca_name/etc/$new_ca_name"-ca.conf"
 	  cat /tmp/tt >> $new_ca_name/etc/$new_ca_name"-ca.conf"
 	  sed -i -- "s/\[ signing_ca_ext \]/\[ component_ca_ext \]/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      awk '/\[ identity_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = identityCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      rm $new_ca_name/etc/$new_ca_name"-ca.conf"
+      mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
+      awk '/\[ intermediate_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = intermediateCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      rm $new_ca_name/etc/$new_ca_name"-ca.conf"
+      mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
+      awk '/\[ component_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = componentCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      rm $new_ca_name/etc/$new_ca_name"-ca.conf"
+      mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
+caconfig="component"
+blah="certificatePolicies = @${caconfig}CPS\n\n\
+[ ${caconfig}CPS ]\n\
+policyIdentifier=1.3.6.1.4.1.0.1.7.8\n\
+CPS=\"http://www.ca.de/policy.html\"\n\
+userNotice=@${caconfig}CPSNotice\n\n\
+[ ${caconfig}CPSNotice ]\n\
+explicitText=\"Nur zur Verschluesselung von E-Mail (S/MIME)\"\n\
+#notice=@${caconfig}CPSNoticeref\n\n\
+#[ ${caconfig}CPSNoticeref ]\n\
+#organisation=\"CA Org.\"\n\
+#noticeNumbers=4, 2\n"
+#      sed -i -- "s|#certificatePolicies = ${caconfig}CPS|${blah}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
       ;;
 	identity)
       cp -a $template_dir/etc/"identity.conf" $new_ca_name/etc
@@ -311,7 +333,7 @@ sed -i -- "s/countryName *= \".*\"/countryName = \"${countryName}\"/g"  $new_ca_
 sed -i -- "s/organizationName *= \".*\"/organizationName = \"${organizationName}\"/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- "s/organizationalUnitName *= \".*\"/organizationalUnitName  = \"${organizationalUnitName}\"/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- "s/commonName *= \".*\"/commonName  = \"${commonName}\"/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
-sed -i -- 's/certificatePolicies/#certificatePolicies/g' $new_ca_name/etc/$new_ca_name"-ca.conf"
+sed -i -E -- 's/^certificatePolicies/#certificatePolicies/g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- 's_$dir/ca/$ca_$dir/ca_g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- 's_$dir/ca.crt_$dir/ca/$ca.crt_g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 
