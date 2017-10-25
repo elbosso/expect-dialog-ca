@@ -241,6 +241,10 @@ case $ca_type in
 #      cp -a $template_dir/etc/".conf" $new_ca_name/etc
       ;;
   esac
+#falls root CA...
+awk '/\[ intermediate_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = intermediateCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+rm $new_ca_name/etc/$new_ca_name"-ca.conf"
+mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
 
 #Anschließend wird in den kopierten Dateien der Name der CA durch den vom Nutzer gewählten ersetzt
 #$dialog_exe --backtitle "Info" --msgbox "s/${ca_type}-ca/${new_ca_name}-ca/g\n$new_ca_name/etc/$ca_type"-ca.conf"" 9 52
@@ -463,8 +467,12 @@ emptySpace=""
 for item in ${conf_files}
     do
             menuitems="$menuitems ${item} '' off " # subst. Blanks with "_"
-
 done
+if [ "$menuitems" = "" ];then
+    if [ "$ca_type" = "root" ];then
+      menuitems="$menuitems intermediate '' off "
+    fi
+fi
 if [ "$menuitems" = "" ];then
 echo "no issuing cas need to be configured - skipping this part"
 else
@@ -489,7 +497,6 @@ if [ $? -eq 0 ]; then
         cpsnumbers=""
 for item in ${sel}
     do
-###################
         caconfig=`echo -n "$item"|cut -d "." -f 1`
         $dialog_exe --backtitle "CPS information" \
                 --form " Specify information for ${caconfig} - use [up] [down] to select input field " 0 0 0 \
@@ -531,11 +538,10 @@ organisation=\"${cpsorg}\"\n\
 noticeNumbers=${cpsnumbers}\n"
               fi
             fi
-            $dialog_exe --title "sed cmd line" --cr-wrap --msgbox "sed -i -- \"s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g\"  $new_ca_name/etc/$new_ca_name\"-ca.conf\"" 12 52
+#            $dialog_exe --title "sed cmd line" --cr-wrap --msgbox "sed -i -- \"s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g\"  $new_ca_name/etc/$new_ca_name\"-ca.conf\"" 12 52
             sed -i -- "s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
           fi
         fi
-###################
 done
 fi
 
