@@ -179,6 +179,18 @@ case $ca_type in
       cp -a $template_dir/etc/"server.conf" $new_ca_name/etc
       cp -a $template_dir/etc/"timestamp.conf" $new_ca_name/etc
       cp -a $template_dir/etc/"client.conf" $new_ca_name/etc
+      awk '/\[ server_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = serverCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      rm $new_ca_name/etc/$new_ca_name"-ca.conf"
+      mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
+      awk '/\[ client_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = clientCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      rm $new_ca_name/etc/$new_ca_name"-ca.conf"
+      mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
+      awk '/\[ timestamp_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = timestampCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      rm $new_ca_name/etc/$new_ca_name"-ca.conf"
+      mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
+      awk '/\[ ocspsign_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = ocspsignCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      rm $new_ca_name/etc/$new_ca_name"-ca.conf"
+      mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       ;;
     network)
       cp -a $template_dir/etc/"identity-ca.conf" $new_ca_name/etc
@@ -205,57 +217,6 @@ case $ca_type in
       awk '/\[ component_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = componentCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
-###################
-caconfig="component"
-cpsoid=""
-cpsuri=""
-cpsexplicit=""
-cpsorg=""
-cpsnumbers=""
-$dialog_exe --backtitle "CPS onformation" \
-	    --form " Specify information for ${caconfig}- use [up] [down] to select input field " 0 0 0 \
-	    "OID" 2 4 "${cpsoid}" 2 25 40 0\
-	    "CPS URI" 4 4 "${cpsuri}" 4 25 40 0\
-	    "User notice - Text" 6 4 "${cpsexplicit}" 6 25 40 0\
-	    "User notice - Org" 8 4 "${cpsorg}" 8 25 40 0\
-	    "User notice - Notice numbers" 10 4 "${cpsnumbers}" 10 25 40 0\
-	    2>$_temp
-
-	if [ ${?} -ne 0 ]; then exit 127; fi
-    result=`cat $_temp`
-    echo "Result=$result"
-#    $dialog_exe --title "Items are separated by \\n" --cr-wrap --msgbox "\nYou entered:\n$result" 12 52
-cpsoid=`cat $_temp |cut -d"
-" -f 1`
-cpsuri=`cat $_temp |cut -d"
-" -f 2`
-cpsexplicit=`cat $_temp |cut -d"
-" -f 3`
-cpsorg=`cat $_temp |cut -d"
-" -f 4`
-cpsnumbers=`cat $_temp |cut -d"
-" -f 5`
-if [ ! "$cpsoid" = "" ]; then
-cpsfragment="certificatePolicies = @${caconfig}CPS\n\n\
-[ ${caconfig}CPS ]\n\
-policyIdentifier=${cpsoid}\n"
-if [ ! "$cpsuri" = "" ]; then
-cpsfragment="${cpsfragment}CPS=\"http://www.ca.de/policy.html\"\n"
-if [ ! "$cpsexplicit" = "" ]; then
-cpsfragment="${cpsfragment}userNotice=@${caconfig}CPSNotice\n\n\
-[ ${caconfig}CPSNotice ]\n\
-explicitText=\"${cpsexplicit}\"\n"
-if [ ! "$cpsorg" = "" ] && [ ! "$cpsnumbers" = "" ]; then
-cpsfragment="${cpsfragment}notice=@${caconfig}CPSNoticeref\n\n\
-[ ${caconfig}CPSNoticeref ]\n\
-organisation=\"${cpsorg}\"\n\
-noticeNumbers=${cpsnumbers}\n"
-fi
-fi
-fi
-sed -i -- "s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
-fi
-###################
       ;;
 	identity)
       cp -a $template_dir/etc/"identity.conf" $new_ca_name/etc
@@ -280,42 +241,6 @@ fi
 #      cp -a $template_dir/etc/".conf" $new_ca_name/etc
       ;;
   esac
-echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-echo "[ additional_oids ]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-$dialog_exe --msgbox "It is possible to give text descriptions for any proprietary OIDs you want to use in your issued certificates.\
-The next form gives you the opportunity to specify them and their associated description together with an identifier (must not contain spaces) one by one. Once you entered
-all your OIDs and their descriptions - just leave the form blank and the script will automatically proceed to the next step" 16 60
-condition=1
-Identifier="CustomOid1"
-OID=""
-Description=""
-while [ $condition -eq 1 ]
-do
-condition=1
-$dialog_exe --backtitle "Custom OID descriptions" \
-	    --form " Please give your OID and their description - use [up] [down] to select input field " 0 0 0 \
-	    "Identifier" 2 4 "${Identifier}" 2 25 40 0\
-	    "OID" 4 4 "${OID}" 4 25 40 0\
-	    "Description" 6 4 "${Description}" 6 25 40 0\
-	    2>$_temp
-
-	if [ ${?} -ne 0 ]; then exit 127; fi
-    result=`cat $_temp`
-    echo "Result=$result"
-#    $dialog_exe --title "Items are separated by \\n" --cr-wrap --msgbox "\nYou entered:\n$result" 12 52
-Identifier=`cat $_temp |cut -d"
-" -f 1`
-OID=`cat $_temp |cut -d"
-" -f 2`
-Description=`cat $_temp |cut -d"
-" -f 3`
-if [ "$OID" = "" ] || [ "$Description" = "" ] || [ "$Identifier" = "" ]; then
-condition=0
-else
-echo "${Identifier} = ${OID}, ${Description}" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-fi
-done
-
 
 #Anschließend wird in den kopierten Dateien der Name der CA durch den vom Nutzer gewählten ersetzt
 #$dialog_exe --backtitle "Info" --msgbox "s/${ca_type}-ca/${new_ca_name}-ca/g\n$new_ca_name/etc/$ca_type"-ca.conf"" 9 52
@@ -462,7 +387,7 @@ that each and every one of them will enter the same for organization - why not s
 is what these default values are for." 16 60
 $dialog_exe --backtitle "Available CA configurations" \
            --title "Select some" --checklist \
-           "Choose some of the available CA types" 16 40 8 $menuitems 2> $_temp
+           "Choose some of the available certificate types" 16 40 8 $menuitems 2> $_temp
 if [ $? -eq 0 ]; then
          sel=`cat $_temp`
 		echo $sel
@@ -530,6 +455,125 @@ sed -i -E -- "/emailAddress *=.*/a emailAddress_default = \"${emailAddress}\""  
 fi
 done
 fi
+
+#Custom Policies
+conf_files=`find $new_ca_name/etc/ -maxdepth 1 ! -name ''"$new_ca_name"'-ca.conf' ! -name '.'|rev|cut -d / -f 1|rev`
+menuitems=""
+emptySpace=""
+for item in ${conf_files}
+    do
+            menuitems="$menuitems ${item} '' off " # subst. Blanks with "_"
+
+done
+if [ "$menuitems" = "" ];then
+echo "no issuing cas need to be configured - skipping this part"
+else
+$dialog_exe --msgbox "The next form shows a list with the different flavors of certificates this new CA is able to issue. You are prompted \
+to select all of those flavors you want to specify CSPs for. For each of those selected, you have to specify the policies afterwards:\
+Either by only giving OID and URI or by giving OID and URI and an additional User notice - Text or by filling out all form fields.
+Important: If either Org or Notice numbers is given, the other field must be given too, else, the policy is not added to the
+configuration!" 16 60
+$dialog_exe --backtitle "Available CA configurations" \
+           --title "Select some" --checklist \
+           "Choose some of the available certificate types" 16 40 8 $menuitems 2> $_temp
+if [ $? -eq 0 ]; then
+         sel=`cat $_temp`
+		echo $sel
+	else
+		exit 255
+    fi
+        cpsoid=""
+        cpsuri=""
+        cpsexplicit=""
+        cpsorg=""
+        cpsnumbers=""
+for item in ${sel}
+    do
+###################
+        caconfig=`echo -n "$item"|cut -d "." -f 1`
+        $dialog_exe --backtitle "CPS information" \
+                --form " Specify information for ${caconfig} - use [up] [down] to select input field " 0 0 0 \
+                "OID" 2 4 "${cpsoid}" 2 25 40 0\
+                "CPS URI" 4 4 "${cpsuri}" 4 25 40 0\
+                "User notice - Text" 6 4 "${cpsexplicit}" 6 25 40 0\
+                "User notice - Org" 8 4 "${cpsorg}" 8 25 40 0\
+                "User notice - Notice numbers" 10 4 "${cpsnumbers}" 10 25 40 0\
+                2>$_temp
+
+            if [ ${?} -ne 0 ]; then exit 127; fi
+            result=`cat $_temp`
+            echo "Result=$result"
+        #    $dialog_exe --title "Items are separated by \\n" --cr-wrap --msgbox "\nYou entered:\n$result" 12 52
+cpsoid=`cat $_temp |cut -d"
+" -f 1`
+cpsuri=`cat $_temp |cut -d"
+" -f 2`
+cpsexplicit=`cat $_temp |cut -d"
+" -f 3`
+cpsorg=`cat $_temp |cut -d"
+" -f 4`
+cpsnumbers=`cat $_temp |cut -d"
+" -f 5`
+        if [ ! "$cpsoid" = "" ]; then
+          cpsfragment="certificatePolicies = @${caconfig}CPS\n\n\
+[ ${caconfig}CPS ]\n\
+policyIdentifier=${cpsoid}\n"
+          if [ ! "$cpsuri" = "" ]; then
+            cpsfragment="${cpsfragment}CPS=\"${cpsuri}\"\n"
+            if [ ! "$cpsexplicit" = "" ]; then
+              cpsfragment="${cpsfragment}userNotice=@${caconfig}CPSNotice\n\n\
+[ ${caconfig}CPSNotice ]\n\
+explicitText=\"${cpsexplicit}\"\n"
+              if [ ! "$cpsorg" = "" ] && [ ! "$cpsnumbers" = "" ]; then
+                cpsfragment="${cpsfragment}notice=@${caconfig}CPSNoticeref\n\n\
+[ ${caconfig}CPSNoticeref ]\n\
+organisation=\"${cpsorg}\"\n\
+noticeNumbers=${cpsnumbers}\n"
+              fi
+            fi
+            $dialog_exe --title "sed cmd line" --cr-wrap --msgbox "sed -i -- \"s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g\"  $new_ca_name/etc/$new_ca_name\"-ca.conf\"" 12 52
+            sed -i -- "s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+          fi
+        fi
+###################
+done
+fi
+
+echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "[ additional_oids ]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+$dialog_exe --msgbox "It is possible to give text descriptions for any proprietary OIDs you want to use in your issued certificates.\
+The next form gives you the opportunity to specify them and their associated description together with an identifier (must not contain spaces) one by one. Once you entered
+all your OIDs and their descriptions - just leave at least one field of the form blank and the script will automatically proceed to the next step" 16 60
+condition=1
+Identifier="CustomOid1"
+OID=""
+Description=""
+while [ $condition -eq 1 ]
+do
+condition=1
+$dialog_exe --backtitle "Custom OID descriptions" \
+	    --form " Please give your OID and their description - use [up] [down] to select input field " 0 0 0 \
+	    "Identifier" 2 4 "${Identifier}" 2 25 40 0\
+	    "OID" 4 4 "${OID}" 4 25 40 0\
+	    "Description" 6 4 "${Description}" 6 25 40 0\
+	    2>$_temp
+
+	if [ ${?} -ne 0 ]; then exit 127; fi
+    result=`cat $_temp`
+    echo "Result=$result"
+#    $dialog_exe --title "Items are separated by \\n" --cr-wrap --msgbox "\nYou entered:\n$result" 12 52
+Identifier=`cat $_temp |cut -d"
+" -f 1`
+OID=`cat $_temp |cut -d"
+" -f 2`
+Description=`cat $_temp |cut -d"
+" -f 3`
+if [ "$OID" = "" ] || [ "$Description" = "" ] || [ "$Identifier" = "" ]; then
+condition=0
+else
+echo "${Identifier} = ${Description}, ${OID}" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+fi
+done
 
 if [ "$preexisting_key_file" = "" ]; then
 . ./ask_for_passwd.sh
