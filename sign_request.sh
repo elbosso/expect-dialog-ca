@@ -313,8 +313,9 @@ echo "issuer=\"${cn}/issuer.crt\"" >index.txt
 cp ${ca_cert} "${cn}/issuer.crt"
 echo "zert=\"${cn}/${cn}.crt\"" >>index.txt
 cp "ca/${cn}.crt" "${cn}/"
-echo "zert (DER)=\"${cn}/${cn}.der\"" >>index.txt
+echo "zertDER=\"${cn}/${cn}.der\"" >>index.txt
 cp "ca/${cn}.der" "${cn}/"
+cp "../build_p12.sh" "${cn}/"
 zip "deliverables_${cn}.zip" "${cn}"/* index.txt
 #rm -rf "deliverables_${cn}"
 

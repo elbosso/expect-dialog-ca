@@ -236,9 +236,17 @@ case $ca_type in
 		echo "authorityKeyIdentifier  = keyid:always" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 		echo "authorityInfoAccess     = @issuer_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 		echo "crlDistributionPoints   = @crl_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-
-#      cp -a $template_dir/etc/".conf" $new_ca_name/etc
-#      cp -a $template_dir/etc/".conf" $new_ca_name/etc
+		echo "crlDistributionPoints   = @crl_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+		echo "certificatePolicies     = blueMediumAssurance" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+      awk '/\[ identity_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = identityCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      rm $new_ca_name/etc/$new_ca_name"-ca.conf"
+      mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
+      awk '/\[ encryption_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = encryptionCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      rm $new_ca_name/etc/$new_ca_name"-ca.conf"
+      mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
+      awk '/\[ smime_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = smimeCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      rm $new_ca_name/etc/$new_ca_name"-ca.conf"
+      mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       ;;
   esac
 #falls root CA...
@@ -468,6 +476,7 @@ for item in ${conf_files}
     do
             menuitems="$menuitems ${item} '' off " # subst. Blanks with "_"
 done
+#if policies for root cas would be allowed...
 if [ "$menuitems" = "" ];then
     if [ "$ca_type" = "root" ];then
       menuitems="$menuitems intermediate '' off "
@@ -477,9 +486,10 @@ if [ "$menuitems" = "" ];then
 echo "no issuing cas need to be configured - skipping this part"
 else
 $dialog_exe --msgbox "The next form shows a list with the different flavors of certificates this new CA is able to issue. You are prompted \
-to select all of those flavors you want to specify CSPs for. For each of those selected, you have to specify the policies afterwards:\
-Either by only giving OID and URI or by giving OID and URI and an additional User notice - Text or by filling out all form fields.
-Important: If either Org or Notice numbers is given, the other field must be given too, else, the policy is not added to the
+to select all of those flavors you want to specify Certificate Policy Statements (CPSs) for. Remember: for a Certificate Authority Hierarchy to \
+be valid according to RFC 5280, all Certificate Authorities below one that does supply CPSs have to do this too! For each of those selected, you have to specify the policies afterwards: \
+Either by only giving OID and URI or by giving OID and URI and an additional User notice - Text or by filling out all form fields. \
+Important: If either Org or Notice numbers is given, the other field must be given too, else, the policy is not added to the \
 configuration!" 16 60
 $dialog_exe --backtitle "Available CA configurations" \
            --title "Select some" --checklist \
@@ -498,6 +508,7 @@ if [ $? -eq 0 ]; then
 for item in ${sel}
     do
         caconfig=`echo -n "$item"|cut -d "." -f 1`
+		caconfig=`echo -n "$caconfig"|cut -d "-" -f 1`
         $dialog_exe --backtitle "CPS information" \
                 --form " Specify information for ${caconfig} - use [up] [down] to select input field " 0 0 0 \
                 "OID" 2 4 "${cpsoid}" 2 25 40 0\
@@ -538,7 +549,7 @@ organisation=\"${cpsorg}\"\n\
 noticeNumbers=${cpsnumbers}\n"
               fi
             fi
-#            $dialog_exe --title "sed cmd line" --cr-wrap --msgbox "sed -i -- \"s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g\"  $new_ca_name/etc/$new_ca_name\"-ca.conf\"" 12 52
+            $dialog_exe --title "sed cmd line" --cr-wrap --msgbox "sed -i -- \"s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g\"  $new_ca_name/etc/$new_ca_name\"-ca.conf\"" 12 52
             sed -i -- "s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
           fi
         fi
