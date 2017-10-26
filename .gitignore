@@ -9,3 +9,8 @@
 /wurzel_/
 /component/
 /intermediate/
+/attic/
+/intermediateca/
+/issueident/
+*.key@arcor.de.csr
+*.key@arcor.de.key
