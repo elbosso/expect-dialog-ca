@@ -26,6 +26,22 @@ The user has to answer quite a lot of questions - for example key length
 for the private key (if none is provided), the Hash or Signing algorithmus
 to be used as part of the Message Authentication Code (MAC) among others.
 
+Additionally, the script lets the user specify default values for config
+file items - especially when creating an issuing CA: Maybe you
+want to save your end users the hussle having to specify Country and 
+Locality? Then here is your chance: Just define Defaults and your end users
+can just click through those annoying questions!
+Another thing is the (optional) provision od Certificate Policy Statements:
+For each config of the CA you can specify them - so they
+get incorporated into every certificate you create using the 
+corresponding configuration. And last but not least: The script
+offers you the (optional) means to define additional OIDs:
+If you use custom OIDs (for example for specifying custom policies),
+application will display them as unintuitive sequences of numbers separated
+by dots - unless you take the time to  define them: then a mapping is
+included into each issued certificate that allows applications
+to display a descriptive text instead of the numeric OID.
+
 After the script is done, you have a fully populated directory structure
 for your CA as well as a CSR you need to get signed by another CA. When this is done,
 you get a certificate back ready for installation. The script [install_ca_certificate.sh](../install_ca_certificate.sh)
