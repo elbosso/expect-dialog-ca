@@ -399,7 +399,7 @@ that each and every one of them will enter the same for organization - why not s
 is what these default values are for." 16 60
 $dialog_exe --backtitle "Available CA configurations" \
            --title "Select some" --checklist \
-           "Choose some of the available certificate types" 16 40 8 $menuitems 2> $_temp
+           "Choose the available certificate types you want to specify defaults for" 16 40 8 $menuitems 2> $_temp
 if [ $? -eq 0 ]; then
          sel=`cat $_temp`
 		echo $sel
@@ -493,7 +493,7 @@ Important: If either Org or Notice numbers is given, the other field must be giv
 configuration!" 16 60
 $dialog_exe --backtitle "Available CA configurations" \
            --title "Select some" --checklist \
-           "Choose some of the available certificate types" 16 40 8 $menuitems 2> $_temp
+           "Choose the available certificate types you want to specify CPSs for" 16 40 8 $menuitems 2> $_temp
 if [ $? -eq 0 ]; then
          sel=`cat $_temp`
 		echo $sel
@@ -549,7 +549,7 @@ organisation=\"${cpsorg}\"\n\
 noticeNumbers=${cpsnumbers}\n"
               fi
             fi
-            $dialog_exe --title "sed cmd line" --cr-wrap --msgbox "sed -i -- \"s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g\"  $new_ca_name/etc/$new_ca_name\"-ca.conf\"" 12 52
+#            $dialog_exe --title "sed cmd line" --cr-wrap --msgbox "sed -i -- \"s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g\"  $new_ca_name/etc/$new_ca_name\"-ca.conf\"" 12 52
             sed -i -- "s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
           fi
         fi
@@ -655,6 +655,15 @@ $dialog_exe --backtitle "Info" --msgbox "The key is in ${new_ca_name}/ca/private
 
 $dialog_exe --backtitle "Custom Policies" --msgbox "At this time, two policies are defined in the CA configuration file $new_ca_name/etc/$new_ca_name-ca.conf. If you want to add more or add some of your own - feel free to add them using the one named minimal_pol as a template. You are free when naming them but if the names do not end with _pol, the script for signing CSRs will not pick them up so you will not be able to use them when actually signing CSRs!" 14 64
 
+#ca=${new_ca_name}
+cpsresources=`grep -e "^CPS\s*=.*$" ${new_ca_name}/etc/${new_ca_name}"-ca.conf"|cut -d "=" -f 2| sed s/\"//g`
+#addresources=`grep \$base_url ${new_ca_name}/etc/${new_ca_name}"-ca.conf"|cut -d "=" -f 2|rev|cut -d "#" -f 2|rev|sed -E "s/^\s*//g"|sed -E "s/ca.(cer|crl)/${new_ca_name}.\1/g"`
+base_url=`grep -e "^base_url\s*=\s*.*$" ${new_ca_name}/etc/${new_ca_name}"-ca.conf"|cut -d "=" -f 2| sed -E "s/^\s*//g"`
+#$dialog_exe --title "resources" --cr-wrap --msgbox "$ca \n $base_url \n ${new_ca_name}\n ${addresources}" 12 52
+resources="${base_url}/${new_ca_name}.cer\n${base_url}/${new_ca_name}.crl\n${cpsresources}"
+
+$dialog_exe --backtitle "Resources to provide" --msgbox "You must provide the following resources after receiving and installing \
+your certificate to make your shiny new CA fully functional:\n$resources" 14 64
 #log schreiben
 
 if [ "$log_file_name" != "" ]; then
