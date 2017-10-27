@@ -56,16 +56,26 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   for confirmation.
   
 ### Linux helper scripts
-* [configure_gui.sh](../configure_gui.sh)  
-  This script is sourced by all other scripts used on the issuer side of
-  things. It sets some basic environment bariables needed in all the scripts
-  and does some other supporting stuff too.
+* [build_p12.sh](../build_p12.sh)  
+  This script is added to all the files delivered to an end entity after creating the certificate
+  using [sign_request.sh](../sign_request.sh): It allows the end
+  entity to easily create a .p12-file from all the deliverables (certificate and
+  full certificate chain) combined with her private key: all she
+  has to do is call the script in the directory  containing it, giving the
+  location of the private key file as its sole parameter. The script
+  then asks for the private key password and for a password to protect the new .p12-file
+  (twice - for safeguarding against typos) and finally prints
+  out the location of the created .p12-file with its full (absolute) path. 
 * [ask_for_password.sh](../ask_for_password.sh)  
   This script is sourced by all scripts needing the user to specify 
   a new secret pasword. It displays the usual "please give new password/please type it
   again to verify"-GUI and does basic verification:
   * are both fields non-empty
   * are password and password verification equal
+* [configure_gui.sh](../configure_gui.sh)  
+  This script is sourced by all other scripts used on the issuer side of
+  things. It sets some basic environment bariables needed in all the scripts
+  and does some other supporting stuff too.
   
 ### Expect scripts
 These scripts are needed to hide the complexities of calling and interacting with the openssl 
