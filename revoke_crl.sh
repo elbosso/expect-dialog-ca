@@ -127,3 +127,14 @@ fi
 fi
 fi
 
+#ca=${new_ca_name}
+#cpsresources=`grep -e "^CPS\s*=.*$" etc/${ca_name}"-ca.conf"|cut -d "=" -f 2| sed s/\"//g`
+#addresources=`grep \$base_url ${new_ca_name}/etc/${new_ca_name}"-ca.conf"|cut -d "=" -f 2|rev|cut -d "#" -f 2|rev|sed -E "s/^\s*//g"|sed -E "s/ca.(cer|crl)/${new_ca_name}.\1/g"`
+base_url=`grep -e "^base_url\s*=\s*.*$" etc/${ca_name}"-ca.conf"|cut -d "=" -f 2| sed -E "s/^\s*//g"`
+#$dialog_exe --title "resources" --cr-wrap --msgbox "$ca \n $base_url \n ${new_ca_name}\n ${addresources}" 12 52
+resources="${base_url}/${ca_name}.crl"
+
+$dialog_exe --backtitle "Resources to provide" --msgbox "You must provide the updated CRL NOW\n
+to make the changes visible:\n$resources" 14 64
+
+clear

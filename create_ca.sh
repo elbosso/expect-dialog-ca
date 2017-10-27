@@ -664,6 +664,7 @@ resources="${base_url}/${new_ca_name}.cer\n${base_url}/${new_ca_name}.crl\n${cps
 
 $dialog_exe --backtitle "Resources to provide" --msgbox "You must provide the following resources after receiving and installing \
 your certificate to make your shiny new CA fully functional:\n$resources" 14 64
+
 #log schreiben
 
 if [ "$log_file_name" != "" ]; then
