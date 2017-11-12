@@ -259,6 +259,7 @@ mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name
 
 sed -i -- "s/${ca_type}-ca /${new_ca_name}-ca /g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- "s/${ca_type}_ca /${new_ca_name}_ca /g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+sed -i -- "s/ca.cer/ca.crt/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 
 #An den Policies wird ein wenig herumgefeilt
 sed -i -E -- "s/(countryName *= *)match(.*)/\1supplied\2/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"

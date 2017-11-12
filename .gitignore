@@ -14,3 +14,6 @@
 /issueident/
 *.key@arcor.de.csr
 *.key@arcor.de.key
+/issuecomp/
+*.csr
+/tsa.key
