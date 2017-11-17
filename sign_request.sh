@@ -315,7 +315,14 @@ echo "zert=\"${cn}/${cn}.crt\"" >>index.txt
 cp "ca/${cn}.crt" "${cn}/"
 echo "zertDER=\"${cn}/${cn}.der\"" >>index.txt
 cp "ca/${cn}.der" "${cn}/"
+if [ $selection = "timestamp" ]; then
+#$dialog_exe --backtitle "Info" --msgbox "copying ${ca_chain} to ${cn}/chain.pem" 0 0
+cp "${ca_chain}" "${cn}/chain.pem"
+cp "${script_dir}"/templates/tsa.conf  "${cn}"
+sed -i -- "s/##crt##/${cn}.crt/g" "${cn}"/tsa.conf
+else
 cp "../build_p12.sh" "${cn}/"
+fi
 zip "deliverables_${cn}.zip" "${cn}"/* index.txt
 #rm -rf "deliverables_${cn}"
 
