@@ -6,4 +6,5 @@ This repository contains scripts meant to make managing an openssl ca less painf
 * [Dependencies](docs/dependencies.md)
 * [Use Cases](docs/usecases.md)
 * [How to build an actual PKI from all this?](docs/buildpki.md)
+* [Special kinds of CAs (special deliverables)](docs/specialdeliverables.md)
 * [Some useful OpenSSL commands](docs/sslcommands.md)
