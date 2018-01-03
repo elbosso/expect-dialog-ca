@@ -207,3 +207,51 @@ the CA directory structure by executing the script
 This - among other things - creates your first CRL and stores the certificate in
 the appropriate place.
 
+## How to operate an actual Issuing CA
+
+Remember when there was a sentence that said that building a CA
+also made sure that convenient OpenSSL configuration files were
+created? If not, now is the time to pay those files some attention:
+
+The directory called etc inside the CAs folder structure holds various
+config files: one that is responsible for operating the CA and several others
+useful for clients wanting a signature from this CA. For example: if
+you had a component CA set up named issuecomp - that is one that for example
+issues TLS server certificates or code signing certificates and so on - 
+the contents of folder etc would look soewhat like this:
+
+ * issuecomp-ca.conf
+ * client.conf
+ * ocspsign.conf
+ * server.conf
+ * timestamp.conf
+ 
+The one that is named <whatever name the ca has>-ca.conf is
+the configuration used when you actually operate the CA - for
+example issuing or revoking certificates. The other configuration files
+are for your prospective customers - so if someone wants to 
+request a signature on his or her private key of a new TLS
+server - you give him or her the server.conf file. Then - using
+this configuration - a certificate request is created and sent
+for you to sign it.
+
+This holds for all CA types this PKI structure offers. If you read 
+the section about creating the PKI hierarchy again, you can see this already
+working when requesting and issuing the intermediary CA certificates.
+
+One important thing needs to be mentioned however: the configuration 
+for the TLS server certificates slightly differ from all the others
+in one important aspect: Other than the others, it does not suffice
+to just call OpenSSL with the config and be done with it:
+
+Because a TLS server may have many different names and the certificate has
+to be issued for all of them, these names must be specified by an
+environment variable that must be set prior to calling OpenSSL
+for creating the certificate request. The name of this
+environment variable is SAN.
+
+Further information about this specific scenario can be found for example here:
+
+ * https://sys4.de/de/blog/2014/05/24/einen-tlsa-record-fuer-dane-mit-bind-9-publizieren/
+ * https://blog.pki.dfn.de/2015/12/openssl-csr-fuer-ein-ssl-server-zertifikat-mit-mehreren-host-namen-erzeugen/
+ 
