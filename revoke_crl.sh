@@ -36,7 +36,7 @@ do
 	serial=`echo -n "$line"|cut -f 4`
 	unknown=`echo -n "$line"|cut -f 5`
 	dn=`echo -n "$line"|cut -f 6`
-	cn=`echo -n $dn| sed -n '/.*/s/^.*CN=//p'`
+	cn=`echo -n $dn| sed -n '/.*/s/^.*CN\s=\s//p'`
 	echo $state $serial $cn
 	if [ "$state" = "V" ]; then
 		if [ "$menuitems" = "" ]; then
@@ -96,7 +96,7 @@ if [ ! -e "ca/${ca_name}-ca.crt" ]; then
 	echo $ca_name
 fi
 
-cn=`openssl x509 -noout -subject -in ca/${ca_name}-ca.crt| sed -n '/^subject/s/^.*CN=//p'`
+cn=`openssl x509 -noout -subject -in ca/${ca_name}-ca.crt| sed -n '/^subject/s/^.*CN\s=\s//p'`
 
 condition=1
 while [ $condition -eq 1 ]

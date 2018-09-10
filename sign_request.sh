@@ -190,7 +190,7 @@ fi
 
 #Nun wird der Anwender gefragt, ob er den Request signieren möchte
 
-cn=`openssl req -noout -subject -in ${sign_req_name}| sed -n '/^subject/s/^.*CN=//p'`
+cn=`openssl req -noout -subject -in ${sign_req_name}| sed -n '/^subject/s/^.*CN\s=\s//p'`
 
 expiration_planned=$(date -d "+3 years")
 expiration_planned_ts=$(date -d "+3 years" +%Y%m%d%H%M%S)

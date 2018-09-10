@@ -82,7 +82,7 @@ $dialog_exe --backtitle "Info" --msgbox "The key is in ${key_name}\nThe Cert Req
 
 #log schreiben
 
-cn=`openssl req -noout -subject -in ${csr_name}| sed -n '/^subject/s/^.*CN=//p'`
+cn=`openssl req -noout -subject -in ${csr_name}| sed -n '/^subject/s/^.*CN\s=\s//p'`
 if [ "$log_file_name" != "" ]; then
 echo "name\tCN\tprivate key pass" > ${log_file_name}
 echo "${ca_name}\t${cn}\t${priv_key_pass}" >> ${log_file_name}

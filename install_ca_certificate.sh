@@ -74,7 +74,7 @@ echo $ca_name
 
 cp "/tmp/ca-rollout/${zert}" "ca/${ca_name}-ca.crt"
 
-cn=`openssl x509 -noout -subject -in ca/${ca_name}-ca.crt| sed -n '/^subject/s/^.*CN=//p'`
+cn=`openssl x509 -noout -subject -in ca/${ca_name}-ca.crt| sed -n '/^subject/s/^.*CN\s=\s//p'`
 
 condition=1
 while [ $condition -eq 1 ]
