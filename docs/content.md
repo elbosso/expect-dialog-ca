@@ -4,6 +4,9 @@ This project consists of Linux shell scripts - some of them are meant to be run 
  scripts. Additionally, there is also a number of expect scripts:
  
 ### Linux scripts for the user
+
+[//]: # (https://stackoverflow.com/questions/4823468/comments-in-markdown)
+[//]: # (https://meta.stackexchange.com/questions/72395/is-it-possible-to-have-definition-lists-in-markdown)
 * [change_ca_password.sh](../change_ca_password.sh)  
   This script changes the password for the private key of a certificate
   authority. The old private key is backed up prior to 
