@@ -96,7 +96,7 @@ if [ ! -e "ca/${ca_name}-ca.crt" ]; then
 	echo $ca_name
 fi
 
-cn=`openssl x509 -noout -subject -in ca/${ca_name}-ca.crt| sed -n '/^subject/s/^.*CN\s=\s//p'`
+cn=`openssl x509 -noout -subject -in ca/${ca_name}-ca.crt| sed -n '/^subject/s/^.*CN\s*=\s*//p'`
 
 condition=1
 while [ $condition -eq 1 ]
@@ -120,6 +120,8 @@ expect "${script_dir}/gen_crl.xpct" "etc/${ca_name}-ca.conf" "crl/${ca_name}-ca.
 priv_key_pass=""
 
 openssl crl -noout -text  -in crl/${ca_name}-ca.crl > /tmp/crl.pem
+
+openssl crl -inform PEM -outform DER -in crl/${ca_name}-ca.crl -out crl/${ca_name}-ca.der
 
 $dialog_exe --backtitle "CRL" --textbox /tmp/crl.pem 0 0
 

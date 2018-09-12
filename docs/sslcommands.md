@@ -18,4 +18,16 @@
 <li>openssl x509 -noout -modulus -in certificate.crt | openssl sha512</li>
 </ul>
 </dd>
+<dt>Print out the contents of the CRL</dt>
+<dd>
+<ul>
+<li>
+openssl crl -inform DER -noout -text  -in crl/cacrl.der
+</li>
+<li>
+openssl crl -inform PEM -noout -text  -in crl/cacrl.pem
+</li>
+</ul>
+</dd>
+
 </dl>
