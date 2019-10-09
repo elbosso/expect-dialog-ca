@@ -1,6 +1,7 @@
 ## Dependencies
 If you did not already deduce it from there being **Linux**
-scripts - this project is meant to be used under Linux! 
+scripts - this project is meant to be used under Linux! At the moment, the only variant it has been extensively tested 
+in is Ubuntu in its latest long term support version: 18.04.
 
 Well, the scripts are meant to facilitate the management of
 [OpenSSL CAs](https://www.openssl.org/docs/manpages.html) - OpenSSL
@@ -10,6 +11,14 @@ The GUI for the scripts is done with the help of
 [Expect](http://www.tcl.tk/man/expect5.31/expect.1.html) and 
 [Dialog](https://linux.die.net/man/1/dialog) - so both of them must be
 installed, too.
+
+*But be wary: Ubuntu might try and sneak a SNAP version past you, for example for `expect`. Don't
+use that! it is dangerous and crappy and does not work as the normal binary. Always use the binary!*
+
+At times apt might tell you that it does not find an installation candidate for either
+`expect` or `dialog`. The reason for this is in most cases deactivation of universe and multiverse
+repositories (usually in _/etc/apt/sources.list_) - activate them, followed by an `apt update` and Ubuntu should know once again
+where to finde the needed packages...
 
 Depending on your particular flavour/version of Linux, there are
  maybe even more components/packages needed to be installed
