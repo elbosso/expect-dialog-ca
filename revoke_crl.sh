@@ -36,7 +36,7 @@ do
 	serial=`echo -n "$line"|cut -f 4`
 	unknown=`echo -n "$line"|cut -f 5`
 	dn=`echo -n "$line"|cut -f 6`
-	cn=`echo -n $dn| sed -n '/.*/s/^.*CN\s=\s//p'`
+	cn=`echo -n $dn| sed -n '/.*/s/^.*CN=//p'`
 	echo $state $serial $cn
 	if [ "$state" = "V" ]; then
 		if [ "$menuitems" = "" ]; then
