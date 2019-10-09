@@ -248,10 +248,30 @@ Because a TLS server may have many different names and the certificate has
 to be issued for all of them, these names must be specified by an
 environment variable that must be set prior to calling OpenSSL
 for creating the certificate request. The name of this
-environment variable is SAN.
+environment variable is SAN - for example:
+
+```
+SAN=DNS:server1.example.lab,server2.example.lab \
+openssl req -new \
+    -config server.conf \
+    -out multi_server.csr \
+    -keyout multi_server.key
+```
 
 Further information about this specific scenario can be found for example here:
 
  * https://sys4.de/de/blog/2014/05/24/einen-tlsa-record-fuer-dane-mit-bind-9-publizieren/
  * https://blog.pki.dfn.de/2015/12/openssl-csr-fuer-ein-ssl-server-zertifikat-mit-mehreren-host-namen-erzeugen/
+ 
+This is also true for the Identity CA as the second kind of issuing CA supported by this project:
+After creating an Identity CA, several configuration files exist inside _etc_ for the purpose of easing the
+life for end users during enrollment. For example there is a file called _smime.conf_ that allows to create a certificate
+signing request for email signing and encryption using s-mime. It can be used as follows:
+
+```
+openssl req -new \
+    -config smime.conf \
+    -out joe_user.csr \
+    -keyout joe_user.key
+```
  
