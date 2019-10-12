@@ -26,12 +26,23 @@ The user has to answer quite a lot of questions - for example key length
 for the private key (if none is provided), the Hash or Signing algorithmus
 to be used as part of the Message Authentication Code (MAC) among others.
 
+The script offers an optional way to specify some of the information the user
+has to enter during this process beforehand - by writing an ini file named _ca_presets.ini_.
+This file has to reside in the current directory. Its format is `key="value"`. The double quotes can be
+omitted if the value does not contain spaces. Allowed keys at this time are:
+
+* countryName
+* organizationName
+* organizationalUnitName
+* commonName
+* base_url
+
 Additionally, the script lets the user specify default values for config
 file items - especially when creating an issuing CA: Maybe you
 want to save your end users the hussle having to specify Country and 
-Locality? Then here is your chance: Just define Defaults and your end users
+Locality? Then here is your chance: Just define defaults and your end users
 can just click through those annoying questions!
-Another thing is the (optional) provision od Certificate Policy Statements:
+Another thing is the (optional) provision of Certificate Policy Statements:
 For each config of the CA you can specify them - so they
 get incorporated into every certificate you create using the 
 corresponding configuration. And last but not least: The script

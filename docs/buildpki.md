@@ -12,6 +12,18 @@ For this you need to call the script
 
 `create_ca.sh`
 
+Before you do so you might want to consider making your life a little easier:
+The script offers an optional way to specify some of the information the user
+has to enter during this process beforehand - by writing an ini file named _ca_presets.ini_.
+This file has to reside in the current directory. Its format is `key="value"`. The double quotes can be
+omitted if the value does not contain spaces. Allowed keys at this time are:
+
+* countryName
+* organizationName
+* organizationalUnitName
+* commonName
+* base_url
+
 Then the script takes you by the hand and asks you a few questions. When it asks,
 what kind of CA you want to create - choose root CA. Only two things are important
 here (and from here on):
@@ -21,11 +33,11 @@ in the field below the two boxes showing directories and files) - mere highlight
  the file inside those boxes doesnt count!
 2. Dont name the CA simply "root" - that confuses the scripts and does not bode well...
 
-When the script is successful, you get a directory named <whatever you called your CA>
+When the script is successful, you get a directory named _<whatever you called your CA>_
 inside the directory you started the script `create_ca.sh` in. Additionally,
-there will be a file named <whatever you called your root CA>-ca.csr - the signing request.
+there will be a file named _<whatever you called your root CA>-ca.csr_ - the signing request.
  
-Now cd into the directory of the ca:
+Now `cd` into the directory of the ca:
  
 `cd  <whatever you called your root CA>`
 
@@ -218,7 +230,7 @@ config files: one that is responsible for operating the CA and several others
 useful for clients wanting a signature from this CA. For example: if
 you had a component CA set up named issuecomp - that is one that for example
 issues TLS server certificates or code signing certificates and so on - 
-the contents of folder etc would look soewhat like this:
+the contents of folder etc would look somewhat like this:
 
  * issuecomp-ca.conf
  * client.conf
@@ -226,7 +238,7 @@ the contents of folder etc would look soewhat like this:
  * server.conf
  * timestamp.conf
  
-The one that is named <whatever name the ca has>-ca.conf is
+The one that is named _<whatever name the ca has>-ca.conf_ is
 the configuration used when you actually operate the CA - for
 example issuing or revoking certificates. The other configuration files
 are for your prospective customers - so if someone wants to 

@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2181,SC2003,SC2039,SC2002
 #Das Script soll online und offline funktionieren
 #es kopiert aus einem Musterverzeichnis (der openssl expert pki)
 #die am besten passenden Dateien in ein neu anzulegendes Verzeichnis und passt diese Templates
@@ -82,10 +83,10 @@ if [ -d "$template_dir" ]; then
 fi
 
 #nun wird versucht, herauszufinden, was alles für template cas vorliegen
-cd $template_dir/etc
-ca_templates=`ls *ca.conf`
-cd -
-echo $ca_templates
+cd $template_dir/etc || exit
+ca_templates=$(ls ./*ca.conf)
+cd - || exit
+echo "$ca_templates"
 
 #daraus wird ein Dialog gebaut, der die Möglichkeiten anzeigt und der Anwender kann dann per 
 #Radiobuttons eine daraus auswählen
@@ -95,32 +96,32 @@ n=0
 #		if [ "$item" != "root-ca.conf" ]
 #		then
         menuitems="$menuitems $n ${item}" # subst. Blanks with "_"  
-        n=`expr $n + 1`
+        n=$(expr $n + 1)
 #		fi
     done
 #    IFS=$IFS_BAK
-echo $menuitems
+echo "$menuitems"
     $dialog_exe --backtitle "Available Types of CAs" \
            --title "Select one" --menu \
            "Choose one of the available CA types" 16 40 8 $menuitems 2> $_temp
     if [ $? -eq 0 ]; then
-         sel=`cat $_temp`
-		echo $sel
+         sel=$(cat $_temp)
+		echo "$sel"
 n=0
-    for item in ${ca_templates}
+    for item in $ca_templates
     do
 #$dialog_exe --msgbox "sel --> $sel\nn --> $n" 6 42
 		if [ "$sel" = "$n" ]
 		then
         selection=${item} 
 		fi
-        n=`expr $n + 1`
+        n=$(expr $n + 1)
     done
 #        $dialog_exe --msgbox "You choose:\nNo. $sel --> $selection" 6 42
 	else
 		exit 255
     fi
-ca_type=`echo -n $selection |cut -d - -f 1`
+ca_type=$(echo -n "$selection" |cut -d - -f 1)
 #$dialog_exe --msgbox "type --> $ca_type" 6 42
 
 condition=1
@@ -132,7 +133,7 @@ $dialog_exe --backtitle "CA name"\
            --inputbox "Name for the new CA\n Please do not use root, network, identity, or component!" 8 52 "test" 2>$_temp
 
     if [ $? -eq 0 ]; then
-    new_ca_name=`cat $_temp`
+    new_ca_name=$(cat $_temp)
 #    $dialog_exe --msgbox "\nYou entered:\n$new_ca_name" 9 52
 if [ "$new_ca_name" = "" ]; then
 echo "You must provide a name!"
@@ -155,30 +156,30 @@ fi
 done
 
 #Mit diesem Namen wird ein Verzeichnis angelegt
-mkdir -p $new_ca_name
+mkdir -p "$new_ca_name"
 
 #In diesem Verzeichnis wird die Infrastruktur der neuen CA angelegt (Verzeihcnisse, Serials, DB, Attributes,etc,...)
-mkdir -p $new_ca_name/ca/private $new_ca_name/ca/db $new_ca_name/crl $new_ca_name/certs
-chmod 700 $new_ca_name/ca/private
-cp /dev/null $new_ca_name/ca/db/$new_ca_name-ca.db
-cp /dev/null $new_ca_name/ca/db/$new_ca_name-ca.db.attr
-echo 01 > $new_ca_name/ca/db/$new_ca_name-ca.crt.srl
-echo 01 > $new_ca_name/ca/db/$new_ca_name-ca.crl.srl
+mkdir -p "$new_ca_name/ca/private" "$new_ca_name/ca/db" "$new_ca_name/crl" "$new_ca_name/certs"
+chmod 700 "$new_ca_name/ca/private"
+cp /dev/null "$new_ca_name/ca/db/$new_ca_name-ca.db"
+cp /dev/null "$new_ca_name/ca/db/$new_ca_name-ca.db.attr"
+echo 01 > "$new_ca_name/ca/db/$new_ca_name-ca.crt.srl"
+echo 01 > "$new_ca_name/ca/db/$new_ca_name-ca.crl.srl"
 
 
 #Nun werden aus dem Template die passenden Dateien in das Verzeichnis der neuen CA kopiert.
 
-mkdir -p $new_ca_name/etc
-chmod 700 $new_ca_name/etc
+mkdir -p "$new_ca_name/etc"
+chmod 700 "$new_ca_name/etc"
 #cp -a $template_dir/etc/$ca_type"-ca.conf" $new_ca_name/etc/$new_ca_name"-ca.conf"
 cat $template_dir/etc/$ca_type"-ca.conf" | head -n -3 >$new_ca_name/etc/$new_ca_name"-ca.conf"
 
 case $ca_type in
     component)
-      cp -a $template_dir/etc/"ocspsign.conf" $new_ca_name/etc
-      cp -a $template_dir/etc/"server.conf" $new_ca_name/etc
-      cp -a $template_dir/etc/"timestamp.conf" $new_ca_name/etc
-      cp -a $template_dir/etc/"client.conf" $new_ca_name/etc
+      cp -a "$template_dir/etc/ocspsign.conf" "$new_ca_name/etc"
+      cp -a "$template_dir/etc/server.conf" "$new_ca_name/etc"
+      cp -a "$template_dir/etc/timestamp.conf" "$new_ca_name/etc"
+      cp -a "$template_dir/etc/client.conf" "$new_ca_name/etc"
       awk '/\[ server_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = serverCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
@@ -267,17 +268,21 @@ sed -i -- "s/match_pol/match_O_pol/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -E -- "s/(commonName *= *)optional(.*)/\1supplied\2/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- "s/any_pol/minimal_pol/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 
+if [ -e ca_presets.ini ]; then
+. ./ca_presets.ini
+fi
+
 condition=1
 while [ $condition -eq 1 ]
 do
 condition=0
 $dialog_exe --backtitle "CA configuration" \
 	    --form " Please give some information - use [up] [down] to select input field " 0 0 0 \
-	    "countryName" 2 4 "DE" 2 25 40 0\
-	    "organizationName" 4 4 "" 4 25 40 0\
-	    "organizationalUnitName" 6 4 "" 6 25 40 0\
-	    "commonName" 8 4 "" 8 25 40 0\
-	    "base_url" 10 4 "http://" 10 25 40 0\
+	    "countryName" 2 4 "${countryName:-DE}" 2 25 40 0\
+	    "organizationName" 4 4 "${organizationName:-}" 4 25 40 0\
+	    "organizationalUnitName" 6 4 "${organizationalUnitName:-}" 6 25 40 0\
+	    "commonName" 8 4 "${commonName:-}" 8 25 40 0\
+	    "base_url" 10 4 "${base_url:-http://}" 10 25 40 0\
 	    2>$_temp
 
 	if [ ${?} -ne 0 ]; then exit 127; fi

@@ -18,3 +18,5 @@
 *.csr
 /tsa.key
 /root/
+*~
+*.ini
