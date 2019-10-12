@@ -31,3 +31,12 @@ openssl crl -inform PEM -noout -text  -in crl/cacrl.pem
 </dd>
 
 </dl>
+
+## Some resources with useful OpenSSL commands
+
+* [OpenSSL command cheatsheet](https://www.freecodecamp.org/news/openssl-command-cheatsheet-b441be1e8c4a/)
+* [21 OpenSSL Examples to Help You in Real-World](https://geekflare.com/openssl-commands-certificates/)
+* [The Most Common OpenSSL Commands](https://www.sslshopper.com/article-most-common-openssl-commands.html)
+* [OpenSSL Quick Reference Guide](https://www.digicert.com/ssl-support/openssl-quick-reference-guide.htm)
+* [openssl_commands.md](https://gist.github.com/webtobesocial/5313b0d7abc25e06c2d78f8b767d4bc3)
+* [OpenSSL Essentials: Working with SSL Certificates, Private Keys and CSRs](https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs)
