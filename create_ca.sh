@@ -84,7 +84,7 @@ fi
 
 #nun wird versucht, herauszufinden, was alles für template cas vorliegen
 cd $template_dir/etc || exit
-ca_templates=$(ls ./*ca.conf)
+ca_templates=$(ls *ca.conf)
 cd - || exit
 echo "$ca_templates"
 
@@ -385,7 +385,7 @@ sed -i -E -- "s/(default_bits *= *)2048(.*)/\1$key_length\2/g"  $new_ca_name/etc
 #Welche der Angaben  müssen bestimmten Vorgaben genügen.
 
 #Welche Defaults sollen das Erstellen eines CSR erleichtern?
-conf_files=`find $new_ca_name/etc/ -maxdepth 1 ! -name '*ca.conf' ! -name '.'|rev|cut -d / -f 1|rev`
+conf_files=$(find $new_ca_name/etc/ -maxdepth 1 ! -name '*ca.conf' ! -name '.'|rev|cut -d / -f 1|rev)
 menuitems=""
 emptySpace=""
 for item in ${conf_files}
@@ -412,24 +412,24 @@ if [ $? -eq 0 ]; then
 	else
 		exit 255
     fi
-countryName=""
-stateOrProvinceName=""
-localityName=""
-organizationName=""
-organizationalUnitName=""
+#countryName=""
+#stateOrProvinceName=""
+#localityName=""
+#organizationName=""
+#organizationalUnitName=""
 commonName=""
 emailAddress=""
 for item in ${sel}
     do
 $dialog_exe --backtitle "CSR defaults for $item" \
 	    --form " Specify defaults for $item - use [up] [down] to select input field " 0 0 0 \
-	    "countryName" 2 4 "${countryName}" 2 25 40 0\
-	    "stateOrProvinceName" 4 4 "${stateOrProvinceName}" 4 25 40 0\
-	    "localityName" 6 4 "${localityName}" 6 25 40 0\
-	    "organizationName" 8 4 "${organizationName}" 8 25 40 0\
-	    "organizationalUnitName" 10 4 "${organizationalUnitName}" 10 25 40 0\
-	    "commonName" 12 4 "${commonName}" 12 25 64 0\
-	    "emailAddress" 14 4 "${emailAddress}" 14 25 40 0\
+	    "countryName" 2 4 "${countryName:-DE}" 2 25 40 0\
+	    "stateOrProvinceName" 4 4 "${stateOrProvinceName:-}" 4 25 40 0\
+	    "localityName" 6 4 "${localityName:-}" 6 25 40 0\
+	    "organizationName" 8 4 "${organizationName:-}" 8 25 40 0\
+	    "organizationalUnitName" 10 4 "${organizationalUnitName:-}" 10 25 40 0\
+	    "commonName" 12 4 "${commonName:-}" 12 25 64 0\
+	    "emailAddress" 14 4 "${emailAddress:-}" 14 25 40 0\
 	    2>$_temp
 	
 	if [ ${?} -ne 0 ]; then exit 127; fi   

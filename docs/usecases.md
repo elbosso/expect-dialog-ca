@@ -32,14 +32,27 @@ This file has to reside in the current directory. Its format is `key="value"`. T
 omitted if the value does not contain spaces. Allowed keys at this time are:
 
 * countryName
+  used for the subject data and for the default values for config items
+  in end user configs (see below)
 * organizationName
+  used for the subject data and for the default values for config items
+  in end user configs (see below)
 * organizationalUnitName
+  used for the subject data and for the default values for config items
+  in end user configs (see below)
 * commonName
+  used for the subject data
 * base_url
+  used for the configuration of the CA - everywhere where an URL is needed;
+  for example location of CA certificate, CRL,...
+* stateOrProvinceName
+  used in end user configs (see below)
+* localityName
+  used in end user configs (see below)
 
 Additionally, the script lets the user specify default values for config
 file items - especially when creating an issuing CA: Maybe you
-want to save your end users the hussle having to specify Country and 
+want to save your end users the hustle having to specify Country and 
 Locality? Then here is your chance: Just define defaults and your end users
 can just click through those annoying questions!
 Another thing is the (optional) provision of Certificate Policy Statements:

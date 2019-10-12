@@ -19,10 +19,23 @@ This file has to reside in the current directory. Its format is `key="value"`. T
 omitted if the value does not contain spaces. Allowed keys at this time are:
 
 * countryName
+  used for the subject data and for the default values for config items
+  in end user configs (see below)
 * organizationName
+  used for the subject data and for the default values for config items
+  in end user configs (see below)
 * organizationalUnitName
+  used for the subject data and for the default values for config items
+  in end user configs (see below)
 * commonName
+  used for the subject data
 * base_url
+  used for the configuration of the CA - everywhere where an URL is needed;
+  for example location of CA certificate, CRL,...
+* stateOrProvinceName
+  used in end user configs (see below)
+* localityName
+  used in end user configs (see below)
 
 Then the script takes you by the hand and asks you a few questions. When it asks,
 what kind of CA you want to create - choose root CA. Only two things are important
