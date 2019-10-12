@@ -10,7 +10,7 @@
 # * ein bestehendes Verzeichnis mit den Dateien der Expert-PKI
 printHelp ()
 {
-echo "usage: $0 [-t <offline template dir>] [-k pre-existing key file] [-c type of CA] [-n name of CA] [-h]"
+echo "usage: $0 [-t <offline template dir>] [-k pre-existing key file] [-c type of CA] [-n name of CA] [-l key length] [-a hash algorithm][-h]"
 }
 dialog_exe=dialog
 . ./configure_gui.sh
@@ -18,7 +18,7 @@ optionerror=0
 offline_template_dir=""
 preexisting_key_file=""
 _temp="/tmp/answer.$$"
-while getopts ":t:k:c:n:h" opt; do
+while getopts ":t:k:c:n:l:a:h" opt; do
   case $opt in
     t)
 #      echo "-t was triggered! ($OPTARG)" >&2
@@ -39,6 +39,41 @@ while getopts ":t:k:c:n:h" opt; do
     n)
 #      echo "-t was triggered! ($OPTARG)" >&2
 		new_ca_name_param=$OPTARG
+      ;;
+    l)
+      case $OPTARG in
+        1024)
+          key_length="1024"
+          ;;
+        2048)
+          key_length="2048"
+          ;;
+        4096)
+          key_length="4096"
+          ;;
+      esac
+      ;;
+    a)
+      case $OPTARG in
+        md5)
+          hash_alg="md5"
+          ;;
+        sha1)
+          hash_alg="sha1"
+          ;;
+        sha224)
+          hash_alg="sha224"
+          ;;
+        sha348)
+          hash_alg="sha348"
+          ;;
+        sha512)
+          hash_alg="sha512"
+          ;;
+        sha256)
+          hash_alg="sha256"
+          ;;
+      esac
       ;;
     h)
 	  printHelp
@@ -345,6 +380,7 @@ sed -i -E -- 's/^certificatePolicies/#certificatePolicies/g' $new_ca_name/etc/$n
 sed -i -- 's_$dir/ca/$ca_$dir/ca_g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- 's_$dir/ca.crt_$dir/ca/$ca.crt_g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 
+if [ -z ${key_length+x} ]; then
 #Die Schlüssellänge und der zu benutzende Hash-Algorithmus werden festgelegt
 $dialog_exe --backtitle "Available key lengths" \
            --title "Select one" --radiolist \
@@ -369,6 +405,9 @@ $dialog_exe --backtitle "Available key lengths" \
 	else
 		exit 255
     fi
+fi
+
+if [ -z ${hash_alg+x} ]; then
 $dialog_exe --backtitle "Available hash algorithms" \
            --title "Select one" --radiolist \
 			"Choose one of the available hash algorithms" 16 40 8\
@@ -404,6 +443,7 @@ $dialog_exe --backtitle "Available hash algorithms" \
 	else
 		exit 255
     fi
+fi
 sed -i -E -- "s/(default_md *= *)sha1(.*)/\1$hash_alg\2/g"  $new_ca_name/etc/*.conf
 sed -i -E -- "s/(default_bits *= *)2048(.*)/\1$key_length\2/g"  $new_ca_name/etc/*.conf
 
