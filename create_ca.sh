@@ -10,7 +10,7 @@
 # * ein bestehendes Verzeichnis mit den Dateien der Expert-PKI
 printHelp ()
 {
-echo "usage: $0 [-t <offline template dir>] [-k pre-existing key file] [-h]"
+echo "usage: $0 [-t <offline template dir>] [-k pre-existing key file] [-c type of CA] [-n name of CA] [-h]"
 }
 dialog_exe=dialog
 . ./configure_gui.sh
@@ -18,7 +18,7 @@ optionerror=0
 offline_template_dir=""
 preexisting_key_file=""
 _temp="/tmp/answer.$$"
-while getopts ":t:k:h" opt; do
+while getopts ":t:k:c:n:h" opt; do
   case $opt in
     t)
 #      echo "-t was triggered! ($OPTARG)" >&2
@@ -31,6 +31,14 @@ while getopts ":t:k:h" opt; do
 			$dialog_exe --backtitle "Error:" --msgbox "$preexisting_key_file does not exist!" 9 52
 		exit 122
 		fi
+      ;;
+    c)
+#      echo "-t was triggered! ($OPTARG)" >&2
+		wanted_ca_type=$OPTARG
+      ;;
+    n)
+#      echo "-t was triggered! ($OPTARG)" >&2
+		new_ca_name_param=$OPTARG
       ;;
     h)
 	  printHelp
@@ -93,6 +101,11 @@ echo "$ca_templates"
 n=0
     for item in ${ca_templates}
     do
+      if [ ! -z ${wanted_ca_type+x} ]; then
+        if [ ${item#$wanted_ca_type} != $item ]; then
+          ca_type="$wanted_ca_type"
+        fi
+      fi
 #		if [ "$item" != "root-ca.conf" ]
 #		then
         menuitems="$menuitems $n ${item}" # subst. Blanks with "_"  
@@ -101,6 +114,7 @@ n=0
     done
 #    IFS=$IFS_BAK
 echo "$menuitems"
+if [ -z ${ca_type+x} ]; then
     $dialog_exe --backtitle "Available Types of CAs" \
            --title "Select one" --menu \
            "Choose one of the available CA types" 16 40 8 $menuitems 2> $_temp
@@ -123,35 +137,48 @@ n=0
     fi
 ca_type=$(echo -n "$selection" |cut -d - -f 1)
 #$dialog_exe --msgbox "type --> $ca_type" 6 42
+fi
 
 condition=1
+error=0
 while [ $condition -eq 1 ]
 do
 condition=0
+if [ -z ${new_ca_name_param+x} ] || [ $error -eq "1" ]; then
 #Der Anwender wird aufgefordert, den Namen der neuen CA zu bestimmen
 $dialog_exe --backtitle "CA name"\
-           --inputbox "Name for the new CA\n Please do not use root, network, identity, or component!" 8 52 "test" 2>$_temp
+           --inputbox "Name for the new CA\n Please do not use root, network, identity, or component!" 8 52 "${new_ca_name:-test}" 2>$_temp
 
     if [ $? -eq 0 ]; then
     new_ca_name=$(cat $_temp)
 #    $dialog_exe --msgbox "\nYou entered:\n$new_ca_name" 9 52
+    else
+      exit 255
+    fi
+else
+    new_ca_name=$new_ca_name_param
+fi
+if [ ! -z ${new_ca_name+x} ]; then
 if [ "$new_ca_name" = "" ]; then
 echo "You must provide a name!"
 $dialog_exe --backtitle "Error" \
            --msgbox "You must provide a name!" 9 52
 condition=1
+error="1"
 else
 case "$new_ca_name" in
    root|network|identity|component)
      $dialog_exe --backtitle "Error" \
            --msgbox "The name must not be among these reserved values: root, network, identity, component!" 9 52
-     condition=1;;
+     condition=1
+     error="1";;
    *)
      ;;
 esac
 fi
 	else
-		exit 255
+	  echo $new_ca_name_param $new_ca_name
+		exit 254
     fi
 done
 
