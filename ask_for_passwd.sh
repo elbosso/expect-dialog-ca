@@ -1,4 +1,9 @@
-proposed_pass=`makepasswd -count 1 -minchars 8`
+#!/bin/bash
+# shellcheck disable=SC2154,SC2181
+proposed_pass=""
+if [ -x "$(command -v makepasswd)" ]; then
+  proposed_pass=$(makepasswd -count 1 -minchars 8)
+fi
 condition=1
 while [ $condition -eq 1 ]
 do
@@ -12,10 +17,10 @@ result=$($dialog_exe --stdout --backtitle "Password for private key ${purpose}" 
 #    result=`cat $_temp`
     echo "Result=$result"
 
-Password=`echo "$result"|cut -d"
-" -f 1`
-Verification=`echo "$result" |cut -d"
-" -f 2`
+Password=$(echo "$result"|cut -d"
+" -f 1)
+Verification=$(echo "$result" |cut -d"
+" -f 2)
 #$dialog_exe --backtitle "Info" --msgbox "$result\n--\n$Password\n$Verification" 9 52
 if [ "$Password" = "" ] || [ "$Verification" = "" ]; then
 echo "You must fill out all the fields!"
