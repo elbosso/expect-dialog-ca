@@ -2,9 +2,9 @@
 set new_ca_name [lindex $argv 0]
 set newpass [lindex $argv 1]
 spawn openssl req -new -newkey rsa \
-    -config $new_ca_name/etc/$new_ca_name-ca.conf \
-    -out $new_ca_name/ca/${new_ca_name}-ca.csr \
-    -keyout $new_ca_name/ca/private/$new_ca_name-ca.key
+    -config "$new_ca_name/etc/$new_ca_name-ca.conf" \
+    -out "$new_ca_name/ca/${new_ca_name}-ca.csr" \
+    -keyout "$new_ca_name/ca/private/$new_ca_name-ca.key"
 expect "Enter PEM pass phrase:" {send "$newpass\r"}
 expect "Verifying - Enter PEM pass phrase:" {send "$newpass\r"}
 expect eof

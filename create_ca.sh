@@ -658,10 +658,10 @@ noticeNumbers=${cpsnumbers}\n"
 done
 fi
 fi
-if [ -z ${no_custom_oids+x} ]; then
 #Custom OIDs
 echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 echo "[ additional_oids ]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+if [ -z ${no_custom_oids+x} ]; then
 $dialog_exe --backtitle "Custom OIDs (scroll with PgUp, PgDown)" --msgbox "It is possible to give text descriptions for any proprietary OIDs you want to use in your issued certificates.\
 The next form gives you the opportunity to specify them and their associated description together with an identifier (must not contain spaces) one by one. Once you entered
 all your OIDs and their descriptions - just leave at least one field of the form blank and the script will automatically proceed to the next step" 0 0
@@ -737,7 +737,12 @@ if [ ${?} -ne 0 ]; then exit 127; fi
 #    -keyout $new_ca_name/private/$new_ca_name"-ca.key"
 
 if [ "$preexisting_key_file" = "" ]; then
-expect ca_csr.xpct ${new_ca_name} $Password
+  $dialog_exe --backtitle "Info" --msgbox "trying to build key and csr for ${new_ca_name} using $Password" 9 52
+  expect ca_csr.xpct ${new_ca_name} $Password
+  if [ ! -e "${new_ca_name}/ca/private/${new_ca_name}-ca.key" ]; then
+    $dialog_exe --backtitle "Error" --msgbox "key ${new_ca_name}/ca/private/${new_ca_name}-ca.key could not be created!" 9 52
+    exit 224
+  fi
 else
 cp $preexisting_key_file ${new_ca_name}/ca/private/${new_ca_name}-ca.key
 expect ca_csr_with_key.xpct ${new_ca_name} $Password $preexisting_key_file

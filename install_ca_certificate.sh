@@ -73,6 +73,8 @@ ca_name=`basename ${ca_dir_name}`
 echo $ca_name
 
 cp "/tmp/ca-rollout/${zert}" "ca/${ca_name}-ca.crt"
+cp "/tmp/ca-rollout/${zertDER}" "ca/${ca_name}-ca.der"
+cp "/tmp/ca-rollout/${zertDER}" "ca/${ca_name}-ca.cer"
 
 cn=`openssl x509 -noout -subject -in ca/${ca_name}-ca.crt| sed -n '/^subject/s/^.*CN\s=\s//p'`
 
