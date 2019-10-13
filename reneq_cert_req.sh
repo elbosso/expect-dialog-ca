@@ -78,7 +78,7 @@ openssl req -text -in "${csr_name}" -out /tmp/csr.pem
 
 $dialog_exe --backtitle "Certificate Request" --textbox /tmp/csr.pem 0 0
 
-$dialog_exe --backtitle "Info" --msgbox "The key is in ${key_name}\nThe Cert Req is in ${csr_name}\n\nYou can now ask your CA to sign the request!" 0 0
+$dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The key is in ${key_name}\nThe Cert Req is in ${csr_name}\n\nYou can now ask your CA to sign the request!" 0 0
 
 #log schreiben
 
