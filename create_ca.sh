@@ -10,7 +10,7 @@
 # * ein bestehendes Verzeichnis mit den Dateien der Expert-PKI
 printHelp ()
 {
-echo "usage: $0 [-t <offline template dir>] [-k pre-existing key file] [-c type of CA] [-n name of CA] [-l key length] [-a hash algorithm][-h]"
+echo "usage: $0 [-t <offline template dir>] [-k <pre-existing key file>] [-c <type of CA>] [-n <name of CA>] [-l <key length>] [-a <hash algorithm>] [-p] [-o] [-h]"
 }
 dialog_exe=dialog
 . ./configure_gui.sh
@@ -18,7 +18,7 @@ optionerror=0
 offline_template_dir=""
 preexisting_key_file=""
 _temp="/tmp/answer.$$"
-while getopts ":t:k:c:n:l:a:h" opt; do
+while getopts ":t:k:c:n:l:a:oph" opt; do
   case $opt in
     t)
 #      echo "-t was triggered! ($OPTARG)" >&2
@@ -78,6 +78,12 @@ while getopts ":t:k:c:n:l:a:h" opt; do
     h)
 	  printHelp
       exit 0
+	  ;;
+    o)
+      no_custom_oids=true
+	  ;;
+    p)
+      no_cpss=true
 	  ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -541,6 +547,7 @@ fi
 done
 fi
 
+if [ -z ${no_cpss+x} ]; then
 #Custom Policies
 conf_files=`find $new_ca_name/etc/ -maxdepth 1 ! -name ''"$new_ca_name"'-ca.conf' ! -name '.'|rev|cut -d / -f 1|rev`
 menuitems=""
@@ -628,7 +635,9 @@ noticeNumbers=${cpsnumbers}\n"
         fi
 done
 fi
-
+fi
+if [ -z ${no_custom_oids+x} ]; then
+#Custom OIDs
 echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 echo "[ additional_oids ]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 $dialog_exe --msgbox "It is possible to give text descriptions for any proprietary OIDs you want to use in your issued certificates.\
@@ -664,7 +673,9 @@ else
 echo "${Identifier} = ${Description}, ${OID}" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 fi
 done
+fi
 
+#Key management
 if [ "$preexisting_key_file" = "" ]; then
 . ./ask_for_passwd.sh
 else
