@@ -469,13 +469,13 @@ done
 if [ "$menuitems" = "" ];then
 echo "no issuing cas need to be configured - skipping this part"
 else
-$dialog_exe --msgbox "The next form shows a list with the different flavors of certificates this new CA is able to issue. You are prompted \
+$dialog_exe --backtitle "Default Values for CSRs" --msgbox "The next form shows a list with the different flavors of certificates this new CA is able to issue. You are prompted \
 to select all of those flavors you want to specify default values for. These default values are stored inside the generated
 client configurations an end user can use to create certificate signing requests. With this you can make the life
 of your end users easier. If for example you create a CA for identity management, the end users must provide details such as country,
 locality, organization and so on. If the CA is meant to manage digital identities for the employees of a company, chances are
 that each and every one of them will enter the same for organization - why not save them the hassle and fill it out beforehand? This
-is what these default values are for." 16 60
+is what these default values are for." 0 0
 $dialog_exe --backtitle "Available CA configurations" \
            --title "Select some" --checklist \
            "Choose the available certificate types you want to specify defaults for" 16 40 8 $menuitems 2> $_temp
@@ -565,12 +565,12 @@ fi
 if [ "$menuitems" = "" ];then
 echo "no issuing cas need to be configured - skipping this part"
 else
-$dialog_exe --msgbox "The next form shows a list with the different flavors of certificates this new CA is able to issue. You are prompted \
+$dialog_exe --backtitle "Certificate Policy Statements" --msgbox "The next form shows a list with the different flavors of certificates this new CA is able to issue. You are prompted \
 to select all of those flavors you want to specify Certificate Policy Statements (CPSs) for. Remember: for a Certificate Authority Hierarchy to \
 be valid according to RFC 5280, all Certificate Authorities below one that does supply CPSs have to do this too! For each of those selected, you have to specify the policies afterwards: \
 Either by only giving OID and URI or by giving OID and URI and an additional User notice - Text or by filling out all form fields. \
 Important: If either Org or Notice numbers is given, the other field must be given too, else, the policy is not added to the \
-configuration!" 16 60
+configuration!" 0 0
 $dialog_exe --backtitle "Available CA configurations" \
            --title "Select some" --checklist \
            "Choose the available certificate types you want to specify CPSs for" 16 40 8 $menuitems 2> $_temp
@@ -640,9 +640,9 @@ if [ -z ${no_custom_oids+x} ]; then
 #Custom OIDs
 echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 echo "[ additional_oids ]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-$dialog_exe --msgbox "It is possible to give text descriptions for any proprietary OIDs you want to use in your issued certificates.\
+$dialog_exe --backtitle "Custom OIDs" --msgbox "It is possible to give text descriptions for any proprietary OIDs you want to use in your issued certificates.\
 The next form gives you the opportunity to specify them and their associated description together with an identifier (must not contain spaces) one by one. Once you entered
-all your OIDs and their descriptions - just leave at least one field of the form blank and the script will automatically proceed to the next step" 16 60
+all your OIDs and their descriptions - just leave at least one field of the form blank and the script will automatically proceed to the next step" 0 0
 condition=1
 Identifier="CustomOid1"
 OID=""
@@ -735,9 +735,9 @@ mac_sha256=$(cat /tmp/sha256)
 $(expect priv_key_fingerprint.xpct "${new_ca_name}/ca/private/${new_ca_name}-ca.key" sha512 ${Password})
 mac_sha512=$(cat /tmp/sha512)
 
-$dialog_exe --backtitle "Info" --msgbox "The key is in ${new_ca_name}/ca/private/${new_ca_name}-ca.key\n\nMD5-Fingerprint: ${mac_md5}\nSHA1-Fingerprint: ${mac_sha1}\nSHA256-Fingerprint: ${mac_sha256}\nSHA512-Fingerprint: ${mac_sha512}\n\nThe Cert Req is in ${new_ca_name}/ca/${new_ca_name}-ca.csr\n\nYou can now ask your CA to sign the request!\n\nThe configurations needed by clients to generate certificate signing requests are in ${new_ca_name}/ca/etc. Available are: $conf_files" 16 52
+$dialog_exe --backtitle "Info" --msgbox "The key is in ${new_ca_name}/ca/private/${new_ca_name}-ca.key\n\nMD5-Fingerprint: ${mac_md5}\nSHA1-Fingerprint: ${mac_sha1}\nSHA256-Fingerprint: ${mac_sha256}\nSHA512-Fingerprint: ${mac_sha512}\n\nThe Cert Req is in ${new_ca_name}/ca/${new_ca_name}-ca.csr\n\nYou can now ask your CA to sign the request!\n\nThe configurations needed by clients to generate certificate signing requests are in ${new_ca_name}/ca/etc. Available are: $conf_files" 0 0
 
-$dialog_exe --backtitle "Custom Policies" --msgbox "At this time, two policies are defined in the CA configuration file $new_ca_name/etc/$new_ca_name-ca.conf. If you want to add more or add some of your own - feel free to add them using the one named minimal_pol as a template. You are free when naming them but if the names do not end with _pol, the script for signing CSRs will not pick them up so you will not be able to use them when actually signing CSRs!" 14 64
+$dialog_exe --backtitle "Custom Policies" --msgbox "At this time, two policies are defined in the CA configuration file $new_ca_name/etc/$new_ca_name-ca.conf. If you want to add more or add some of your own - feel free to add them using the one named minimal_pol as a template. You are free when naming them but if the names do not end with _pol, the script for signing CSRs will not pick them up so you will not be able to use them when actually signing CSRs!" 0 0
 
 #ca=${new_ca_name}
 cpsresources=`grep -e "^CPS\s*=.*$" ${new_ca_name}/etc/${new_ca_name}"-ca.conf"|cut -d "=" -f 2| sed s/\"//g`
@@ -747,7 +747,7 @@ base_url=`grep -e "^base_url\s*=\s*.*$" ${new_ca_name}/etc/${new_ca_name}"-ca.co
 resources="${base_url}/${new_ca_name}.cer\n${base_url}/${new_ca_name}.crl\n${cpsresources}"
 
 $dialog_exe --backtitle "Resources to provide" --msgbox "You must provide the following resources after receiving and installing \
-your certificate to make your shiny new CA fully functional:\n$resources" 14 64
+your certificate to make your shiny new CA fully functional:\n$resources" 0 0
 
 #log schreiben
 
