@@ -20,15 +20,15 @@ privkey_file_name=""
 . ${script_dir}/preset_${script}
 _temp="/tmp/answer.$$"
 
-while getopts ":s:k:" opt; do
+while getopts ":d:k:" opt; do
   case $opt in
     k)
 #      echo "-k was triggered! ($OPTARG)" >&2
 		privkey_file_name=$OPTARG
       ;;
-    s)
+    d)
 #      echo "-s was triggered! ($OPTARG)" >&2
-		sign_req_name=$OPTARG
+		sign_req_directory=$OPTARG
       ;;
     h)
 	  printHelp
@@ -77,3 +77,20 @@ if [ ! -d "./ca/db" ]; then layout_error=1; fi
 if [ ! -d "./ca/private" ]; then layout_error=1; fi
 if [ "$layout_error" = 1 ]; then exit 128; fi
 
+if [ -z ${sign_req_directory+x} ]; then
+  sign_req_directory=$($dialog_exe --title "Choose a directory containing Vertificate signing requests" --stdout --title "CSR directory" --dselect /tmp/ 0 0)
+fi
+
+if [ -d "$sign_req_directory" ]; then
+  mkdir -p "$sign_req_directory/done"
+  cd "$sign_req_directory" || exit
+  csrs=$(ls *.csr)
+  cd - || exit
+  echo "$csrs"
+
+  for current_csr in ${csrs}
+  do
+    "$script_dir/sign_request.sh" -k "$privkey_file_name" -s "$sign_req_directory/$current_csr"
+    mv "$sign_req_directory/$current_csr" "$sign_req_directory/done"
+  done
+fi
