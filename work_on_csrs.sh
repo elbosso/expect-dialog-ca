@@ -78,7 +78,7 @@ if [ ! -d "./ca/private" ]; then layout_error=1; fi
 if [ "$layout_error" = 1 ]; then exit 128; fi
 
 if [ -z ${sign_req_directory+x} ]; then
-  sign_req_directory=$($dialog_exe --title "Choose a directory containing Vertificate signing requests" --stdout --title "CSR directory" --dselect /tmp/ 0 0)
+  sign_req_directory=$($dialog_exe --title "Choose a directory containing certificate signing requests" --stdout --title "CSR directory" --dselect /tmp/ 0 0)
 fi
 
 if [ -d "$sign_req_directory" ]; then

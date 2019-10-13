@@ -10,7 +10,7 @@
 # * ein bestehendes Verzeichnis mit den Dateien der Expert-PKI
 printHelp ()
 {
-echo "usage: $0 [-t <offline template dir>] [-k <pre-existing key file>] [-c <type of CA>] [-n <name of CA>] [-l <key length>] [-a <hash algorithm>] [-p] [-o] [-h]"
+echo "usage: $0 [-t <offline template dir>] [-k <pre-existing key file>] [-c <type of CA>] [-n <name of CA>] [-l <key length>] [-a <hash algorithm>] [-p] [-o] [-g] [-h]"
 }
 dialog_exe=dialog
 . ./configure_gui.sh
@@ -18,7 +18,7 @@ optionerror=0
 offline_template_dir=""
 preexisting_key_file=""
 _temp="/tmp/answer.$$"
-while getopts ":t:k:c:n:l:a:oph" opt; do
+while getopts ":t:k:c:n:l:a:opgh" opt; do
   case $opt in
     t)
 #      echo "-t was triggered! ($OPTARG)" >&2
@@ -84,6 +84,28 @@ while getopts ":t:k:c:n:l:a:oph" opt; do
 	  ;;
     p)
       no_cpss=true
+	  ;;
+    g)
+      if [ -e ca_presets.ini ]; then
+        $dialog_exe --backtitle "Error:" --msgbox "ca_presets.ini does already exist - not overwriting it!" 9 52
+      else
+        echo "#used for the subject data and for the default values for config items in end user configs" >ca_presets.ini
+        echo "countryName=\"\"" >>ca_presets.ini
+        echo "#used for the subject data and for the default values for config items in end user configs" >>ca_presets.ini
+        echo "organizationName=\"\"" >>ca_presets.ini
+        echo "#used for the subject data and for the default values for config items in end user configs" >>ca_presets.ini
+        echo "organizationalUnitName=\"\"" >>ca_presets.ini
+        echo "#used for the subject data" >>ca_presets.ini
+        echo "commonName=\"\"" >>ca_presets.ini
+        echo "#used for the configuration of the CA - everywhere where an URL is needed; for example location of CA certificate, CRL,..." >>ca_presets.ini
+        echo "base_url=\"\"" >>ca_presets.ini
+        echo "#used in end user configs" >>ca_presets.ini
+        echo "stateOrProvinceName=\"\"" >>ca_presets.ini
+        echo "#used in end user configs" >>ca_presets.ini
+        echo "localityName=\"\"" >>ca_presets.ini
+        $dialog_exe --backtitle "Success:" --msgbox "Wrote template ca_presets.ini!" 9 52
+      fi
+      exit 0
 	  ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -581,7 +603,7 @@ if [ $? -eq 0 ]; then
 		exit 255
     fi
         cpsoid=""
-        cpsuri=""
+        cpsuri="${base_url:-}"
         cpsexplicit=""
         cpsorg=""
         cpsnumbers=""
