@@ -771,7 +771,7 @@ cpsresources=`grep -e "^CPS\s*=.*$" ${new_ca_name}/etc/${new_ca_name}"-ca.conf"|
 #addresources=`grep \$base_url ${new_ca_name}/etc/${new_ca_name}"-ca.conf"|cut -d "=" -f 2|rev|cut -d "#" -f 2|rev|sed -E "s/^\s*//g"|sed -E "s/ca.(cer|crl)/${new_ca_name}.\1/g"`
 base_url=`grep -e "^base_url\s*=\s*.*$" ${new_ca_name}/etc/${new_ca_name}"-ca.conf"|cut -d "=" -f 2| sed -E "s/^\s*//g"`
 #$dialog_exe --title "resources" --cr-wrap --msgbox "$ca \n $base_url \n ${new_ca_name}\n ${addresources}" 12 52
-resources="${base_url}/${new_ca_name}.cer\n${base_url}/${new_ca_name}.crl\n${cpsresources}"
+resources="${base_url}/${new_ca_name}.crt\n${base_url}/${new_ca_name}.crl\n${cpsresources}"
 
 $dialog_exe --backtitle "Resources to provide (scroll with PgUp, PgDown)" --msgbox "You must provide the following resources after receiving and installing \
 your certificate to make your shiny new CA fully functional:\n$resources" 0 0
