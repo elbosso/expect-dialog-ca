@@ -84,7 +84,7 @@ $dialog_exe --backtitle "CSR defaults for $item" \
 	    "localityName" 6 4 "$localityName" 6 25 40 0\
 	    "organizationName" 8 4 "$organizationName" 8 25 40 0\
 	    "organizationalUnitName" 10 4 "$organizationalUnitName" 10 25 40 0\
-	    "commonName" 12 4 "$commonName" 12 25 64 0\
+	    "commonName" 12 4 "$commonName" 12 25 40 64\
 	    2>$_temp
 
 	if [ ${?} -ne 0 ]; then exit 127; fi

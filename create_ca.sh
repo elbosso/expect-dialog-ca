@@ -523,8 +523,8 @@ $dialog_exe --backtitle "CSR defaults for $item" \
 	    "localityName" 6 4 "${localityName:-}" 6 25 40 0\
 	    "organizationName" 8 4 "${organizationName:-}" 8 25 40 0\
 	    "organizationalUnitName" 10 4 "${organizationalUnitName:-}" 10 25 40 0\
-	    "commonName" 12 4 "${commonName:-}" 12 25 64 0\
-	    "emailAddress" 14 4 "${emailAddress:-}" 14 25 40 0\
+	    "commonName" 12 4 "${commonName:-}" 12 25 40 64\
+	    "emailAddress" 14 4 "${emailAddress:-}" 14 25 40 80\
 	    2>$_temp
 	
 	if [ ${?} -ne 0 ]; then exit 127; fi   
@@ -676,7 +676,7 @@ $dialog_exe --backtitle "Custom OID descriptions" \
 	    --form " Please give your OID and their description - use [up] [down] to select input field " 0 0 0 \
 	    "Identifier" 2 4 "${Identifier}" 2 25 40 0\
 	    "OID" 4 4 "${OID}" 4 25 40 0\
-	    "Description" 6 4 "${Description}" 6 25 40 0\
+	    "Description" 6 4 "${Description}" 6 25 40 255\
 	    2>$_temp
 
 	if [ ${?} -ne 0 ]; then exit 127; fi
@@ -705,7 +705,7 @@ while [ $condition -eq 1 ]
 do
 result=$($dialog_exe --stdout --backtitle "Password for private key" \
 	    --form " Please specify - use [up] [down] to select input field " 0 0 0 \
-	    "Password" 2 4 "" 2 25 40 0)
+	    "Password (max 254 chars)" 2 4 "" 2 25 40 255)
 	
 	if [ ${?} -ne 0 ]; then exit 127; fi   
 #    result=`cat $_temp`

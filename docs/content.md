@@ -75,6 +75,7 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   again to verify"-GUI and does basic verification:
   * are both fields non-empty
   * are password and password verification equal
+  *Please note that passwords must be at most 254 characters long*
 * [configure_gui.sh](../configure_gui.sh)  
   This script is sourced by all other scripts used on the issuer side of
   things. It sets some basic environment bariables needed in all the scripts
