@@ -13,45 +13,74 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   creation of the new key with the new password.
   
   Parameters for the script:
-  * *-t offline template dir*
-    The script initially tries to download the expert pki unless this parameter specifies an already downloaded version"
-  * *-k pre-existing key file*
-    A key pair is created for the new CA unless there is already a preexisting key file - in this case, it has to be specified here"
-  * *-c type of CA*
-    The script skips the dialog for choosing the type of CA about to be created if the value given here is one of the types offered by the expert PKI project (at the time of writing these are: root|component|network|identity)"
-  * *-n name of CA*
-    The name of the CA about to b created. This skips the dialog asking vor it. The name must not contain special characters such as whitespace or umlaute etc."
-  * *-l key length*
-    The length in bits of the key to be created (if no preexisting key is given, see above). If this value is given here as one of the supported values 1024|2048|4096 the corresponding dialog is skipped."
-  * *-a <hash algorithm>*
-    The message digest algorithm to be used. If this value is given here as one of the supported values md5|sha1|sha224|sha348|sha512|sha256 the corresponding dialog is skipped."
-  * *-p*
-    Skip specification of CPS"
-  * *-o*
-    Skip specification of custom OIDs"
-  * *-g*
-    Generate template for ca_presets.ini and stop execution afterwards"
+  * *-k file name for private key file of the CA*
+    The file containing the private key of the CA
   * *-h*
-    Print some help text"
+    Print some help text
 * [create_ca.sh](../create_ca.sh)  
   This script lets the user create a CA. It asks for the kind of CA
   (Root, Intermediate, ...) and some configuration options. Then, it builds
   a directory structure and populates it with the necessary files.
   Finally, a certificate signing request (CSR) is created
+
+  Parameters for the script:
+  * *-t offline template dir*
+    The script initially tries to download the expert pki unless this parameter specifies an already downloaded version
+  * *-k pre-existing key file*
+    A key pair is created for the new CA unless there is already a preexisting key file - in this case, it has to be specified here
+  * *-c type of CA*
+    The script skips the dialog for choosing the type of CA about to be created if the value given here is one of the types offered by the expert PKI project (at the time of writing these are: root|component|network|identity)
+  * *-n name of CA*
+    The name of the CA about to b created. This skips the dialog asking vor it. The name must not contain special characters such as whitespace or umlaute etc.
+  * *-l key length*
+    The length in bits of the key to be created (if no preexisting key is given, see above). If this value is given here as one of the supported values 1024|2048|4096 the corresponding dialog is skipped.
+  * *-a <hash algorithm>*
+    The message digest algorithm to be used. If this value is given here as one of the supported values md5|sha1|sha224|sha348|sha512|sha256 the corresponding dialog is skipped.
+  * *-p*
+    Skip specification of CPS
+  * *-o*
+    Skip specification of custom OIDs
+  * *-g*
+    Generate template for ca_presets.ini and stop execution afterwards
+  * *-h*
+    Print some help text"
+* [create_timestamp.sh](../create_timestamp.sh)
+  Act as timestamping Authority. This script reads a timestamp request and creates
+  a matching timestamp to be sent back.
+  
+  Parameters for the script:
+  * *-t <file name for timestamp request*
+    The file containing the timestamp request to be processed
+  * *-h*
+    Print some help text"
 * [install_ca_certificate.sh](../install_ca_certificate.sh)  
   This script takes the certificate produced by the certificate authority
   for the new CA and installs it in the correct place inside the directory structure.
+
+  Parameters for the script:
+  * *-z location of zip file holding the certificate*
+    The file with the deliverables in it that the CA sent back
+  * *-h*
+    Print some help text"
 * [manage_certs.sh](../manage_certs.sh)  
   This script lists all certificates ever issued by this CA and their 
   current state or - if a date is given - all valid certificates with 
   an end date of their validity befor this given date.
 * [refresh_crl.sh](../refresh_crl.sh)  
-  This script renews the Certificate Revocation List of the 
-  current Certificate Authority: Inside crls there is always 
+  This script renews the Certificate Revocation List 
+  of the 
+  current Certificate Authority: 
+  Inside crls there is always 
   information about the end of its validity. A crls validity period is always 
    limited. The PKI or CA is responsible for refreshing the CRL before
    the validity of the last one is up. This script offers
    a convenient method of doing so.
+
+  Parameters for the script:
+  * *-k file name for private key file of the CA*
+    The file containing the private key of the CA
+  * *-h*
+    Print some help text"
 * [reneq_cert_req.sh](../reneq_cert_req.sh)  
   This script issues a CSR for renewal of a soon to be expiring certificate:
   If the private key should stay the same - thats the option to choose!
@@ -63,6 +92,16 @@ This project consists of Linux shell scripts - some of them are meant to be run 
 
   This script runs without a GUI so as to put as few dependencies and preconditions
   in the way of a user getting her certificate.
+
+  Parameters for the script:
+  * *-k file name for key file*
+    If this file exists, the key in it is used - if it does not exist, a new key is generated and saved to it
+  * *-c file name of config file*
+    The config file containing information about the contents and structure of the certificate signing request to be built
+  * *-o file name of resulting CSR*
+    The file the new certificate signing request is to be saved in
+  * *-h*
+    Print some help text"
 * [request_certificate_renewal.sh](../request_certificate_renewal.sh)  
   This script is for end users: They can use it to renew their certificate - meaning to
   extend the validity of an already obtained certificate from the same 
@@ -71,6 +110,16 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   
   This script runs without a GUI so as to put as few dependencies and preconditions
   in the way of a user getting her certificate.
+  
+  Parameters for the script:
+  * *-k file name for key file*
+    If this file exists, the key in it is used - if it does not exist, a new key is generated and saved to it
+  * *-c file name of old certificate*
+    The file containing the old certificate that should be renewed
+  * *-o file name of resulting CSR*
+    The file the new certificate signing request is to be saved in
+  * *-h*
+    Print some help text"
 * [revoke_crl.sh](../revoke_crl.sh)  
   This script shows all currently valid certificates. The user 
   can choose one of them. This is then revoked and the certificate revocation list 
@@ -80,6 +129,30 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   presenting the CSR to the user in a human-readable form and asking
   for confirmation.
   
+  
+  Parameters for the script:
+  * *-k file name for key file*
+    If this file exists, the key in it is used - if it does not exist, a new key is generated and saved to it
+  * *-k file name for private key file of the CA*
+    The file containing the private key of the CA
+  * *-s file name of the CSR to work on*
+    A file containing the certificate signing request to be processed
+  * *-h*
+    Print some help text"
+* [work_on_csrs.sh](../work_on_csrs.sh)  
+  This script takes a directory and searches for all files with suffix
+  ".csr" in it. With each such file found it calls [sign_request.sh](../sign_request.sh)
+  and after this script has finished, it moves the CSR to a subdirectory named _done_.
+  This subdirectory is created if it does not yet exist. That way, the
+  habdling of CSRs can be interrupted and continued later on.
+  
+  Parameters for the script:
+  * *-k file name for private key file of the CA*
+    The file containing the private key of the CA
+  * *-d directory containing the CSRs to work on*
+    All files found inside this directory with suffix \".csr\" are processed as certificate signing request
+  * *-h*
+    Print some help text"
 ### Linux helper scripts
 * [build_p12.sh](../build_p12.sh)  
   This script is added to all the files delivered to an end entity after creating the certificate
