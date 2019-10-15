@@ -2,7 +2,9 @@
 #Dieses Skript signiert Zertifikatsrequests
 printHelp ()
 {
-echo "usage: $0 [-t <filename for timestamp request>] [-h]"
+echo "usage: $0 [-t <file name for timestamp request>] [-h]"
+echo "-t <file name for timestamp request>\tThe file containing the timestamp request to be processed"
+echo "-h\t\tPrint this help text"
 }
 dialog_exe=dialog
 . `dirname $0`/configure_gui.sh

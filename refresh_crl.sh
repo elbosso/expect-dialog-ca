@@ -2,7 +2,9 @@
 #Dieses Skript signiert Zertifikatsrequests
 printHelp ()
 {
-echo "usage: $0 [-k <filename for private key file of the CA>] [-h]"
+echo "usage: $0 [-k <file name for private key file of the CA>] [-h]"
+echo "-k <file name for private key file of the CA>\tThe file containing the private key of the CA"
+echo "-h\t\tPrint this help text"
 }
 dialog_exe=dialog
 . `dirname $0`/configure_gui.sh

@@ -6,7 +6,10 @@ cert_file_location=""
 csr_file_location=""
 printHelp ()
 {
-echo "usage: $0 [-k <filename for key file>] [-c <filename of old certificate>] [-o <file name of resulting CSR>] [-h]"
+echo "usage: $0 [-k <file name for key file>] [-c <file name of old certificate>] [-o <file name of resulting CSR>] [-h]"
+echo "-k <file name for key file>\tIf this file exists, the key in it is used - if it does not exist, a new key is generated and saved to it"
+echo "-c <file name of old certificate>\tThe file containing the old certificate that should be renewed"
+echo "-o <file name of resulting CSR>\tThe file the new certificate signing request is to be saved in"
 }
 while getopts ":k:c:o:" opt; do
   case $opt in

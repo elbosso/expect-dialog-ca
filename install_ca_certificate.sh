@@ -2,6 +2,8 @@
 printHelp ()
 {
 echo "usage: $0 [-z <location of zip file holding the certificate (and other stuff)>] [-h]"
+echo "-z <location of zip file holding the certificate>\tThe file with the deliverables in it that the CA sent back"
+echo "-h\t\tPrint this help text"
 }
 dialog_exe=dialog
 . `dirname $0`/configure_gui.sh

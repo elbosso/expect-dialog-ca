@@ -2,7 +2,10 @@
 #Dieses Skript signiert Zertifikatsrequests
 printHelp ()
 {
-echo "usage: $0 [-k <filename for private key file of the CA>] [-s <file name of the CSR to work on>] [-h]"
+echo "usage: $0 [-k <file name for private key file of the CA>] [-s <file name of the CSR to work on>] [-h]"
+echo "-k <file name for private key file of the CA>\tThe file containing the private key of the CA"
+echo "-s <file name of the CSR to work on>\tA file containing the certificate signing request to be processed"
+echo "-h\t\tPrint this help text"
 }
 dialog_exe=dialog
 . `dirname $0`/configure_gui.sh
