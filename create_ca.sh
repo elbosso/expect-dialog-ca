@@ -11,6 +11,17 @@
 printHelp ()
 {
 echo "usage: $0 [-t <offline template dir>] [-k <pre-existing key file>] [-c <type of CA>] [-n <name of CA>] [-l <key length>] [-a <hash algorithm>] [-p] [-o] [-g] [-h]"
+echo "-t <offline template dir>\tThe script initially tries to download the expert pki unless this parameter specifies an already downloaded version"
+echo "-k <pre-existing key file>\tA key pair is created for the new CA unless there is already a preexisting key file - in this case, it has to be specified here"
+echo "-c <type of CA>\t\tThe script skips the dialog for choosing the type of CA about to be created if the value given here is one of the types offered by the expert PKI project (at the time of writing these are: root|component|network|identity)"
+echo "-n <name of CA>\t\tThe name of the CA about to b created. This skips the dialog asking vor it. The name must not contain special characters such as whitespace or umlaute etc."
+echo "-l <key length>\t\tThe length in bits of the key to be created (if no preexisting key is given, see above). If this value is given here as one of the supported values 1024|2048|4096 the corresponding dialog is skipped."
+echo "-a <hash algorithm>\t\tThe message digest algorithm to be used. If this value is given here as one of the supported values md5|sha1|sha224|sha348|sha512|sha256 the corresponding dialog is skipped."
+echo "-p\t\tSkip specification of CPS"
+echo "-o\t\tSkip specification of custom OIDs"
+echo "-g\t\tGenerate template for ca_presets.ini and stop execution afterwards"
+echo "-h\t\tPrint this help text"
+#echo ""
 }
 dialog_exe=dialog
 . ./configure_gui.sh
