@@ -3,6 +3,9 @@
 printHelp ()
 {
 echo "usage: $0 [-k <file name for private key file of the CA>] [-h]"
+echo ""
+echo "https://elbosso.github.io/expect-dialog-ca/"
+echo ""
 echo "-k <file name for private key file of the CA>\tThe file containing the private key of the CA"
 echo "-h\t\tPrint this help text"
 }
@@ -21,7 +24,7 @@ privkey_file_name=""
 . ${script_dir}/preset_${script}
 _temp="/tmp/answer.$$"
 
-while getopts ":s:k:" opt; do
+while getopts ":s:k:h" opt; do
   case $opt in
     k)
 #      echo "-k was triggered! ($OPTARG)" >&2

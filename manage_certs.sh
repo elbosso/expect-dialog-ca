@@ -1,8 +1,35 @@
 #!/bin/sh
+printHelp ()
+{
+echo "usage: $0 [-h]"
+echo ""
+echo "https://elbosso.github.io/expect-dialog-ca/"
+echo ""
+echo "-h\t\tPrint this help text"
+}
 dialog_exe=dialog
 . `dirname $0`/configure_gui.sh
 optionerror=0
 _temp="/tmp/answer.$$"
+
+while getopts ":h" opt; do
+  case $opt in
+    h)
+	  printHelp
+      exit 0
+	  ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+	  printHelp
+      optionerror=1
+      ;;
+  esac
+done
+if [ "$optionerror" = "1" ]
+then
+	exit 1
+fi
+
 zip_file_location=""
 script_dir=`dirname $0`
 ca_dir_name=""

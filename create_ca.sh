@@ -11,6 +11,9 @@
 printHelp ()
 {
 echo "usage: $0 [-t <offline template dir>] [-k <pre-existing key file>] [-c <type of CA>] [-n <name of CA>] [-l <key length>] [-a <hash algorithm>] [-p] [-o] [-g] [-h]"
+echo ""
+echo "https://elbosso.github.io/expect-dialog-ca/"
+echo ""
 echo "-t <offline template dir>\tThe script initially tries to download the expert pki unless this parameter specifies an already downloaded version"
 echo "-k <pre-existing key file>\tA key pair is created for the new CA unless there is already a preexisting key file - in this case, it has to be specified here"
 echo "-c <type of CA>\t\tThe script skips the dialog for choosing the type of CA about to be created if the value given here is one of the types offered by the expert PKI project (at the time of writing these are: root|component|network|identity)"

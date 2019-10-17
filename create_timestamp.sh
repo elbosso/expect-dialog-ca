@@ -3,6 +3,9 @@
 printHelp ()
 {
 echo "usage: $0 [-t <file name for timestamp request>] [-h]"
+echo ""
+echo "https://elbosso.github.io/expect-dialog-ca/"
+echo ""
 echo "-t <file name for timestamp request>\tThe file containing the timestamp request to be processed"
 echo "-h\t\tPrint this help text"
 }
@@ -25,7 +28,7 @@ ca_dir_name=""
 privkey_file_name=""
 _temp="/tmp/answer.$$"
 
-while getopts ":s:t:" opt; do
+while getopts ":s:t:h" opt; do
   case $opt in
     t)
 #      echo "-k was triggered! ($OPTARG)" >&2

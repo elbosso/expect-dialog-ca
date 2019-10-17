@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ $# -lt 1 ];then
-	echo "you must specify the file containing your private key!"
+	echo "you must specify the file containing your private key! (https://elbosso.github.io/expect-dialog-ca/)"
 	exit 1;
 fi
 if [ ! -e ./tmp ];then

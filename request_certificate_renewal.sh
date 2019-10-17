@@ -7,12 +7,15 @@ csr_file_location=""
 printHelp ()
 {
 echo "usage: $0 [-k <file name for key file>] [-c <file name of old certificate>] [-o <file name of resulting CSR>] [-h]"
+echo ""
+echo "https://elbosso.github.io/expect-dialog-ca/"
+echo ""
 echo "-k <file name for key file>\tIf this file exists, the key in it is used - if it does not exist, a new key is generated and saved to it"
 echo "-c <file name of old certificate>\tThe file containing the old certificate that should be renewed"
 echo "-o <file name of resulting CSR>\tThe file the new certificate signing request is to be saved in"
 echo "-h\t\tPrint this help text"
 }
-while getopts ":k:c:o:" opt; do
+while getopts ":k:c:o:h" opt; do
   case $opt in
     k)
 #      echo "-k was triggered! ($OPTARG)" >&2

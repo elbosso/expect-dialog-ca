@@ -2,6 +2,9 @@
 printHelp ()
 {
 echo "usage: $0 [-z <location of zip file holding the certificate (and other stuff)>] [-h]"
+echo ""
+echo "https://elbosso.github.io/expect-dialog-ca/"
+echo ""
 echo "-z <location of zip file holding the certificate>\tThe file with the deliverables in it that the CA sent back"
 echo "-h\t\tPrint this help text"
 }
@@ -12,7 +15,7 @@ _temp="/tmp/answer.$$"
 zip_file_location=""
 script_dir=`dirname $0`
 ca_dir_name=""
-while getopts ":z:" opt; do
+while getopts ":z:h" opt; do
   case $opt in
     z)
 #      echo "-z was triggered! ($OPTARG)" >&2

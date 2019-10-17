@@ -3,6 +3,9 @@
 printHelp ()
 {
 echo "usage: $0 [-k <file name for private key file of the CA>] [-d <directory containing the CSRs to work on>] [-h]"
+echo ""
+echo "https://elbosso.github.io/expect-dialog-ca/"
+echo ""
 echo "-k <file name for private key file of the CA>\tThe file containing the private key of the CA"
 echo "-d <directory containing the CSRs to work on>\tAll files found inside this directory with suffix \".csr\" are processed as certificate signing request"
 echo "-h\t\tPrint this help text"
@@ -23,7 +26,7 @@ privkey_file_name=""
 . ${script_dir}/preset_${script}
 _temp="/tmp/answer.$$"
 
-while getopts ":d:k:" opt; do
+while getopts ":d:k:h" opt; do
   case $opt in
     k)
 #      echo "-k was triggered! ($OPTARG)" >&2
