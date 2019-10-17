@@ -10,8 +10,9 @@ do
 condition=0
 result=$($dialog_exe --stdout --backtitle "Password for private key ${purpose}" \
 	    --form " Please specify - use [up] [down] to select input field " 0 0 0 \
-	    "Password (max 254 chars)" 2 4 "$proposed_pass" 2 25 40 255\
-	    "Verification (max 254 chars)" 4 4 "" 4 25 40 255)
+	    "Passwords must not be longer than 254 characters!" 2 4 "" 2 54 -1 0\
+	    "Password" 4 4 "$proposed_pass" 4 25 40 255\
+	    "Verification" 6 4 "" 6 25 40 255)
 
 	if [ ${?} -ne 0 ]; then exit 127; fi   
 #    result=`cat $_temp`
