@@ -96,6 +96,10 @@ if [ -d "$sign_req_directory" ]; then
 
   for current_csr in ${csrs}
   do
+    $dialog_exe --backtitle "Decision" --yesno "Do You want to continue working on\n${current_csr}?" 0 0
+    if [ ! $? -eq 0 ]; then
+      exit 0
+    fi
     "$script_dir/sign_request.sh" -k "$privkey_file_name" -s "$sign_req_directory/$current_csr"
     mv "$sign_req_directory/$current_csr" "$sign_req_directory/done"
   done
