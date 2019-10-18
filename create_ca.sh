@@ -583,6 +583,58 @@ fi
 done
 fi
 
+if ! grep "countryName_default" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/countryName *=.*/a #countryName_default = \"default countryName\""  $new_ca_name/etc/$item
+fi
+if ! grep "stateOrProvinceName_default" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/stateOrProvinceName *=.*/a #stateOrProvinceName_default = \"default stateOrProvinceName\""  $new_ca_name/etc/$item
+fi
+if ! grep "localityName_default" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/localityName *=.*/a #localityName_default = \"default localityName\""  $new_ca_name/etc/$item
+fi
+if ! grep "organizationName_default" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/organizationName *=.*/a #organizationName_default = \"default organizationName\""  $new_ca_name/etc/$item
+fi
+if ! grep "organizationalUnitName_default" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/organizationalUnitName *=.*/a #organizationalUnitName_default = \"default organizationalUnitName\""  $new_ca_name/etc/$item
+fi
+if ! grep "commonName_default" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/commonName *=.*/a #commonName_default = \"default commonName\""  $new_ca_name/etc/$item
+fi
+if ! grep "emailAddress_default" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/emailAddress *=.*/a #emailAddress_default = \"default emailAddress\""  $new_ca_name/etc/$item
+fi
+
+if ! grep "countryName_max" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/countryName *=.*/a #countryName_max = 255"  $new_ca_name/etc/$item
+fi
+sed -i -E -- "/.*countryName_max *=.*/i #countryName_min = 1"  $new_ca_name/etc/$item
+if ! grep "stateOrProvinceName_max" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/stateOrProvinceName *=.*/a #stateOrProvinceName_max = 255"  $new_ca_name/etc/$item
+fi
+sed -i -E -- "/.*stateOrProvinceName_max *=.*/i #stateOrProvinceName_min = 1"  $new_ca_name/etc/$item
+if ! grep "localityName_max" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/localityName *=.*/a #localityName_max = 255"  $new_ca_name/etc/$item
+fi
+sed -i -E -- "/.*localityName_max *=.*/i #localityName_min = 1"  $new_ca_name/etc/$item
+if ! grep "organizationName_max" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/organizationName *=.*/a #organizationName_max = 255"  $new_ca_name/etc/$item
+fi
+sed -i -E -- "/.*organizationName_max *=.*/i #organizationName_min = 1"  $new_ca_name/etc/$item
+if ! grep "organizationalUnitName_max" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/organizationalUnitName *=.*/a #organizationalUnitName_max = 255"  $new_ca_name/etc/$item
+fi
+sed -i -E -- "/.*organizationalUnitName_max *=.*/i #organizationalUnitName_min = 1"  $new_ca_name/etc/$item
+if ! grep "commonName_max" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/commonName *=.*/a #commonName_max = 255"  $new_ca_name/etc/$item
+fi
+sed -i -E -- "/.*commonName_max *=.*/i #commonName_min = 1"  $new_ca_name/etc/$item
+if ! grep "emailAddress_max" "$new_ca_name/etc/$item" ; then
+  sed -i -E -- "/emailAddress *=.*/a #emailAddress_max = 255"  $new_ca_name/etc/$item
+fi
+sed -i -E -- "/.*emailAddress_max *=.*/i #emailAddress_min\t= 1"  $new_ca_name/etc/$item
+
+
 if [ -z ${no_cpss+x} ]; then
 #Custom Policies
 conf_files=`find $new_ca_name/etc/ -maxdepth 1 ! -name ''"$new_ca_name"'-ca.conf' ! -name '.'|rev|cut -d / -f 1|rev`
@@ -751,7 +803,7 @@ if [ ${?} -ne 0 ]; then exit 127; fi
 #    -keyout $new_ca_name/private/$new_ca_name"-ca.key"
 
 if [ "$preexisting_key_file" = "" ]; then
-  $dialog_exe --backtitle "Info" --msgbox "trying to build key and csr for ${new_ca_name} using $Password" 9 52
+#  $dialog_exe --backtitle "Info" --msgbox "trying to build key and csr for ${new_ca_name} using $Password" 9 52
   expect ca_csr.xpct ${new_ca_name} $Password
   if [ ! -e "${new_ca_name}/ca/private/${new_ca_name}-ca.key" ]; then
     $dialog_exe --backtitle "Error" --msgbox "key ${new_ca_name}/ca/private/${new_ca_name}-ca.key could not be created!" 9 52
