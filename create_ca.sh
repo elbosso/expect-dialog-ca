@@ -349,17 +349,6 @@ case $ca_type in
 	  sed -i -- "s/Identity/S\/MIME-Multi/g"  $new_ca_name/etc/smime_multi.conf
 	  sed -i -E -- "s/keyUsage(.*)/keyUsage\1,keyEncipherment/g"  $new_ca_name/etc/smime_multi.conf
 	  sed -i -E -- "s/subjectAltName( *= *.*)/subjectAltName\1,\$ENV::SAN/g"  $new_ca_name/etc/smime_multi.conf
-	  echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "[ smime_multi_ext ]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "keyUsage                = critical,keyEncipherment,digitalSignature" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "basicConstraints        = CA:false" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "extendedKeyUsage        = emailProtection,msEFS,clientAuth,msSmartcardLogin" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "subjectKeyIdentifier    = hash" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "authorityKeyIdentifier  = keyid:always" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "authorityInfoAccess     = @issuer_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "crlDistributionPoints   = @crl_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "crlDistributionPoints   = @crl_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "certificatePolicies     = blueMediumAssurance" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
       awk '/\[ identity_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = identityCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
@@ -367,9 +356,6 @@ case $ca_type in
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       awk '/\[ smime_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = smimeCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
-      rm $new_ca_name/etc/$new_ca_name"-ca.conf"
-      mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
-      awk '/\[ smime_multi_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = smime_multiCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       ;;
