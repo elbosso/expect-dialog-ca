@@ -77,8 +77,20 @@ ca_name=`basename ${ca_dir_name}`
 
 echo $ca_name
 
+timestamp=$(date +%Y-%m-%d_%H-%M-%S)
+if [ -e "ca/${ca_name}-ca.crt" ]; then
+  cp "ca/${ca_name}-ca.crt" "ca/${ca_name}_${timestamp}-ca.crt"
+fi
 cp "/tmp/ca-rollout/${zert}" "ca/${ca_name}-ca.crt"
+timestamp=$(date +%Y-%m-%d_%H-%M-%S)
+if [ -e "ca/${ca_name}-ca.der" ]; then
+  cp "ca/${ca_name}-ca.der" "ca/${ca_name}_${timestamp}-ca.der"
+fi
 cp "/tmp/ca-rollout/${zertDER}" "ca/${ca_name}-ca.der"
+timestamp=$(date +%Y-%m-%d_%H-%M-%S)
+if [ -e "ca/${ca_name}-ca.cer" ]; then
+  cp "ca/${ca_name}-ca.cer" "ca/${ca_name}_${timestamp}-ca.cer"
+fi
 cp "/tmp/ca-rollout/${zertDER}" "ca/${ca_name}-ca.cer"
 
 cn=`openssl x509 -noout -subject -in ca/${ca_name}-ca.crt| sed -n '/^subject/s/^.*CN\s=\s//p'`
@@ -122,7 +134,7 @@ base_url=`grep -e "^base_url\s*=\s*.*$" etc/${ca_name}"-ca.conf"|cut -d "=" -f 2
 resources="${base_url}/${ca_name}.crt\n${base_url}/${ca_name}.crl\n${cpsresources}"
 
 $dialog_exe --backtitle "Resources to provide" --msgbox "You must provide the following resources NOW\n
-to make your shiny new CA fully functional:\n$resources" 14 64
+to make your shiny new CA fully functional:\n$resources" 0 0
 
 
 clear
