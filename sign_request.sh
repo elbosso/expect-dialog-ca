@@ -2,12 +2,16 @@
 #Dieses Skript signiert Zertifikatsrequests
 printHelp ()
 {
-echo "usage: $0 [-k <file name for private key file of the CA>] [-s <file name of the CSR to work on>] [-h]"
+echo "usage: $0 [-k <file name for private key file of the CA>] [-s <file name of the CSR to work on>] [-d <end day of validity>] [-m <end month of validity>] [-y <validity in years>] [-y <validity in months>] [-h]"
 echo ""
 echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
 echo "-k <file name for private key file of the CA>\tThe file containing the private key of the CA"
 echo "-s <file name of the CSR to work on>\tA file containing the certificate signing request to be processed"
+echo "-d the calendar dialog for choosing the validity end of the certificate is preset to this date"
+echo "-m the calendar dialog for choosing the validity end of the certificate is preset to this date (only if -M ist *NOT* specified!)"
+echo "-y the calendar dialog shows a date the given amount of years in the future - taking into account the values for -m and -d if given"
+echo "-M the calendar dialog shows a date the given amount of months in the future - taking into account the value for -d if given"
 echo "-h\t\tPrint this help text"
 }
 dialog_exe=dialog
@@ -23,10 +27,14 @@ script=`basename $0`
 ca_dir_name=""
 sign_req_name=""
 privkey_file_name=""
-. ${script_dir}/preset_${script}
+validityEndDay="%d"
+validityEndMonth="%m"
+if [ -e "${script_dir}/preset_${script}" ]; then
+  . ${script_dir}/preset_${script}
+fi
 _temp="/tmp/answer.$$"
 
-while getopts ":s:k:h" opt; do
+while getopts ":s:k:d:m:y:M:h" opt; do
   case $opt in
     k)
 #      echo "-k was triggered! ($OPTARG)" >&2
@@ -36,8 +44,20 @@ while getopts ":s:k:h" opt; do
 #      echo "-s was triggered! ($OPTARG)" >&2
 		sign_req_name=$OPTARG
       ;;
+    d)
+  	  validityEndDay=$OPTARG
+	    ;;
+    m)
+  	  validityEndMonth=$OPTARG
+	    ;;
+    y)
+  	  validityInYears=$OPTARG
+	    ;;
+    M)
+  	  validityInMonths=$OPTARG
+	    ;;
     h)
-	  printHelp
+	    printHelp
       exit 0
 	  ;;
     \?)
@@ -197,10 +217,28 @@ fi
 #Nun wird der Anwender gefragt, ob er den Request signieren möchte
 
 cn=`openssl req -noout -subject -in ${sign_req_name}| sed -n '/^subject/s/^.*CN\s=\s//p'`
-
-expiration_planned=$(date -d "+3 years")
-expiration_planned_ts=$(date -d "+3 years" +%Y%m%d%H%M%S)
-calpreset=$(date -d "+${validity_in_years} years" +"%d %m %Y")
+if [ ! -z "$validityInYears" ]; then
+  $dialog_exe --msgbox "found -y $validityInYears" 0 0
+  validity_in_years="$validityInYears"
+  expiration_planned=$(date -d "+$validityInYears years")
+  expiration_planned_ts=$(date -d "+$validityInYears years" +%Y%m%d%H%M%S)
+  calpreset=$(date -d "+${validity_in_years} years" +"$validityEndDay $validityEndMonth %Y")
+  $dialog_exe --msgbox "$calpreset" 0 0
+else
+  if [ ! -z "$validityInMonths" ]; then
+    $dialog_exe --msgbox "found -M $validityInMonths" 0 0
+    expiration_planned=$(date -d "+$validityInMonths months")
+    expiration_planned_ts=$(date -d "+$validityInMonths months" +%Y%m%d%H%M%S)
+    calpreset=$(date -d "+${validityInMonths} months" +"$validityEndDay %m %Y")
+    $dialog_exe --msgbox "$calpreset" 0 0
+  else
+    $dialog_exe --msgbox "no -y or -M" 0 0
+    expiration_planned=$(date -d "+3 years")
+    expiration_planned_ts=$(date -d "+3 years" +%Y%m%d%H%M%S)
+    calpreset=$(date -d "+3 years" +"$validityEndDay $validityEndMonth %Y")
+    $dialog_exe --msgbox "$calpreset" 0 0
+  fi
+fi
 
 planned_exp=$($dialog_exe --calendar --stdout "Planned expiration" 0 0 ${calpreset})
 if [ $? -ne 0 ]; then exit 127; fi   
