@@ -218,25 +218,25 @@ fi
 
 cn=`openssl req -noout -subject -in ${sign_req_name}| sed -n '/^subject/s/^.*CN\s=\s//p'`
 if [ ! -z "$validityInYears" ]; then
-  $dialog_exe --msgbox "found -y $validityInYears" 0 0
+#  $dialog_exe --msgbox "found -y $validityInYears" 0 0
   validity_in_years="$validityInYears"
   expiration_planned=$(date -d "+$validityInYears years")
   expiration_planned_ts=$(date -d "+$validityInYears years" +%Y%m%d%H%M%S)
   calpreset=$(date -d "+${validity_in_years} years" +"$validityEndDay $validityEndMonth %Y")
-  $dialog_exe --msgbox "$calpreset" 0 0
+#  $dialog_exe --msgbox "$calpreset" 0 0
 else
   if [ ! -z "$validityInMonths" ]; then
-    $dialog_exe --msgbox "found -M $validityInMonths" 0 0
+#    $dialog_exe --msgbox "found -M $validityInMonths" 0 0
     expiration_planned=$(date -d "+$validityInMonths months")
     expiration_planned_ts=$(date -d "+$validityInMonths months" +%Y%m%d%H%M%S)
     calpreset=$(date -d "+${validityInMonths} months" +"$validityEndDay %m %Y")
-    $dialog_exe --msgbox "$calpreset" 0 0
+#    $dialog_exe --msgbox "$calpreset" 0 0
   else
-    $dialog_exe --msgbox "no -y or -M" 0 0
+#    $dialog_exe --msgbox "no -y or -M" 0 0
     expiration_planned=$(date -d "+3 years")
     expiration_planned_ts=$(date -d "+3 years" +%Y%m%d%H%M%S)
     calpreset=$(date -d "+3 years" +"$validityEndDay $validityEndMonth %Y")
-    $dialog_exe --msgbox "$calpreset" 0 0
+#    $dialog_exe --msgbox "$calpreset" 0 0
   fi
 fi
 
