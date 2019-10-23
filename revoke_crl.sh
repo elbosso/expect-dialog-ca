@@ -62,15 +62,14 @@ do
 	revoked_date=`echo -n "$line"|cut -f 3`
 	serial=`echo -n "$line"|cut -f 4`
 	unknown=`echo -n "$line"|cut -f 5`
-	dn=`echo -n "$line"|cut -f 6`
-	cn=`echo -n $dn| sed -n '/.*/s/^.*CN=//p'`
-	echo $state $serial $cn
+	cn=`echo -n "$line"|cut -f 6| sed -n 's/.*CN=\(.*\)/\1/p'`
+#	$dialog_exe --msgbox "_${dn}_\n$state $serial _${cn}_" 0 0
 	if [ "$state" = "V" ]; then
 		if [ "$menuitems" = "" ]; then
 echo "empty"
-			menuitems="$serial%${cn}" # subst. Blanks with "_"  
+			menuitems="$serial${cn}%" # subst. Blanks with "_"
 		else
-			menuitems="$menuitems%$serial%${cn}" # subst. Blanks with "_"  
+			menuitems="$menuitems%$serial${cn}% " # subst. Blanks with "_"
 		fi
 	    n=`expr $n + 1`
 	fi
@@ -78,7 +77,7 @@ echo "empty"
 done < "$db_name"
 echo $menuitems
 #menuitems=`echo -n $menuitems | sed -e 's/.//'`
-echo $menuitems
+#$dialog_exe --msgbox "$menuitems" 0 0
 IFS=$'%'
     $dialog_exe --backtitle "Valid Certificates in data base" \
            --title "Select one" --menu \
@@ -98,7 +97,9 @@ serial=-1
 revoked_cert=""
 #echo "${item}"
 	serial=`openssl x509 -noout -serial -in "${item}" |cut -d "=" -f 2`
-	if [ "$sel" = "$serial" ]; then 
+	cn=$(openssl x509 -noout -subject -in "${item}" | sed -n '/.*/s/^.*CN\s=\s//p'|sed  's/"//g')
+#	$dialog_exe --msgbox "_${serial}${cn}_\n_${sel}_" 0 0
+	if [ "$sel" = "$serial$cn" ]; then
 		revoked_cert=${item}
 		break
 	fi
