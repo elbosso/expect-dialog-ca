@@ -345,7 +345,7 @@ expiration=`openssl x509 -noout -dates -in "ca/${cn}.crt" |grep notAfter|cut -d 
 start=`openssl x509 -noout -dates -in "ca/${cn}.crt" |grep notBefore|cut -d "=" -f 2`
 openssl x509 -inform PEM -outform DER -in "ca/${cn}.crt" -out "ca/${cn}.der"
 
-$dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The issuer certificate is in issuer.crt\nThe certificate is in ca/${cn}.crt (PEM) and in ca/${cn}.der (DER)\nThe certificate will expire on ${expiration}\n\nYou can now send the archive\ndeliverables_${cn}.zip\nback to the requestor!" 0 0
+$dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The issuer certificate is in issuer.crt\nThe certificate is in ca/${start}_${expiration}_${cn}.crt (PEM) and in ca/${start}_${expiration}_${cn}.der (DER)\nThe certificate will expire on ${expiration}\n\nYou can now send the archive\ndeliverables_${cn}.zip\nback to the requestor!" 0 0
 
 # eventuell sogar zip/tar draus machen?
 
@@ -369,6 +369,9 @@ cp "../build_p12.sh" "${cn}/"
 fi
 zip "deliverables_${cn}.zip" "${cn}"/* index.txt
 #rm -rf "deliverables_${cn}"
+
+mv "ca/${cn}.crt" "ca/${start}_${expiration}_${cn}.crt"
+mv "ca/${cn}.der" "ca/${start}_${expiration}_${cn}.der"
 
 #log schreiben: minimum: aktuelles Datum, Ende-Datum, Serien-Nummer, Subject
 if [ "$log_file_name" != "" ]; then
