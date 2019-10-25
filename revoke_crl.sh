@@ -68,6 +68,7 @@ do
 		if [ "$menuitems" = "" ]; then
 echo "empty"
 			menuitems="$serial${cn}%" # subst. Blanks with "_"
+			sel="$serial${cn}"
 		else
 			menuitems="$menuitems%$serial${cn}% " # subst. Blanks with "_"
 		fi
@@ -75,17 +76,23 @@ echo "empty"
 	fi
 #if  [ "$n" = 1 ]; then break; fi
 done < "$db_name"
+if [ ! $n -eq 1 ]; then
 echo $menuitems
 #menuitems=`echo -n $menuitems | sed -e 's/.//'`
-#$dialog_exe --msgbox "$menuitems" 0 0
 IFS=$'%'
     $dialog_exe --backtitle "Valid Certificates in data base" \
            --title "Select one" --menu \
            "Choose one of the valid certificates to revoke" 0 0 0 $menuitems 2> $_temp
     if [ $? -eq 0 ]; then
          sel=`cat $_temp`
+    else
+      exit 12
+    fi
 		echo $sel
 n=0
+fi
+           $dialog_exe --msgbox "$sel" 0 0
+
 #das folgende, weil POSIX shell!!
 IFS='
 '
@@ -93,6 +100,7 @@ certs=`ls ca/*.crt`
 
 for item in ${certs}
 do
+#$dialog_exe --msgbox "$item _${serial}${cn}_\n_${sel}_" 0 0
 serial=-1
 revoked_cert=""
 #echo "${item}"
@@ -153,10 +161,6 @@ openssl crl -inform PEM -outform DER -in crl/${ca_name}-ca.crl -out crl/${ca_nam
 
 $dialog_exe --backtitle "CRL" --textbox /tmp/crl.pem 0 0
 
-fi
-fi
-fi
-
 #ca=${new_ca_name}
 #cpsresources=`grep -e "^CPS\s*=.*$" etc/${ca_name}"-ca.conf"|cut -d "=" -f 2| sed s/\"//g`
 #addresources=`grep \$base_url ${new_ca_name}/etc/${new_ca_name}"-ca.conf"|cut -d "=" -f 2|rev|cut -d "#" -f 2|rev|sed -E "s/^\s*//g"|sed -E "s/ca.(cer|crl)/${new_ca_name}.\1/g"`
@@ -166,5 +170,9 @@ resources="${base_url}/${ca_name}.crl"
 
 $dialog_exe --backtitle "Resources to provide" --msgbox "You must provide the updated CRL NOW\n
 to make the changes visible:\n$resources" 14 64
+
+fi
+fi
+
 
 clear

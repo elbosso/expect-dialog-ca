@@ -44,15 +44,6 @@ This project consists of Linux shell scripts - some of them are meant to be run 
     Generate template for ca_presets.ini and stop execution afterwards
   * *-h*
     Print some help text"
-* [create_timestamp.sh](../create_timestamp.sh)
-  Act as timestamping Authority. This script reads a timestamp request and creates
-  a matching timestamp to be sent back.
-  
-  Parameters for the script:
-  * *-t <file name for timestamp request*
-    The file containing the timestamp request to be processed
-  * *-h*
-    Print some help text"
 * [install_ca_certificate.sh](../install_ca_certificate.sh)  
   This script takes the certificate produced by the certificate authority
   for the new CA and installs it in the correct place inside the directory structure.
