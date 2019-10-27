@@ -76,6 +76,7 @@ do
 	unknown=`echo -n "$line"|cut -f 5`
 	dn=`echo -n "$line"|cut -f 6`
 	cn=`echo -n $dn| sed -n '/.*/s/^.*CN\s=\s//p'`
+	cn=`echo -n "$line"|cut -f 6| sed -n 's/.*CN=\(.*\)/\1/p'`
 n=0
 #das folgende, weil POSIX shell!!
 IFS='
@@ -88,7 +89,8 @@ ser=-1
 lookedat_cert=""
 #echo "${item}"
 	ser=`openssl x509 -noout -serial -in "${item}" |cut -d "=" -f 2`
-	if [ "$ser" = "$serial" ]; then 
+	cname=$(openssl x509 -noout -subject -in "${item}" | sed -n '/.*/s/^.*CN\s=\s//p'|sed  's/"//g')
+	if [ "$ser$cname" = "$serialcn" ]; then
 		lookedat_cert=${item}
 cert_expiration=`openssl x509 -noout -dates -in ${lookedat_cert}|grep notAfter|cut -d "=" -f 2`
 	cert_expiration_ts=$(date -d "${cert_expiration}" +%Y%m%d%H%M%S)
@@ -105,13 +107,13 @@ done
 		if [ "$ca_expiration_seconds" = "" ] || [ "$ca_expiration_seconds" -gt "$cert_expiration_seconds" ]; then
 			if [ "$menuitems" = "" ]; then
 				echo "empty"
-				menuitems="$serial%"
+				menuitems="$serial${cn}%"
 				if [  "$ca_expiration_seconds" = "" ];then 
 				menuitems="$menuitems${state} "
 				fi
 				menuitems="$menuitems${cn} (${dn})" # subst. Blanks with "_"  
 			else
-				menuitems="$menuitems%$serial%"
+				menuitems="$menuitems%$serial${cn}%"
 				if [  "$ca_expiration_seconds" = "" ];then 
 				menuitems="$menuitems${state} "
 				fi
@@ -123,6 +125,7 @@ done
 #if  [ "$n" = 1 ]; then break; fi
 done < "$db_name"
 #echo $menuitems
+#$dialog_exe --backtitle "date" --msgbox "$menuitems" 0 0
 #menuitems=`echo -n $menuitems | sed -e 's/.//'`
 #echo $menuitems
 IFS=$'%'
@@ -144,7 +147,9 @@ serial=-1
 revoked_cert=""
 #echo "${item}"
 	serial=`openssl x509 -noout -serial -in "${item}" |cut -d "=" -f 2`
-	if [ "$sel" = "$serial" ]; then 
+	cn=$(openssl x509 -noout -subject -in "${item}" | sed -n '/.*/s/^.*CN\s=\s//p'|sed  's/"//g')
+#	$dialog_exe --msgbox "_${serial}${cn}_\n_${sel}_" 0 0
+	if [ "$sel" = "$serial$cn" ]; then
 		revoked_cert=${item}
 		break
 	fi

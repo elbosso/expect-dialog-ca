@@ -343,9 +343,12 @@ priv_key_pass=""
 serial=`openssl x509 -noout -serial -in "ca/${cn}.crt" |cut -d "=" -f 2`
 expiration=`openssl x509 -noout -dates -in "ca/${cn}.crt" |grep notAfter|cut -d "=" -f 2`
 start=`openssl x509 -noout -dates -in "ca/${cn}.crt" |grep notBefore|cut -d "=" -f 2`
+#startn=`openssl x509 -noout -dates -in "ca/${cn}.crt" | grep notBefore | sed -e 's#notBefore=##'`
+#startts=`date -d "${data}" '+%Y.%m.%d-%H.%M.%S'`
+startts=`date '+%Y.%m.%d-%H.%M.%S'`
 openssl x509 -inform PEM -outform DER -in "ca/${cn}.crt" -out "ca/${cn}.der"
 
-$dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The issuer certificate is in issuer.crt\nThe certificate is in ca/${start}_${expiration}_${cn}.crt (PEM) and in ca/${start}_${expiration}_${cn}.der (DER)\nThe certificate will expire on ${expiration}\n\nYou can now send the archive\ndeliverables_${cn}.zip\nback to the requestor!" 0 0
+$dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The issuer certificate is in issuer.crt\nThe certificate is in ca/${startts}_${cn}.crt (PEM) and in ca/${startts}_${cn}.der (DER)\nThe certificate will expire on ${expiration}\n\nYou can now send the archive\ndeliverables_${cn}.zip\nback to the requestor!" 0 0
 
 # eventuell sogar zip/tar draus machen?
 
@@ -370,8 +373,8 @@ fi
 zip "deliverables_${cn}.zip" "${cn}"/* index.txt
 #rm -rf "deliverables_${cn}"
 
-mv "ca/${cn}.crt" "ca/${start}_${expiration}_${cn}.crt"
-mv "ca/${cn}.der" "ca/${start}_${expiration}_${cn}.der"
+mv "ca/${cn}.crt" "ca/${startts}_${cn}.crt"
+mv "ca/${cn}.der" "ca/${startts}_${cn}.der"
 
 #log schreiben: minimum: aktuelles Datum, Ende-Datum, Serien-Nummer, Subject
 if [ "$log_file_name" != "" ]; then
