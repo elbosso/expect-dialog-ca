@@ -50,6 +50,53 @@ as well as information about creating one and verifying it.
 It is the foundation for creating a cryptographic time stamp using 
 the certificate contained in the deliverables archive using OpenSSL.
 
+The component CA actually provides a configuration file for 
+requesting certificates for creating trusted timestamps. An entity
+about wanting to become a Trusted Timestamping Authority (TSA) would call
+openssl on the lines of
+
+```shell script
+openssl req -new -config <path_to_config>/timestamp.conf -out <some_path>/tsa.csr -keyout <some_other_path>/tsa.key
+```
+
+to create a certificate request. This can be sent to a component CA to
+be signed.
+
+With the deliverables unpacked and with the path to the private key file known
+the TSA can start circulating its own config file that came as part of
+the deliverables. So anyone can generate timestamping requests using it like
+for eample so:
+
+```shell script
+openssl ts -query -config <deliverables_unpacked_path>/tsa.conf -cert -data <path>/<some_file> -no_nonce -out <request_path>/<request>.tsq
+```
+
+The request can be viewed using 
+
+```shell script
+openssl ts -config <deliverables_unpacked_path>/tsa.conf -query -in <request_path>/<request>.tsq -text
+```
+
+When the TSA receives such a request it can furnish a reply - and thus a trusted
+timestamp by issuing
+
+```shell script
+openssl ts -reply -config <deliverables_unpacked_path>/tsa.conf -queryfile <request_path>/<request>.tsq -out <reply_path>/reply.tsr -inkey <some_other_path>/tsa.key
+```
+
+After receiving the trusted timestamp, it can be verified by simply issuing 
+
+```shell script
+openssl ts -verify -config <deliverables_unpacked_path>/tsa.conf -queryfile <request_path>/<request>.tsq -in <reply_path>/reply.tsr -CAfile <deliverables_unpacked_path>/chain.pem
+```
+
+One can inspect the content - and thus ascertain the exact time the timestamp was issued - 
+by using the following command:
+
+```shell script
+openssl ts -config <deliverables_unpacked_path>/tsa.conf -reply -in <reply_path>/reply.tsr -text
+```
+
 ### OCSP 
 
 The specific content for the deliverable archive for OCSP certificates
