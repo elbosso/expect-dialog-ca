@@ -1,6 +1,7 @@
 *.iml
 /.idea/
-/test1/
+/test*
+trash
 *.tsv
 /__template__/
 /test/

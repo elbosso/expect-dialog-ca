@@ -259,6 +259,12 @@ fi
     fi
 done
 
+
+if [ -e "$new_ca_name" ]; then
+  $dialog_exe --backtitle "Error" \
+           --msgbox "There already is a file or directory with the name $new_ca_name - aborting!" 0 0
+  exit 253
+fi
 #Mit diesem Namen wird ein Verzeichnis angelegt
 mkdir -p "$new_ca_name"
 

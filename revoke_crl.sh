@@ -91,7 +91,7 @@ IFS=$'%'
 		echo $sel
 n=0
 fi
-           $dialog_exe --msgbox "$sel" 0 0
+#           $dialog_exe --msgbox "$sel" 0 0
 
 #das folgende, weil POSIX shell!!
 IFS='
