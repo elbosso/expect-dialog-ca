@@ -292,9 +292,9 @@ if [ $selection = "root_ca" ]; then
 mode="-selfsign"
 fi
 
-echo "expect ${script_dir}/sign_csr_dry.xpct ${ca_conf_file}  ${sign_req_name}  ca/${cn}.crt  ${selection} ${expiration_planned_ts} ${priv_key_pass} ${policy} ${mode}">/tmp/stmt.txt
+echo "expect ${script_dir}/sign_csr_dry.xpct ${ca_conf_file}  ${sign_req_name}  certs/${cn}.crt  ${selection} ${expiration_planned_ts} ${priv_key_pass} ${policy} ${mode}">/tmp/stmt.txt
 
-expect "${script_dir}/sign_csr_dry.xpct" "${ca_conf_file}"  "${sign_req_name}"  "ca/${cn}.crt"  "${selection}" "${expiration_planned_ts}" "${priv_key_pass}" "${policy}" "${mode}">/tmp/dry_run.log 2>&1
+expect "${script_dir}/sign_csr_dry.xpct" "${ca_conf_file}"  "${sign_req_name}"  "certs/${cn}.crt"  "${selection}" "${expiration_planned_ts}" "${priv_key_pass}" "${policy}" "${mode}">/tmp/dry_run.log 2>&1
 
 rv=$?
 
@@ -323,7 +323,7 @@ if [ ${?} -ne 0 ]; then exit 127; fi
 
 #Anschließend wird der Request per Openssl signiert
 
-expect "${script_dir}/sign_csr.xpct" "${ca_conf_file}"  "${sign_req_name}"  "ca/${cn}.crt"  "${selection}" "${expiration_planned_ts}" "${priv_key_pass}" "${policy}" "${mode}"
+expect "${script_dir}/sign_csr.xpct" "${ca_conf_file}"  "${sign_req_name}"  "certs/${cn}.crt"  "${selection}" "${expiration_planned_ts}" "${priv_key_pass}" "${policy}" "${mode}"
 
 priv_key_pass=""
 
@@ -340,15 +340,15 @@ priv_key_pass=""
 # * falls existiert: Zertifikatskette
 # * ausgestelltes Zertifikat
 #an denjenigen Zurücksenden kann, von dem der Request stammte.
-serial=`openssl x509 -noout -serial -in "ca/${cn}.crt" |cut -d "=" -f 2`
-expiration=`openssl x509 -noout -dates -in "ca/${cn}.crt" |grep notAfter|cut -d "=" -f 2`
-start=`openssl x509 -noout -dates -in "ca/${cn}.crt" |grep notBefore|cut -d "=" -f 2`
-#startn=`openssl x509 -noout -dates -in "ca/${cn}.crt" | grep notBefore | sed -e 's#notBefore=##'`
+serial=`openssl x509 -noout -serial -in "certs/${cn}.crt" |cut -d "=" -f 2`
+expiration=`openssl x509 -noout -dates -in "certs/${cn}.crt" |grep notAfter|cut -d "=" -f 2`
+start=`openssl x509 -noout -dates -in "certs/${cn}.crt" |grep notBefore|cut -d "=" -f 2`
+#startn=`openssl x509 -noout -dates -in "certs/${cn}.crt" | grep notBefore | sed -e 's#notBefore=##'`
 #startts=`date -d "${data}" '+%Y.%m.%d-%H.%M.%S'`
 startts=`date '+%Y.%m.%d-%H.%M.%S'`
-openssl x509 -inform PEM -outform DER -in "ca/${cn}.crt" -out "ca/${cn}.der"
+openssl x509 -inform PEM -outform DER -in "certs/${cn}.crt" -out "certs/${cn}.der"
 
-$dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The issuer certificate is in issuer.crt\nThe certificate is in ca/${startts}_${cn}.crt (PEM) and in ca/${startts}_${cn}.der (DER)\nThe certificate will expire on ${expiration}\n\nYou can now send the archive\ndeliverables_${cn}.zip\nback to the requestor!" 0 0
+$dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The issuer certificate is in issuer.crt\nThe certificate is in certs/${startts}_${cn}.crt (PEM) and in certs/${startts}_${cn}.der (DER)\nThe certificate will expire on ${expiration}\n\nYou can now send the archive\ndeliverables_${cn}.zip\nback to the requestor!" 0 0
 
 # eventuell sogar zip/tar draus machen?
 
@@ -359,9 +359,9 @@ fi
 echo "issuer=\"${cn}/issuer.crt\"" >index.txt
 cp ${ca_cert} "${cn}/issuer.crt"
 echo "zert=\"${cn}/${cn}.crt\"" >>index.txt
-cp "ca/${cn}.crt" "${cn}/"
+cp "certs/${cn}.crt" "${cn}/"
 echo "zertDER=\"${cn}/${cn}.der\"" >>index.txt
-cp "ca/${cn}.der" "${cn}/"
+cp "certs/${cn}.der" "${cn}/"
 if [ $selection = "timestamp" ]; then
 #$dialog_exe --backtitle "Info" --msgbox "copying ${ca_chain} to ${cn}/chain.pem" 0 0
 cp "${ca_chain}" "${cn}/chain.pem"
@@ -373,13 +373,13 @@ fi
 zip "deliverables_${cn}.zip" "${cn}"/* index.txt
 #rm -rf "deliverables_${cn}"
 
-mv "ca/${cn}.crt" "ca/${startts}_${cn}.crt"
-mv "ca/${cn}.der" "ca/${startts}_${cn}.der"
+mv "certs/${cn}.crt" "certs/${startts}_${cn}.crt"
+mv "certs/${cn}.der" "certs/${startts}_${cn}.der"
 
 #log schreiben: minimum: aktuelles Datum, Ende-Datum, Serien-Nummer, Subject
 if [ "$log_file_name" != "" ]; then
 echo -e "CN\tcert file\tissuer cert file\tnotBefore\tnotAfter" > "${log_file_name}"
-echo -e "${cn}\tca/${cn}.crt\tca/${cn}.der\t${ca_cert}\t${start}\t${expiration}" >> "${log_file_name}"
+echo -e "${cn}\tcerts/${startts}_${cn}.crt\tcerts/${startts}_${cn}.der\t${ca_cert}\t${start}\t${expiration}" >> "${log_file_name}"
 chmod 600 "${log_file_name}"
 $dialog_exe --backtitle "Info" --msgbox "log file written to ${log_file_name}" 0 0
 fi

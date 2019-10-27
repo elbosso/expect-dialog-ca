@@ -96,7 +96,7 @@ fi
 #das folgende, weil POSIX shell!!
 IFS='
 '
-certs=`ls ca/*.crt`
+certs=`ls certs/*.crt`
 
 for item in ${certs}
 do

@@ -433,6 +433,7 @@ sed -i -- "s/commonName *= \".*\"/commonName  = \"${commonName}\"/g"  $new_ca_na
 sed -i -E -- 's/^certificatePolicies/#certificatePolicies/g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- 's_$dir/ca/$ca_$dir/ca_g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- 's_$dir/ca.crt_$dir/ca/$ca.crt_g' $new_ca_name/etc/$new_ca_name"-ca.conf"
+sed -i -E -- 's#(new_certs_dir.*)dir/ca#\1dir/certs#g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 
 if [ -z ${key_length+x} ]; then
 #Die Schlüssellänge und der zu benutzende Hash-Algorithmus werden festgelegt
