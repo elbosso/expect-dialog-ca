@@ -18,7 +18,7 @@ This repository contains scripts meant to make managing an openssl ca less painf
 ---
 **NOTE**
 
-Please not that ther is a restriction concerning common names (CN): They must not contain non-ascii characters and they also must not contain any special characters such as parentheses or quotes of any kind or umlaute for example
+Please not that there is a restriction concerning common names (CN): They must not contain non-ascii characters and they also must not contain any special characters such as parentheses or quotes of any kind or umlaute for example
 ---
 
 * [Scope](docs/scope.md)
