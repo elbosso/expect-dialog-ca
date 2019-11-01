@@ -148,6 +148,8 @@ condition=1
 fi
 done
 
+#$dialog_exe --msgbox "_${revoked_cert}_etc/${ca_name}-ca.conf" 0 0
+
 expect "${script_dir}/revoke_cert.xpct" "etc/${ca_name}-ca.conf" "${revoked_cert}" "${priv_key_pass}"
 
 expect "${script_dir}/gen_crl.xpct" "etc/${ca_name}-ca.conf" "crl/${ca_name}-ca.crl" "${priv_key_pass}"

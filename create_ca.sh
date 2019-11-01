@@ -288,7 +288,9 @@ case $ca_type in
     component)
       cp -a "$template_dir/etc/ocspsign.conf" "$new_ca_name/etc"
       cp -a "$template_dir/etc/server.conf" "$new_ca_name/etc"
-      cp -a "$template_dir/etc/timestamp.conf" "$new_ca_name/etc"
+      #cp -a "$template_dir/etc/timestamp.conf" "$new_ca_name/etc"
+      awk '/\[ timestamp_reqext \]/ || f == 1 && sub(/keyUsage                = critical,digitalSignature/, "keyUsage                = critical,nonRepudiation") { ++f } 1' $template_dir/etc/timestamp.conf >$new_ca_name/etc/timestamp.conf.intermediate
+      mv $new_ca_name/etc/timestamp.conf.intermediate $new_ca_name/etc/timestamp.conf
       cp -a "$template_dir/etc/client.conf" "$new_ca_name/etc"
       awk '/\[ server_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = serverCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
