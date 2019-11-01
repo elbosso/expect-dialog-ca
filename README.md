@@ -15,6 +15,12 @@ This repository contains scripts meant to make managing an openssl ca less painf
 [![Github All Releases](https://img.shields.io/github/downloads/elbosso/expect-dialog-ca/total.svg)](https://github.com/elbosso/expect-dialog-ca)
 [![Website elbosso.github.io](https://img.shields.io/website-up-down-green-red/https/elbosso.github.io.svg)](https://elbosso.github.io/)
 
+---
+**NOTE**
+
+Please not that ther is a restriction concerning common names (CN): They must not contain non-ascii characters and they also must not contain any special characters such as parentheses or quotes of any kind or umlaute for example
+---
+
 * [Scope](docs/scope.md)
 * [Content](docs/content.md)
 * [Dependencies](docs/dependencies.md)
