@@ -29,7 +29,7 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   * *-k pre-existing key file*
     A key pair is created for the new CA unless there is already a preexisting key file - in this case, it has to be specified here
   * *-c type of CA*
-    The script skips the dialog for choosing the type of CA about to be created if the value given here is one of the types offered by the expert PKI project (at the time of writing these are: root|component|network|identity)
+    The script skips the dialog for choosing the type of CA about to be created if the value given here is one of the types offered by the expert PKI project (at the time of writing these are: root|component|network|identity|software)
   * *-n name of CA*
     The name of the CA about to b created. This skips the dialog asking vor it. The name must not contain special characters such as whitespace or umlaute etc.
   * *-l key length*

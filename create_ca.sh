@@ -16,7 +16,7 @@ echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
 echo "-t <offline template dir>\tThe script initially tries to download the expert pki unless this parameter specifies an already downloaded version"
 echo "-k <pre-existing key file>\tA key pair is created for the new CA unless there is already a preexisting key file - in this case, it has to be specified here"
-echo "-c <type of CA>\t\tThe script skips the dialog for choosing the type of CA about to be created if the value given here is one of the types offered by the expert PKI project (at the time of writing these are: root|component|network|identity)"
+echo "-c <type of CA>\t\tThe script skips the dialog for choosing the type of CA about to be created if the value given here is one of the types offered by the expert PKI project (at the time of writing these are: root|component|network|identity|software)"
 echo "-n <name of CA>\t\tThe name of the CA about to b created. This skips the dialog asking vor it. The name must not contain special characters such as whitespace or umlaute etc."
 echo "-l <key length>\t\tThe length in bits of the key to be created (if no preexisting key is given, see above). If this value is given here as one of the supported values 1024|2048|4096 the corresponding dialog is skipped."
 echo "-a <hash algorithm>\t\tThe message digest algorithm to be used. If this value is given here as one of the supported values md5|sha1|sha224|sha348|sha512|sha256 the corresponding dialog is skipped."
@@ -158,6 +158,7 @@ else
 	fi
 	git clone https://bitbucket.org/stefanholek/pki-example-3 __template__
 	template_dir=./__template__
+	cp "templates/software-ca.conf" "$template_dir/etc"
 fi
 echo $template_dir
 
@@ -324,7 +325,16 @@ case $ca_type in
 	  echo "" >> $new_ca_name/etc/$new_ca_name"-ca.conf"
 	  cat /tmp/tt >> $new_ca_name/etc/$new_ca_name"-ca.conf"
 	  sed -i -- "s/\[ signing_ca_ext \]/\[ component_ca_ext \]/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
-      awk '/\[ identity_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = identityCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+ 	  echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+	  echo "[ software_ca_ext ]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+	  echo "keyUsage                = critical,keyCertSign,cRLSign" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+	  echo "basicConstraints        = critical,CA:true,pathlen:0" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+	  echo "subjectKeyIdentifier    = hash" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+	  echo "authorityKeyIdentifier  = keyid:always" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+	  echo "authorityInfoAccess     = @issuer_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+	  echo "crlDistributionPoints   = @crl_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+	  echo "#certificatePolicies = softwareCPS" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+     awk '/\[ identity_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = identityCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       awk '/\[ intermediate_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = intermediateCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
@@ -367,6 +377,12 @@ case $ca_type in
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       awk '/\[ smime_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = smimeCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      rm $new_ca_name/etc/$new_ca_name"-ca.conf"
+      mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
+      ;;
+    software)
+      cp -a templates/codesign.conf "$new_ca_name/etc"
+      awk '/\[ codesign_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = codesignCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       ;;
