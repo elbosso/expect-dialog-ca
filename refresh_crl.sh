@@ -6,8 +6,8 @@ echo "usage: $0 [-k <file name for private key file of the CA>] [-h]"
 echo ""
 echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
-echo "-k <file name for private key file of the CA>\tThe file containing the private key of the CA"
-echo "-h\t\tPrint this help text"
+echo -e "-k <file name for private key file of the CA>\tThe file\n\t\tcontaining the private key of the CA\n"
+echo -e "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
 . `dirname $0`/configure_gui.sh

@@ -5,7 +5,7 @@ echo "usage: $0 [-h]"
 echo ""
 echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
-echo "-h\t\tPrint this help text"
+echo "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
 . `dirname $0`/configure_gui.sh

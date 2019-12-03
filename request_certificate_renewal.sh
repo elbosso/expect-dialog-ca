@@ -10,10 +10,10 @@ echo "usage: $0 [-k <file name for key file>] [-c <file name of old certificate>
 echo ""
 echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
-echo "-k <file name for key file>\tIf this file exists, the key in it is used - if it does not exist, a new key is generated and saved to it"
-echo "-c <file name of old certificate>\tThe file containing the old certificate that should be renewed"
-echo "-o <file name of resulting CSR>\tThe file the new certificate signing request is to be saved in"
-echo "-h\t\tPrint this help text"
+echo "-k <file name for key file>\tIf this file exists, the key in it\n\t\tis used - if it does not exist, a new key is generated and\n\t\tsaved to it\n"
+echo "-c <file name of old certificate>\tThe file containing the old\n\t\tcertificate that should be renewed\n"
+echo "-o <file name of resulting CSR>\tThe file the new certificate signing\n\t\trequest is to be saved in\n"
+echo "-h\t\tPrint this help text\n"
 }
 while getopts ":k:c:o:h" opt; do
   case $opt in

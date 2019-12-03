@@ -5,8 +5,8 @@ echo "usage: $0 [-z <location of zip file holding the certificate (and other stu
 echo ""
 echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
-echo "-z <location of zip file holding the certificate>\tThe file with the deliverables in it that the CA sent back"
-echo "-h\t\tPrint this help text"
+echo "-z <location of zip file holding the certificate>\tThe file with\n\t\tthe deliverables in it that the CA sent back\n"
+echo "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
 . `dirname $0`/configure_gui.sh

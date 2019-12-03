@@ -6,8 +6,8 @@ echo "usage: $0 [-k <file name for private key file of the CA>] [-h]"
 echo ""
 echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
-echo "-k <file name for private key file of the CA>\tThe file containing the private key of the CA"
-echo "-h\t\tPrint this help text"
+echo -e "-k <file name for private key file of the CA>\t\n\tThe file containing the private key of the CA\n"
+echo -e "-h\t\tPrint this help text"
 }
 dialog_exe=dialog
 . `dirname $0`/configure_gui.sh
@@ -23,7 +23,7 @@ ca_dir_name=""
 privkey_file_name=""
 _temp="/tmp/answer.$$"
 
-while getopts ":s:k:h" opt; do
+while getopts ":k:h" opt; do
   case $opt in
     k)
 #      echo "-k was triggered! ($OPTARG)" >&2

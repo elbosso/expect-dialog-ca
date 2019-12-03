@@ -6,13 +6,13 @@ echo "usage: $0 [-k <file name for private key file of the CA>] [-s <file name o
 echo ""
 echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
-echo "-k <file name for private key file of the CA>\tThe file containing the private key of the CA"
-echo "-s <file name of the CSR to work on>\tA file containing the certificate signing request to be processed"
-echo "-d the calendar dialog for choosing the validity end of the certificate is preset to this date"
-echo "-m the calendar dialog for choosing the validity end of the certificate is preset to this date (only if -M ist *NOT* specified!)"
-echo "-y the calendar dialog shows a date the given amount of years in the future - taking into account the values for -m and -d if given"
-echo "-M the calendar dialog shows a date the given amount of months in the future - taking into account the value for -d if given"
-echo "-h\t\tPrint this help text"
+echo -e "-k <file name for private key file of the CA>\tThe file containing the\n\t\tprivate key of the CA\n"
+echo -e "-s <file name of the CSR to work on>\tA file containing the certificate\n\t\tsigning request to be processed\n"
+echo -e "-d the calendar dialog for choosing the validity end of the certificate\n\t\tis preset to this date\n"
+echo -e "-m the calendar dialog for choosing the validity end of the certificate\n\t\tis preset to this date (only if -M ist *NOT* specified!)\n"
+echo -e "-y the calendar dialog shows a date the given amount of years in the\n\t\tfuture - taking into account the values for -m and -d if given\n"
+echo -e "-M the calendar dialog shows a date the given amount of months in the\n\t\tfuture - taking into account the value for -d if given\n"
+echo -e "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
 . `dirname $0`/configure_gui.sh

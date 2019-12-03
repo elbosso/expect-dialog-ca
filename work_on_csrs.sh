@@ -6,9 +6,9 @@ echo "usage: $0 [-k <file name for private key file of the CA>] [-d <directory c
 echo ""
 echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
-echo "-k <file name for private key file of the CA>\tThe file containing the private key of the CA"
-echo "-d <directory containing the CSRs to work on>\tAll files found inside this directory with suffix \".csr\" are processed as certificate signing request"
-echo "-h\t\tPrint this help text"
+echo -e "-k <file name for private key file of the CA>\tThe file containing the\n\t\tprivate key of the CA\n"
+echo -e "-d <directory containing the CSRs to work on>\tAll files found inside\n\t\tthis directory with suffix \".csr\" are processed as\n\t\tcertificate signing request\n"
+echo -e "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
 . `dirname $0`/configure_gui.sh

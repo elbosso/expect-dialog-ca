@@ -10,10 +10,10 @@ echo "usage: $0 [-k <file name for key file>] [-c <file name of config file>] [-
 echo ""
 echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
-echo "-k <file name for key file>\tIf this file exists, the key in it is used - if it does not exist, a new key is generated and saved to it"
-echo "-c <file name of config file>\tThe config file containing information about the contents and structure of the certificate signing request to be built"
-echo "-o <file name of resulting CSR>\tThe file the new certificate signing request is to be saved in"
-echo "-h\t\tPrint this help text"
+echo "-k <file name for key file>\tIf this file exists, the key in it is\n\t\tused - if it does not exist, a new key is generated and\n\t\tsaved to it\n"
+echo "-c <file name of config file>\tThe config file containing information\n\t\tabout the contents and structure of the certificate\n\t\tsigning request to be built\n"
+echo "-o <file name of resulting CSR>\tThe file the new certificate signing\n\t\trequest is to be saved in\n"
+echo "-h\t\tPrint this help text\n"
 }
 while getopts ":k:c:o:h" opt; do
   case $opt in
