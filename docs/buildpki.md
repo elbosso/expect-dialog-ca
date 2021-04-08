@@ -67,13 +67,16 @@ we are currently self-signing, you have to choose root at this point.
 
 When this is done - remember what was said earlier about selecting files? - 
 a file is created inside the directory you are currently in called deliverables_<whatever you choose as CN for your root CA>.zip.
+*You may want to check the validity duration of CRLs from this CA before actually 
+  doing the next step - it can be found inside the configuration file for your shiny new CA.
+  The key to look for is `default_crl_days` - it accepts positive whole numbers interpreted as a duration in days.*
 Now - without leaving the directory, you install the certificate inside
 the CA directory structure by executing the script
 
 `../install_ca_certificate.sh`
 
 This - among other things - creates your first CRL and stores the certificate in
-the appropriate place.
+the appropriate place. 
 
 ### Intermediary CA
 
@@ -115,6 +118,9 @@ your newly created intermediate CA:
 
 `cd  ../<whatever you called your intermediate CA>`
 
+*You may want to check the validity duration of CRLs from this CA before actually 
+  doing the next step - it can be found inside the configuration file for your shiny new CA.
+  The key to look for is `default_crl_days` - it accepts positive whole numbers interpreted as a duration in days.*
 Now, you install the certificate inside
 the CA directory structure by executing the script
 
@@ -174,7 +180,10 @@ your newly created identity CA:
 
 `cd  ../<whatever you called your intermediate CA>`
 
-Now, you install the certificate inside
+*You may want to check the validity duration of CRLs from this CA before actually 
+  doing the next step - it can be found inside the configuration file for your shiny new CA.
+  The key to look for is `default_crl_days` - it accepts positive whole numbers interpreted as a duration in days.*
+  Now, you install the certificate inside
 the CA directory structure by executing the script
 
 `../install_ca_certificate.sh`
@@ -227,7 +236,10 @@ your newly created identity CA:
 
 `cd  ../<whatever you called your intermediate CA>`
 
-Now, you install the certificate inside
+*You may want to check the validity duration of CRLs from this CA before actually 
+  doing the next step - it can be found inside the configuration file for your shiny new CA.
+  The key to look for is `default_crl_days` - it accepts positive whole numbers interpreted as a duration in days.*
+  Now, you install the certificate inside
 the CA directory structure by executing the script
 
 `../install_ca_certificate.sh`
