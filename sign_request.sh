@@ -89,13 +89,20 @@ fi
 #fi
 ca_dir_name=`realpath .`
 #der private Schlüssel wird ausgewählt
+#$dialog_exe --backtitle "Info 1" --msgbox "$privkey_file_name" 0 0
 if [ "$privkey_file_name" == "" ]; then
 	privkey_file_name=$($dialog_exe --stdout --backtitle "CAs Private Key" --fselect "$ca_dir_name/ca/private/" 0 90)
-	if [ ${?} -ne 0 ]; then exit 127; fi   
+	if [ ${?} -ne 0 ]; then exit 127; fi
+	#$dialog_exe --backtitle "Info 1" --msgbox "$privkey_file_name" 0 0
 	if [ "$privkey_file_name" = "" ]; then
 	echo "A private key must be given!"
 	$dialog_exe --backtitle "Error" --msgbox "A private key must be given!" 9 52
 	exit 4
+	fi
+	if [ ! -f "$privkey_file_name" ]; then
+	echo "A private key must be a file!"
+	$dialog_exe --backtitle "Error" --msgbox "A private key must be a file!" 9 52
+	exit 5
 	fi
 fi
 ca=`basename ${privkey_file_name}|cut -d "." -f 1 |cut -d "-" -f 1`
@@ -111,6 +118,11 @@ if [ "$sign_req_name" == "" ]; then
 	echo "A signing request must be given!"
 	$dialog_exe --backtitle "Error" --msgbox "A signing request must be given!" 9 52
 	exit 4
+	fi
+	if [ ! -f "$sign_req_name" ]; then
+	echo "A signing request must be a file!"
+	$dialog_exe --backtitle "Error" --msgbox "A signing request must be a file!" 9 52
+	exit 5
 	fi
 fi
 

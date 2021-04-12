@@ -50,6 +50,11 @@ if [ "$zip_file_location" = "" ]; then
 	$dialog_exe --backtitle "Error" --msgbox "A zip file must be given!" 0 0 
 	exit 4
 	fi
+	if [ ! -f "$zip_file_location" ]; then
+	echo "A zip file must be a file!"
+	$dialog_exe --backtitle "Error" --msgbox "A zip file must be a file!" 0 0
+	exit 5
+	fi
 fi
 ca_dir_name=`realpath .`
 
