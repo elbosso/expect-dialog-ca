@@ -314,4 +314,13 @@ openssl req -new \
     -out joe_user.csr \
     -keyout joe_user.key
 ```
- 
+Alternatively you can also use configuration `smime_multi.conf` - it allows to request (and later issue) certificates for multiple
+email addresses at once like so (also setting the email address that is part of the CN):
+
+```
+SAN="email:user1@emailpriovider2.net, user1@emailprovider3.net" \
+openssl req -new \
+    -config smime_multi.conf \
+    -out multi_server.csr \
+    -keyout multi_server.key
+```
