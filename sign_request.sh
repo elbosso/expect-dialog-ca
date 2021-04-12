@@ -240,7 +240,7 @@ fi
 
 #Nun wird der Anwender gefragt, ob er den Request signieren möchte
 
-cn=`openssl req -noout -subject -in ${sign_req_name}| sed -n '/^subject/s/^.*CN\s=\s//p'`
+cn=`openssl req -noout -subject -in ${sign_req_name}| sed -n '/^subject/s/^.*CN\s=\s//p'|cut -d',' -f1`
 if [ ! -z "$validityInYears" ]; then
 #  $dialog_exe --msgbox "found -y $validityInYears" 0 0
   validity_in_years="$validityInYears"

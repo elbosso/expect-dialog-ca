@@ -677,9 +677,9 @@ if [ -z ${no_cpss+x} ]; then
 conf_files=`find $new_ca_name/etc/ -maxdepth 1 ! -name ''"$new_ca_name"'-ca.conf' ! -name '.'|rev|cut -d / -f 1|rev`
 menuitems=""
 emptySpace=""
-for item in ${conf_files}
+for cfitem in ${conf_files}
     do
-            menuitems="$menuitems ${item} '' off " # subst. Blanks with "_"
+            menuitems="$menuitems ${cfitem} '' off " # subst. Blanks with "_"
 done
 #if policies for root cas would be allowed...
 if [ "$menuitems" = "" ];then
@@ -700,8 +700,8 @@ $dialog_exe --backtitle "Available CA configurations" \
            --title "Select some" --checklist \
            "Choose the available certificate types you want to specify CPSs for" 16 40 8 $menuitems 2> $_temp
 if [ $? -eq 0 ]; then
-         sel=`cat $_temp`
-		echo $sel
+         cpssel=`cat $_temp`
+		echo $cpssel
 	else
 		exit 255
     fi
@@ -710,9 +710,9 @@ if [ $? -eq 0 ]; then
         cpsexplicit=""
         cpsorg=""
         cpsnumbers=""
-for item in ${sel}
+for cpsitem in ${cpssel}
     do
-        caconfig=`echo -n "$item"|cut -d "." -f 1`
+        caconfig=`echo -n "$cpsitem"|cut -d "." -f 1`
 		caconfig=`echo -n "$caconfig"|cut -d "-" -f 1`
         $dialog_exe --backtitle "CPS information" \
                 --form " Specify information for ${caconfig} - use [up] [down] to select input field " 0 0 0 \
@@ -765,9 +765,17 @@ fi
 echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 echo "[ additional_oids ]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 if [ -z ${no_custom_oids+x} ]; then
-$dialog_exe --backtitle "Custom OIDs (scroll with PgUp, PgDown)" --msgbox "It is possible to give text descriptions for any proprietary OIDs you want to use in your issued certificates.\
-The next form gives you the opportunity to specify them and their associated description together with an identifier (must not contain spaces) one by one. Once you entered
-all your OIDs and their descriptions - just leave at least one field of the form blank and the script will automatically proceed to the next step" 0 0
+$dialog_exe --backtitle "Custom OIDs (scroll with PgUp, PgDown)" --msgbox "It is possible to give text descriptions for any \
+proprietary OIDs you want to use in your issued certificates.\
+The next form gives you the opportunity to specify them and their associated description together with an \
+identifier (must not contain spaces) one by one. Once you entered
+all your OIDs and their descriptions - just leave at least one field of the form blank and \
+the script will automatically proceed to the next step" 0 0
+for item in ${conf_files}
+    do
+      sed -i -E -- "/\[ req \]/i oid_section = additional_oids\n\n[ additional_oids ]\n"  $new_ca_name/etc/$item
+done
+
 condition=1
 Identifier="CustomOid1"
 OID=""
@@ -796,6 +804,14 @@ if [ "$OID" = "" ] || [ "$Description" = "" ] || [ "$Identifier" = "" ]; then
 condition=0
 else
 echo "${Identifier} = ${Description}, ${OID}" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+#$dialog_exe --backtitle "conf_files" --msgbox "$conf_files" 9 52
+for item in ${conf_files}
+    do
+#$dialog_exe --backtitle "Item" --msgbox "$item" 9 52
+echo "#${OID}=ASN1:UTF8String:${Description}" >>$new_ca_name/etc/$item
+      sed -i -E -- "/\[ additional_oids \]/a ${Identifier} = ${OID}"  $new_ca_name/etc/$item
+      sed -i -E -- "/\[ .*ext \]/i #${Identifier} = \"${Description}\"" $new_ca_name/etc/$item
+done
 fi
 done
 fi
