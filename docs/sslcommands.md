@@ -1,36 +1,123 @@
 ## Some useful OpenSSL commands
-<dl>
-<dt>Print out the private key details</dt>
-<dd>openssl rsa -check -text -in privateKey.key</dd>
-<dt>Print out the hashes of the private key</dt>
-<dd><ul>
-<li>openssl rsa -noout -modulus -in privateKey.key | openssl md5</li>
-<li>openssl rsa -noout -modulus -in privateKey.key | openssl sha1</li>
-<li>openssl rsa -noout -modulus -in privateKey.key | openssl sha256</li>
-<li>openssl rsa -noout -modulus -in privateKey.key | openssl sha512</li>
-</ul>
-</dd>
-<dt>Print out the hashes of the certificate</dt>
-<dd><ul>
-<li>openssl x509 -noout -modulus -in certificate.crt | openssl md5</li>
-<li>openssl x509 -noout -modulus -in certificate.crt | openssl sha1</li>
-<li>openssl x509 -noout -modulus -in certificate.crt | openssl sha256</li>
-<li>openssl x509 -noout -modulus -in certificate.crt | openssl sha512</li>
-</ul>
-</dd>
-<dt>Print out the contents of the CRL</dt>
-<dd>
-<ul>
-<li>
-openssl crl -inform DER -noout -text  -in crl/cacrl.der
-</li>
-<li>
-openssl crl -inform PEM -noout -text  -in crl/cacrl.pem
-</li>
-</ul>
-</dd>
 
-</dl>
+### Private Key
+
+#### Print out the private key details
+
+```
+openssl rsa -check -text -in privateKey.key
+```
+
+#### Print out the hashes of the private key
+
+```
+openssl rsa -noout -modulus -in privateKey.key | openssl md5
+openssl rsa -noout -modulus -in privateKey.key | openssl sha1
+openssl rsa -noout -modulus -in privateKey.key | openssl sha256
+openssl rsa -noout -modulus -in privateKey.key | openssl sha512
+```
+
+#### Change password
+
+```
+openssl rsa -aes256 -in privateKey.key -out newPrivateKey.key
+```
+
+### Certificate
+
+#### Print out the hashes of the certificate
+
+```
+openssl x509 -noout -modulus -in certificate.crt | openssl md5
+openssl x509 -noout -modulus -in certificate.crt | openssl sha1
+openssl x509 -noout -modulus -in certificate.crt | openssl sha256
+openssl x509 -noout -modulus -in certificate.crt | openssl sha512
+```
+
+#### Print out the content of the certificates
+
+```
+openssl x509 -in certificate.crt -noout -text|more
+```
+
+### S/Mime
+
+#### create signature
+
+```
+openssl smime -sign -in msg.txt -text -out msg.p7s -signer certificate.crt -inkey privateKey.key
+```
+
+
+#### Verify signature
+
+```
+openssl smime -verify -in msg.p7s -CAfile chain.pem
+```
+
+
+### CRL
+
+#### Print out the contents of the CRL
+
+```
+openssl crl -inform DER -noout -text  -in crl/cacrl.der
+openssl crl -inform PEM -noout -text  -in crl/cacrl.pem
+```
+
+### PKCS#12
+
+#### Display contents
+
+```
+openssl pkcs12 -info -in  digitalIdentity.p12
+```
+
+#### Create from certificate and private key 
+
+```
+openssl pkcs12 -export -in certificate.cert -inkey privateKey.key -out digitalIdentity.p12
+```
+
+#### Extract private key
+
+```
+openssl pkcs12 -in digitalIdentity.p12 -out privateKey.key
+```
+
+### TSA
+
+#### Display query
+
+```
+openssl ts -query -in query.tsq -text
+```
+
+#### Display reply
+
+```
+openssl ts -reply -in reply.tsr -text
+```
+
+#### Verify reply
+
+```
+openssl ts -verify -in reply.tsr -data data.dat -CAfile chain.pem
+```
+
+### CSR
+
+#### Create from existing key
+
+```
+openssl req -new -key privateKey.key -out my.csr
+```
+
+#### Display
+
+```
+openssl req -in my.csr -noout -text
+```
 
 ## Some resources with useful OpenSSL commands
 
