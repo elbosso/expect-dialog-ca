@@ -42,20 +42,26 @@ then
 	exit 1
 fi
 
+condition=1;
+while [ $condition -eq 1 ]
+do
+condition=0
 if [ "$zip_file_location" = "" ]; then
 	zip_file_location=$($dialog_exe --stdout --backtitle "Certificate deliverables zip file location" --fselect "" 0 90)
-	if [ ${?} -ne 0 ]; then exit 127; fi   
+	if [ ${?} -ne 0 ]; then exit 127; fi
+fi
 	if [ "$zip_file_location" = "" ]; then
 	echo "A zip file must be given!"
 	$dialog_exe --backtitle "Error" --msgbox "A zip file must be given!" 0 0 
-	exit 4
-	fi
-	if [ ! -f "$zip_file_location" ]; then
+	condition=1;
+	zip_file_location=""
+	elif [ ! -f "$zip_file_location" ]; then
 	echo "A zip file must be a file!"
 	$dialog_exe --backtitle "Error" --msgbox "A zip file must be a file!" 0 0
-	exit 5
+	condition=1;
+	zip_file_location=""
 	fi
-fi
+done
 ca_dir_name=`realpath .`
 
 layout_error=0

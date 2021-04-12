@@ -68,12 +68,13 @@ if [ "$privkey_file_name" == "" ]; then
 	if [ "$privkey_file_name" = "" ]; then
 	echo "A private key must be given!"
 	$dialog_exe --backtitle "Error" --msgbox "A private key must be given!" 9 52
-	exit 4
-	fi
-	if [ ! -f "$privkey_file_name" ]; then
+	condition=1;
+	privkey_file_name=""
+	elif [ ! -f "$privkey_file_name" ]; then
 	echo "A private key must be a file!"
 	$dialog_exe --backtitle "Error" --msgbox "A private key must be a file!" 9 52
-	exit 5
+	condition=1;
+	privkey_file_name=""
 	fi
 fi
 ca=`basename ${privkey_file_name}|cut -d "." -f 1 |cut -d "-" -f 1`

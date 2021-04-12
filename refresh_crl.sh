@@ -53,20 +53,26 @@ fi
 
 ca_dir_name=`realpath .`
 #der private Schlüssel wird ausgewählt
+condition=1;
+while [ $condition -eq 1 ]
+do
+condition=0
 if [ "$privkey_file_name" == "" ]; then
 	privkey_file_name=$($dialog_exe --stdout --backtitle "CAs Private Key" --fselect "$ca_dir_name/ca/private/" 0 90)
-	if [ ${?} -ne 0 ]; then exit 127; fi   
+	if [ ${?} -ne 0 ]; then exit 127; fi
+fi
 	if [ "$privkey_file_name" = "" ]; then
 	echo "A private key must be given!"
 	$dialog_exe --backtitle "Error" --msgbox "A private key must be given!" 9 52
-	exit 4
-	fi
-	if [ ! -f "$privkey_file_name" ]; then
+	condition=1;
+	privkey_file_name=""
+	elif [ ! -f "$privkey_file_name" ]; then
 	echo "A private key must be a file!"
 	$dialog_exe --backtitle "Error" --msgbox "A private key must be a file!" 9 52
-	exit 5
+	condition=1;
+	privkey_file_name=""
 	fi
-fi
+done
 ca=`basename ${privkey_file_name}|cut -d "." -f 1 |cut -d "-" -f 1`
 if [ ! -d "./ca/db" ]; then layout_error=1; fi
 if [ ! -d "./ca/private" ]; then layout_error=1; fi
