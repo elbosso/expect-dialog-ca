@@ -405,7 +405,10 @@ sed -i -- "s/match_pol/match_O_pol/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -E -- "s/(commonName *= *)optional(.*)/\1supplied\2/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- "s/any_pol/minimal_pol/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 
+
+
 if [ -e ca_presets.ini ]; then
+$dialog_exe --backtitle "Using ./ca_presets.ini:" --textbox ./ca_presets.ini 0 0
 . ./ca_presets.ini
 fi
 

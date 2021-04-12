@@ -336,8 +336,8 @@ $dialog_exe --backtitle "Decision" --yesno "Do You want to sign this request\nfr
 if [ $? -eq 0 ]; then
 
 # output der Daten in eine tsv-Datei
-
-log_file_name=$($dialog_exe --stdout --backtitle "Log" --fselect "./${cn}_log.tsv" 0 0)
+timestamp=$(date +%Y-%m-%d_%H-%M-%S)
+log_file_name=$($dialog_exe --stdout --backtitle "Log" --fselect "./${cn}_${timestamp}_log.tsv" 0 0)
 if [ ${?} -ne 0 ]; then exit 127; fi   
 #if [ "$log_file_name" = "" ]; then
 #echo "A log file name must be given!"
@@ -372,7 +372,7 @@ start=`openssl x509 -noout -dates -in "certs/${cn}.crt" |grep notBefore|cut -d "
 startts=`date '+%Y.%m.%d-%H.%M.%S'`
 openssl x509 -inform PEM -outform DER -in "certs/${cn}.crt" -out "certs/${cn}.der"
 
-$dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The issuer certificate is in issuer.crt\nThe certificate is in certs/${startts}_${cn}.crt (PEM) and in certs/${startts}_${cn}.der (DER)\nThe certificate will expire on ${expiration}\n\nYou can now send the archive\ndeliverables_${cn}.zip\nback to the requestor!" 0 0
+$dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The issuer certificate is in issuer.crt\nThe certificate is in certs/${startts}_${cn}.crt (PEM) and in certs/${startts}_${cn}.der (DER)\nThe certificate will expire on ${expiration}\n\nYou can now send the archive\ndeliverables_${cn}_${timestamp}.zip\nback to the requestor!" 0 0
 
 # eventuell sogar zip/tar draus machen?
 
@@ -394,7 +394,7 @@ sed -i -- "s/##crt##/${cn}.crt/g" "${cn}"/tsa.conf
 else
 cp "../build_p12.sh" "${cn}/"
 fi
-zip "deliverables_${cn}.zip" "${cn}"/* index.txt
+zip "deliverables_${cn}_${timestamp}.zip" "${cn}"/* index.txt
 #rm -rf "deliverables_${cn}"
 
 mv "certs/${cn}.crt" "certs/${startts}_${cn}.crt"
@@ -405,6 +405,9 @@ if [ "$log_file_name" != "" ]; then
 echo -e "CN\tcert file\tissuer cert file\tnotBefore\tnotAfter" > "${log_file_name}"
 echo -e "${cn}\tcerts/${startts}_${cn}.crt\tcerts/${startts}_${cn}.der\t${ca_cert}\t${start}\t${expiration}" >> "${log_file_name}"
 chmod 600 "${log_file_name}"
+if [ -d "$cn" ]; then
+  rm -rf "${cn}"
+fi
 $dialog_exe --backtitle "Info" --msgbox "log file written to ${log_file_name}" 0 0
 fi
 
