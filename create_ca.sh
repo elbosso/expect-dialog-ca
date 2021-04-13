@@ -310,8 +310,8 @@ case $ca_type in
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       ;;
     network)
-      cp -a $template_dir/etc/"identity-ca.conf" $new_ca_name/etc
-      cp -a $template_dir/etc/"component-ca.conf" $new_ca_name/etc
+#      cp -a $template_dir/etc/"identity-ca.conf" $new_ca_name/etc
+#      cp -a $template_dir/etc/"component-ca.conf" $new_ca_name/etc
 #      cp -a $template_dir/etc/".conf" $new_ca_name/etc
 #      cp -a $template_dir/etc/".conf" $new_ca_name/etc
 	  sed -ie -- "s/basicConstraints *= critical,CA:true$/basicConstraints        = critical,CA:true,pathlen:1/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
@@ -771,10 +771,12 @@ The next form gives you the opportunity to specify them and their associated des
 identifier (must not contain spaces) one by one. Once you entered
 all your OIDs and their descriptions - just leave at least one field of the form blank and \
 the script will automatically proceed to the next step" 0 0
+if [ "$ca_type" != "root" -a "$ca_type" != "network" ]; then
 for item in ${conf_files}
     do
       sed -i -E -- "/\[ req \]/i oid_section = additional_oids\n\n[ additional_oids ]\n"  $new_ca_name/etc/$item
 done
+fi
 
 condition=1
 Identifier="CustomOid1"
@@ -805,6 +807,7 @@ condition=0
 else
 echo "${Identifier} = ${Description}, ${OID}" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 #$dialog_exe --backtitle "conf_files" --msgbox "$conf_files" 9 52
+if [ "$ca_type" != "root" -a "$ca_type" != "network" ]; then
 for item in ${conf_files}
     do
 #$dialog_exe --backtitle "Item" --msgbox "$item" 9 52
@@ -812,6 +815,7 @@ echo "#${OID}=ASN1:UTF8String:${Description}" >>$new_ca_name/etc/$item
       sed -i -E -- "/\[ additional_oids \]/a ${Identifier} = ${OID}"  $new_ca_name/etc/$item
       sed -i -E -- "/\[ .*ext \]/i #${Identifier} = \"${Description}\"" $new_ca_name/etc/$item
 done
+fi
 fi
 done
 fi

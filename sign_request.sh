@@ -322,11 +322,18 @@ expect "${script_dir}/sign_csr_dry.xpct" "${ca_conf_file}"  "${sign_req_name}"  
 
 rv=$?
 
+$dialog_exe --backtitle "Info" --msgbox "${rv}" 0 0
 
 if [ $rv -ne 0 ]; then
 cat /tmp/dry_run.log |sed $'s/\r$//' |tail -n +5>/tmp/dry_run1.log
-$dialog_exe --backtitle "Unable to sign certificate request" --textbox /tmp/dry_run1.log 0 0
 
+tailed=$(cat /tmp/dry_run1.log|tail)
+
+$dialog_exe --backtitle "Unable to sign certificate request" --yesno "${tailed}\n\nDo you want to see the full log?" 20 80
+response=$?
+if [ $response -eq 0 ]; then
+$dialog_exe --backtitle "Unable to sign certificate request" --textbox /tmp/dry_run1.log 0 0
+fi
 else
 
 cat /tmp/dry_run.log|sed $'s/\r$//' |tail -n +6|head -n -1 >/tmp/dry_run1.log
