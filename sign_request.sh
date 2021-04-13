@@ -322,7 +322,7 @@ expect "${script_dir}/sign_csr_dry.xpct" "${ca_conf_file}"  "${sign_req_name}"  
 
 rv=$?
 
-$dialog_exe --backtitle "Info" --msgbox "${rv}" 0 0
+#$dialog_exe --backtitle "Info" --msgbox "${rv}" 0 0
 
 if [ $rv -ne 0 ]; then
 cat /tmp/dry_run.log |sed $'s/\r$//' |tail -n +5>/tmp/dry_run1.log

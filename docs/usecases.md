@@ -61,13 +61,110 @@ can just click through those annoying questions!
 Another thing is the (optional) provision of Certificate Policy Statements:
 For each config of the CA you can specify them - so they
 get incorporated into every certificate you create using the 
-corresponding configuration. And last but not least: The script
+corresponding configuration. 
+
+And last but not least: The script
 offers you the (optional) means to define additional OIDs:
-If you use custom OIDs (for example for specifying custom policies),
+If you use custom OIDs (for example for specifying custom policies), an
 application will display them as unintuitive sequences of numbers separated
 by dots - unless you take the time to  define them: then a mapping is
 included into each issued certificate that allows applications
 to display a descriptive text instead of the numeric OID.
+
+These additional OIDs can be used for a multitude of possible scenarios.
+In issuing CAs, issuing end entity certificates the operator of the CA
+can decide to add more fields to the 
+[Distiguished Name (DN)](https://www.cryptosys.net/pki/manpki/pki_distnames.html) 
+of the subjects.
+After adding such fields - the operator of the pki can use those additional fields
+as he would the common or standard fields already defined. To be more precise:
+the operator has to add them to the respective policy in the CA configuration - 
+else they are not inserted into the new certificate. An example for this would be the 
+client configuration for creation of Certificate Signing Requests (CSRs) for an 
+S/Mime certificate as created by the `create_ca.sh` script:
+
+```shell
+# S/MIME certificate request
+
+oid_section = additional_oids
+
+[ additional_oids ]
+CustomOid2 = descriptionb, 2.2.3
+CustomOid1 = descriptiona, 1.2.3
+
+[ req ]
+default_bits            = 4096                  # RSA key size
+encrypt_key             = yes                   # Protect private key
+default_md              = sha256                  # MD to use
+utf8                    = yes                   # Input is UTF-8
+string_mask             = utf8only              # Emit UTF-8 strings
+prompt                  = yes                   # Prompt for DN
+distinguished_name      = smime_dn           # DN template
+req_extensions          = smime_reqext       # Desired extensions
+
+[ smime_dn ]
+countryName             = "1. Country Name (2 letters) (eg, US)       "
+countryName_max         = 2
+stateOrProvinceName     = "2. State or Province Name   (eg, region)   "
+localityName            = "3. Locality Name            (eg, city)     "
+organizationName        = "4. Organization Name        (eg, company)  "
+organizationalUnitName  = "5. Organizational Unit Name (eg, section)  "
+commonName              = "6. Common Name              (eg, full name)"
+commonName_max          = 64
+emailAddress            = "7. Email Address            (eg, name@fqdn)"
+emailAddress_max        = 40
+
+#CustomOid1 = "descriptiona"
+#CustomOid2 = "descriptionb"
+[ smime_reqext ]
+keyUsage                = critical,digitalSignature,keyEncipherment
+extendedKeyUsage        = emailProtection,clientAuth
+subjectKeyIdentifier    = hash
+subjectAltName          = email:move
+#1.2.3=ASN1:UTF8String:descriptiona
+#2.2.3=ASN1:UTF8String:descriptionb
+```
+
+We see here that there are two additional custom OIDs defined (section `[ additional_oids ]`)
+To actually use them, one has to decide, what they should be used for: They can be used as additional
+extensions - in that case, the operator has to remove the comment in the corresponding line in section
+describing the extensions - in this example
+`[ smime_reqext ]`.
+If the operator wants to use them for extending the DN, the comments from the appropriate line(s) in the DN
+section - in this example
+`[ smime_dn ]`
+must be removed.
+
+In the second case - the operator must also change the configuration file of the CA itself:
+The policy sections therein define, what parts constitute the DN of issued certificates. In our
+example, those sections would look like this (we only show a part of the rather lengthy configuration file here):
+
+```shell
+[ match_O_pol ]
+#CustomOid2 = optional
+#CustomOid1 = optional
+countryName             = supplied
+stateOrProvinceName     = optional
+localityName            = optional
+organizationName        = match
+organizationalUnitName  = optional
+commonName              = supplied
+
+[ minimal_pol ]
+#CustomOid2 = optional
+#CustomOid1 = optional
+domainComponent         = optional
+countryName             = optional
+stateOrProvinceName     = optional
+localityName            = optional
+organizationName        = optional
+organizationalUnitName  = optional
+commonName              = supplied
+emailAddress            = optional
+```
+
+The operator has to remove the comments in the appropriate lines according to the changes in the 
+CSR configurations.
 
 After the script is done, you have a fully populated directory structure
 for your CA as well as a CSR you need to get signed by another CA. When this is done,
