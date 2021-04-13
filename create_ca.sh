@@ -815,6 +815,7 @@ echo "#${OID}=ASN1:UTF8String:${Description}" >>$new_ca_name/etc/$item
       sed -i -E -- "/\[ additional_oids \]/a ${Identifier} = ${OID}"  $new_ca_name/etc/$item
       sed -i -E -- "/\[ .*ext \]/i #${Identifier} = \"${Description}\"" $new_ca_name/etc/$item
 done
+sed -i -E -- "/\[ .*_pol \]/a #${Identifier} = optional" $new_ca_name/etc/$new_ca_name"-ca.conf"
 fi
 fi
 done
