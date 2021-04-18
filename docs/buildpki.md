@@ -291,7 +291,7 @@ for creating the certificate request. The name of this
 environment variable is SAN - for example:
 
 ```
-SAN=DNS:server1.example.lab,server2.example.lab \
+SAN=DNS:server1.example.lab,server2.example.lab,IP:127.0.0.1 \
 openssl req -new \
     -config server.conf \
     -out multi_server.csr \
