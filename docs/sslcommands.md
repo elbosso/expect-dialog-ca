@@ -85,6 +85,12 @@ openssl pkcs12 -export -in certificate.cert -inkey privateKey.key -out digitalId
 openssl pkcs12 -in digitalIdentity.p12 -out privateKey.key
 ```
 
+#### Convert to PEM
+
+```
+openssl pkcs12 -in digitalIdentity.p12 -out digitalIdentity.pem 
+```
+
 ### TSA
 
 #### Display query
