@@ -290,6 +290,9 @@ case $ca_type in
       cp -a "$template_dir/etc/ocspsign.conf" "$new_ca_name/etc"
       cp -a "$template_dir/etc/server.conf" "$new_ca_name/etc"
       #cp -a "$template_dir/etc/timestamp.conf" "$new_ca_name/etc"
+      sed -i -E -- "s/OCSP;URI\.0(.*)/#OCSP;URI.0\1/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @issuer_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      sed -i -E -- "s/^ocsp_url(.*)/#ocsp_url\1/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
       awk '/\[ timestamp_reqext \]/ || f == 1 && sub(/keyUsage                = critical,digitalSignature/, "keyUsage                = critical,nonRepudiation") { ++f } 1' $template_dir/etc/timestamp.conf >$new_ca_name/etc/timestamp.conf.intermediate
       mv $new_ca_name/etc/timestamp.conf.intermediate $new_ca_name/etc/timestamp.conf
       cp -a "$template_dir/etc/client.conf" "$new_ca_name/etc"
