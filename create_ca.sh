@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # shellcheck disable=SC2181,SC2003,SC2039,SC2002
 #Das Script soll online und offline funktionieren
 #es kopiert aus einem Musterverzeichnis (der openssl expert pki)
@@ -285,14 +285,41 @@ chmod 700 "$new_ca_name/etc"
 #cp -a $template_dir/etc/$ca_type"-ca.conf" $new_ca_name/etc/$new_ca_name"-ca.conf"
 cat $template_dir/etc/$ca_type"-ca.conf" | head -n -3 >$new_ca_name/etc/$new_ca_name"-ca.conf"
 
+ocsp_uri=""
+
+$dialog_exe --backtitle "OCSP URI"\
+           --inputbox "URI for accessing the OCSP Responder\n If you dont want to use one - just leave it blank!!" 8 52 "${ocsp_uri}" 2>$_temp
+
+if [ $? -eq 0 ]; then
+    ocsp_uri=$(cat $_temp)
+#    $dialog_exe --msgbox "\nYou entered:\n${ocsp_uri}" 9 52
+else
+    ocsp_uri=""
+fi
+
 case $ca_type in
+    root)
+      if [ "$ocsp_uri" == "" ]; then
+        sed -i -E -- "/crl_url *=.*/a #ocsp_url =\t# OCSP responder URL"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @issuer_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      else
+        sed -i -E -- "/crl_url *=.*/a ocsp_url = ${ocsp_uri}\t# OCSP responder URL"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @ocsp_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "/\[ issuer_info \]/i \[ ocsp_info \]\ncaIssuers;URI.0         = \$aia_url\nOCSP;URI.0              = \$ocsp_url\n"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      fi
+    ;;
     component)
       cp -a "$template_dir/etc/ocspsign.conf" "$new_ca_name/etc"
       cp -a "$template_dir/etc/server.conf" "$new_ca_name/etc"
       #cp -a "$template_dir/etc/timestamp.conf" "$new_ca_name/etc"
-      sed -i -E -- "s/OCSP;URI\.0(.*)/#OCSP;URI.0\1/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
-      sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @issuer_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
-      sed -i -E -- "s/^ocsp_url(.*)/#ocsp_url\1/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      if [ "$ocsp_uri" == "" ]; then
+        sed -i -E -- "s/OCSP;URI\.0(.*)/#OCSP;URI.0\1/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @issuer_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "s/^ocsp_url(.*)=(.*)/#ocsp_url\1=\2/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      else
+        sed -i -E -- "s/^ocsp_url(.*?)=(.*)/ocsp_url\1= ${ocsp_uri}\t# OCSP responder URL/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @ocsp_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      fi
       awk '/\[ timestamp_reqext \]/ || f == 1 && sub(/keyUsage                = critical,digitalSignature/, "keyUsage                = critical,nonRepudiation") { ++f } 1' $template_dir/etc/timestamp.conf >$new_ca_name/etc/timestamp.conf.intermediate
       mv $new_ca_name/etc/timestamp.conf.intermediate $new_ca_name/etc/timestamp.conf
       cp -a "$template_dir/etc/client.conf" "$new_ca_name/etc"
@@ -337,6 +364,14 @@ case $ca_type in
 	  echo "authorityInfoAccess     = @issuer_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 	  echo "crlDistributionPoints   = @crl_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 	  echo "#certificatePolicies = softwareCPS" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+      if [ "$ocsp_uri" == "" ]; then
+        sed -i -E -- "/crl_url *=.*/a #ocsp_url =\t# OCSP responder URL"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @issuer_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      else
+        sed -i -E -- "/crl_url *=.*/a ocsp_url = ${ocsp_uri}\t# OCSP responder URL"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @ocsp_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "/\[ issuer_info \]/i \[ ocsp_info \]\ncaIssuers;URI.0         = \$aia_url\nOCSP;URI.0              = \$ocsp_url\n"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      fi
      awk '/\[ identity_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = identityCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
@@ -367,12 +402,19 @@ case $ca_type in
 		echo "authorityKeyIdentifier  = keyid:always" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 		echo "authorityInfoAccess     = @issuer_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 		echo "crlDistributionPoints   = @crl_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "crlDistributionPoints   = @crl_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 		echo "certificatePolicies     = blueMediumAssurance" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 	  sed -i -- "s/identity/smime_multi/g"  $new_ca_name/etc/smime_multi.conf
 	  sed -i -- "s/Identity/S\/MIME-Multi/g"  $new_ca_name/etc/smime_multi.conf
 	  sed -i -E -- "s/keyUsage(.*)/keyUsage\1,keyEncipherment/g"  $new_ca_name/etc/smime_multi.conf
 	  sed -i -E -- "s/subjectAltName( *= *.*)/subjectAltName\1,\$ENV::SAN/g"  $new_ca_name/etc/smime_multi.conf
+      if [ "$ocsp_uri" == "" ]; then
+        sed -i -E -- "/crl_url *=.*/a #ocsp_url =\t# OCSP responder URL"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @issuer_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      else
+        sed -i -E -- "/crl_url *=.*/a ocsp_url = ${ocsp_uri}\t# OCSP responder URL"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @ocsp_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "/\[ issuer_info \]/i \[ ocsp_info \]\ncaIssuers;URI.0         = \$aia_url\nOCSP;URI.0              = \$ocsp_url\n"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      fi
       awk '/\[ identity_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = identityCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
@@ -388,6 +430,14 @@ case $ca_type in
       awk '/\[ codesign_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = codesignCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
+      if [ "$ocsp_uri" == "" ]; then
+        sed -i -E -- "/crl_url *=.*/a #ocsp_url =\t# OCSP responder URL"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @issuer_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      else
+        sed -i -E -- "/crl_url *=.*/a ocsp_url = ${ocsp_uri}\t# OCSP responder URL"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @ocsp_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+        sed -i -E -- "/\[ issuer_info \]/i \[ ocsp_info \]\ncaIssuers;URI.0         = \$aia_url\nOCSP;URI.0              = \$ocsp_url\n"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+      fi
       ;;
   esac
 #falls root CA...
@@ -808,18 +858,36 @@ Description=`cat $_temp |cut -d"
 if [ "$OID" = "" ] || [ "$Description" = "" ] || [ "$Identifier" = "" ]; then
 condition=0
 else
-echo "${Identifier} = ${Description}, ${OID}" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-#$dialog_exe --backtitle "conf_files" --msgbox "$conf_files" 9 52
-if [ "$ca_type" != "root" -a "$ca_type" != "network" ]; then
-for item in ${conf_files}
-    do
-#$dialog_exe --backtitle "Item" --msgbox "$item" 9 52
-echo "#${OID}=ASN1:UTF8String:${Description}" >>$new_ca_name/etc/$item
-      sed -i -E -- "/\[ additional_oids \]/a ${Identifier} = ${OID}"  $new_ca_name/etc/$item
-      sed -i -E -- "/\[ .*ext \]/i #${Identifier} = \"${Description}\"" $new_ca_name/etc/$item
-done
-sed -i -E -- "/\[ .*_pol \]/a #${Identifier} = optional" $new_ca_name/etc/$new_ca_name"-ca.conf"
-fi
+  #grep "${Identifier} = ${Description}, ${OID}" $new_ca_name/etc/$new_ca_name"-ca.conf"
+  #$dialog_exe --backtitle "exact" --msgbox "$?" 9 52
+  grep "^.* =.*, ${OID}" $new_ca_name/etc/$new_ca_name"-ca.conf"
+  #$dialog_exe --backtitle "regex" --msgbox "$?" 9 52
+  if [ ${?} -ne 0 ] ; then
+    grep "^${Identifier} = .*, .*" $new_ca_name/etc/$new_ca_name"-ca.conf"
+    if [ ${?} -ne 0 ] ; then
+      echo "${Identifier} = ${Description}, ${OID}" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+      #$dialog_exe --backtitle "conf_files" --msgbox "$conf_files" 9 52
+      if [ "$ca_type" != "root" -a "$ca_type" != "network" ]; then
+      for item in ${conf_files}
+          do
+            #$dialog_exe --backtitle "Item" --msgbox "$item" 9 52
+            echo "#${OID}=ASN1:UTF8String:${Description}" >>$new_ca_name/etc/$item
+            #no ${Description} here because else:
+            #problem creating object CustomOid2=b, 2.2.3.4
+            #140240013320640:error:0D06407A:asn1 encoding routines:a2d_ASN1_OBJECT:first num too large:../crypto/asn1/a_object.c:73
+            sed -i -E -- "/\[ additional_oids \]/a ${Identifier} = ${OID}"  $new_ca_name/etc/$item
+            sed -i -E -- "/\[ .*ext \]/i #${Identifier} = \"${Description}\"" $new_ca_name/etc/$item
+      done
+      sed -i -E -- "/\[ .*_pol \]/a #${Identifier} = optional" $new_ca_name/etc/$new_ca_name"-ca.conf"
+      fi
+    else
+      $dialog_exe --backtitle "Error" \
+             --msgbox "Identifier ${Identifier} already exists - ignoring it!" 0 0
+    fi
+  else
+    $dialog_exe --backtitle "Error" \
+           --msgbox "OID ${OID} already exists - ignoring it!" 0 0
+  fi
 fi
 done
 fi
