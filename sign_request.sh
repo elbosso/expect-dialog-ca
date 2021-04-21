@@ -362,6 +362,7 @@ start=`openssl x509 -noout -dates -in "certs/${cn}.crt" |grep notBefore|cut -d "
 startts=`date '+%Y.%m.%d-%H.%M.%S'`
 openssl x509 -inform PEM -outform DER -in "certs/${cn}.crt" -out "certs/${cn}.der"
 
+#infomsg
 $dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The issuer certificate is in issuer.crt\nThe certificate is in certs/${startts}_${cn}.crt (PEM) and in certs/${startts}_${cn}.der (DER)\nThe certificate will expire on ${expiration}\n\nYou can now send the archive\ndeliverables_${cn}_${timestamp}.zip\nback to the requestor!" 0 0
 
 # eventuell sogar zip/tar draus machen?
@@ -398,6 +399,7 @@ chmod 600 "${log_file_name}"
 if [ -d "$cn" ]; then
   rm -rf "${cn}"
 fi
+#infomsg
 $dialog_exe --backtitle "Info" --msgbox "log file written to ${log_file_name}" 0 0
 fi
 

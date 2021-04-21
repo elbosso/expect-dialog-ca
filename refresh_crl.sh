@@ -104,6 +104,7 @@ priv_key_pass=""
 
 openssl crl -noout -text  -in crl/${ca_name}-ca.crl > /tmp/crl.pem
 
+#infomsg
 $dialog_exe --backtitle "CRL" --textbox /tmp/crl.pem 0 0
 
 openssl crl -inform PEM -outform DER -in crl/${ca_name}-ca.crl -out crl/${ca_name}-ca.der
@@ -115,6 +116,7 @@ base_url=`grep -e "^base_url\s*=\s*.*$" etc/${ca_name}"-ca.conf"|cut -d "=" -f 2
 #$dialog_exe --title "resources" --cr-wrap --msgbox "$ca \n $base_url \n ${new_ca_name}\n ${addresources}" 12 52
 resources="${base_url}/${ca_name}.crl"
 
+#infomsg
 $dialog_exe --backtitle "Resources to provide" --msgbox "You must provide the updated CRL NOW\n
 to make the changes visible:\n$resources" 14 64
 

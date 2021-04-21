@@ -103,8 +103,10 @@ expect "${script_dir}/req_from_cert.xpct" "${crt_name}" "${key_name}" "${csr_nam
 
 openssl req -text -in "${csr_name}" -out /tmp/csr.pem
 
+#infomsg
 $dialog_exe --backtitle "Certificate Request" --textbox /tmp/csr.pem 0 0
 
+#infomsg
 $dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The key is in ${key_name}\nThe Cert Req is in ${csr_name}\n\nYou can now ask your CA to sign the request!" 0 0
 
 #log schreiben
@@ -114,6 +116,7 @@ if [ "$log_file_name" != "" ]; then
 echo "name\tCN\tprivate key pass" > ${log_file_name}
 echo "${ca_name}\t${cn}\t${priv_key_pass}" >> ${log_file_name}
 chmod 600 ${log_file_name}
+#infomsg
 $dialog_exe --backtitle "Info" --msgbox "log file written to ${log_file_name}" 0 0
 fi
 private_key_pass=""

@@ -461,8 +461,9 @@ sed -i -- "s/any_pol/minimal_pol/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
 
 
 if [ -e ca_presets.ini ]; then
-$dialog_exe --backtitle "Using ./ca_presets.ini:" --textbox ./ca_presets.ini 0 0
-. ./ca_presets.ini
+  #infomsg
+  $dialog_exe --backtitle "Using ./ca_presets.ini:" --textbox ./ca_presets.ini 0 0
+  . ./ca_presets.ini
 fi
 
 condition=1
@@ -595,6 +596,7 @@ done
 if [ "$menuitems" = "" ];then
 echo "no issuing cas need to be configured - skipping this part"
 else
+  #infomsg
 $dialog_exe --backtitle "Default Values for CSRs (scroll with PgUp, PgDown)" --msgbox "The next form shows a list with the different flavors of certificates this new CA is able to issue. You are prompted \
 to select all of those flavors you want to specify default values for. These default values are stored inside the generated
 client configurations an end user can use to create certificate signing requests. With this you can make the life
@@ -743,6 +745,7 @@ fi
 if [ "$menuitems" = "" ];then
 echo "no issuing cas need to be configured - skipping this part"
 else
+  #infomsg
 $dialog_exe --backtitle "Certificate Policy Statements (scroll with PgUp, PgDown)" --msgbox "The next form shows a list with the different flavors of certificates this new CA is able to issue. You are prompted \
 to select all of those flavors you want to specify Certificate Policy Statements (CPSs) for. Remember: for a Certificate Authority Hierarchy to \
 be valid according to RFC 5280, all Certificate Authorities below one that does supply CPSs have to do this too! For each of those selected, you have to specify the policies afterwards: \
@@ -818,6 +821,7 @@ fi
 echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 echo "[ additional_oids ]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 if [ -z ${no_custom_oids+x} ]; then
+  #infomsg
 $dialog_exe --backtitle "Custom OIDs (scroll with PgUp, PgDown)" --msgbox "It is possible to give text descriptions for any \
 proprietary OIDs you want to use in your issued certificates.\
 The next form gives you the opportunity to specify them and their associated description together with an \
@@ -957,8 +961,10 @@ mac_sha256=$(cat /tmp/sha256)
 $(expect priv_key_fingerprint.xpct "${new_ca_name}/ca/private/${new_ca_name}-ca.key" sha512 ${Password})
 mac_sha512=$(cat /tmp/sha512)
 
+#infomsg
 $dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The key is in ${new_ca_name}/ca/private/${new_ca_name}-ca.key\n\nMD5-Fingerprint: ${mac_md5}\nSHA1-Fingerprint: ${mac_sha1}\nSHA256-Fingerprint: ${mac_sha256}\nSHA512-Fingerprint: ${mac_sha512}\n\nThe Cert Req is in ${new_ca_name}/ca/${new_ca_name}-ca.csr\n\nYou can now ask your CA to sign the request!\n\nThe configurations needed by clients to generate certificate signing requests are in ${new_ca_name}/ca/etc. Available are: $conf_files" 0 0
 
+#infomsg
 $dialog_exe --backtitle "Custom Policies (scroll with PgUp, PgDown)" --msgbox "At this time, two policies are defined in the CA configuration file $new_ca_name/etc/$new_ca_name-ca.conf. If you want to add more or add some of your own - feel free to add them using the one named minimal_pol as a template. You are free when naming them but if the names do not end with _pol, the script for signing CSRs will not pick them up so you will not be able to use them when actually signing CSRs!" 0 0
 
 #ca=${new_ca_name}
@@ -968,6 +974,7 @@ base_url=`grep -e "^base_url\s*=\s*.*$" ${new_ca_name}/etc/${new_ca_name}"-ca.co
 #$dialog_exe --title "resources" --cr-wrap --msgbox "$ca \n $base_url \n ${new_ca_name}\n ${addresources}" 12 52
 resources="${base_url}/${new_ca_name}.crt\n${base_url}/${new_ca_name}.crl\n${cpsresources}"
 
+#infomsg
 $dialog_exe --backtitle "Resources to provide (scroll with PgUp, PgDown)" --msgbox "You must provide the following resources after receiving and installing \
 your certificate to make your shiny new CA fully functional:\n$resources" 0 0
 
@@ -977,6 +984,7 @@ if [ "$log_file_name" != "" ]; then
 echo "name\tCN\tprivate key pass\tMD5\tSHA1\tSHA256\tSHA512" > ${log_file_name}
 echo "${new_ca_name}\t${organizationalUnitName}\t****\t${mac_md5}\t${mac_sha1}\t${mac_sha256}\t${mac_sha512}" >> ${log_file_name}
 chmod 600 ${log_file_name}
+#infomsg
 $dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "log file written to ${log_file_name}" 0 0
 fi
 Password=""
