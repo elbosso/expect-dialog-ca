@@ -13,8 +13,8 @@ For this you need to call the script
 `create_ca.sh`
 
 Before you do so for the first time - please refer to the 
-[step-by-step instructions for using this script](customizeca.md) 
-- it can save some headaches...
+[step-by-step instructions for using this script](customizeca.md) - it can save some headaches...
+
 You might want to consider making your life a little easier before starting `create_ca.sh`:
 The script offers an optional way to specify some of the information the user
 has to enter during this process beforehand - by writing an ini file named _ca_presets.ini_.
