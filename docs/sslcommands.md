@@ -40,6 +40,14 @@ openssl x509 -noout -modulus -in certificate.crt | openssl sha512
 openssl x509 -in certificate.crt -noout -text|more
 ```
 
+#### Print out specific fields of the certificates 
+
+```
+openssl x509 -noout -subject certificate.crt
+openssl x509 -noout -issuer certificate.crt
+openssl x509 -noout -dates certificate.crt
+```
+
 ### S/Mime
 
 #### create signature
@@ -125,6 +133,12 @@ openssl req -new -key privateKey.key -out my.csr
 openssl req -in my.csr -noout -text
 ```
 
+### Raw
+
+#### See the raw structure of an ASN.1 file (only for DER encoded files)
+
+openssl asn1parse -in mysterious_file.pem
+
 ## Some resources with useful OpenSSL commands
 
 * [OpenSSL command cheatsheet](https://www.freecodecamp.org/news/openssl-command-cheatsheet-b441be1e8c4a/)
@@ -133,3 +147,4 @@ openssl req -in my.csr -noout -text
 * [OpenSSL Quick Reference Guide](https://www.digicert.com/ssl-support/openssl-quick-reference-guide.htm)
 * [openssl_commands.md](https://gist.github.com/webtobesocial/5313b0d7abc25e06c2d78f8b767d4bc3)
 * [OpenSSL Essentials: Working with SSL Certificates, Private Keys and CSRs](https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs)
+* [OpenSSL tips and tricks](https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art030)
