@@ -76,6 +76,12 @@ In issuing CAs, issuing end entity certificates the operator of the CA
 can decide to add more fields to the 
 [Distiguished Name (DN)](https://www.cryptosys.net/pki/manpki/pki_distnames.html) 
 of the subjects.
+One could for example add some of the fields defined in 
+[X.500](https://www.alvestrand.no/objectid/2.5.4.html) - such as 
+[postalAddress](https://oidref.com/2.5.4.16), 
+[name](https://oidref.com/2.5.4.41) and 
+[givenName](https://oidref.com/2.5.4.42) among others.
+
 After adding such fields - the operator of the pki can use those additional fields
 as he would the common or standard fields already defined. To be more precise:
 the operator has to add them to the respective policy in the CA configuration - 
