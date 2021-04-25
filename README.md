@@ -26,5 +26,6 @@ Please not that there is a restriction concerning common names (CN): They must n
 * [Dependencies](docs/dependencies.md)
 * [Use Cases](docs/usecases.md)
 * [How to build an actual PKI from all this?](docs/buildpki.md)
+* [How can i customize my CA?](docs/customizeca.md)
 * [Special kinds of CAs (special deliverables)](docs/specialdeliverables.md)
 * [Some useful OpenSSL commands](docs/sslcommands.md)

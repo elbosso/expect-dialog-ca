@@ -225,7 +225,7 @@ condition=0
 if [ -z ${new_ca_name_param+x} ] || [ $error -eq "1" ]; then
 #Der Anwender wird aufgefordert, den Namen der neuen CA zu bestimmen
 $dialog_exe --backtitle "CA name"\
-           --inputbox "Name for the new CA\n Please do not use root, network, identity, or component!" 8 52 "${new_ca_name:-test}" 2>$_temp
+           --inputbox "Name for the new CA\n Please do not use root, network, identity, software or component!" 8 52 "${new_ca_name:-test}" 2>$_temp
 
     if [ $? -eq 0 ]; then
     new_ca_name=$(cat $_temp)
@@ -245,9 +245,9 @@ condition=1
 error="1"
 else
 case "$new_ca_name" in
-   root|network|identity|component)
+   root|network|identity|component|software)
      $dialog_exe --backtitle "Error" \
-           --msgbox "The name must not be among these reserved values: root, network, identity, component!" 9 52
+           --msgbox "The name must not be among these reserved values: root, network, identity, component, software!" 9 52
      condition=1
      error="1";;
    *)

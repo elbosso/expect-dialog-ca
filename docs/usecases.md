@@ -74,7 +74,8 @@ to display a descriptive text instead of the numeric OID.
 These additional OIDs can be used for a multitude of possible scenarios.
 In issuing CAs, issuing end entity certificates the operator of the CA
 can decide to add more fields to the 
-[Distiguished Name (DN)](https://www.cryptosys.net/pki/manpki/pki_distnames.html) 
+[Distiguished Name (DN)](https://www.cryptosys.net/pki/manpki/pki_distnames.html)
+(also see [RFC 4519](https://tools.ietf.org/html/rfc4519))
 of the subjects.
 One could for example add some of the fields defined in 
 [X.500](https://www.alvestrand.no/objectid/2.5.4.html) - such as 
