@@ -81,7 +81,7 @@ echo $ts
 
 echo $csr_name $crt_name $key_name
 
-log_file_name=$($dialog_exe --stdout --backtitle "Log" --fselect ./${ca_name}_log.tsv 0 0)
+log_file_name=$($dialog_exe --stdout --backtitle "Log" --fselect ./${ca_name}_log.tsv $(expr $(tput lines) - 12 ) $(expr $(tput cols) -10 ))
 if [ ${?} -ne 0 ]; then exit 127; fi   
 
 condition=1

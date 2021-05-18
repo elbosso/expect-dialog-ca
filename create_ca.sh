@@ -920,7 +920,7 @@ done
 fi
 # output der Daten in eine tsv-Datei
 
-log_file_name=$($dialog_exe --stdout --backtitle "Log" --fselect ./${new_ca_name}_log.tsv 0 0)
+log_file_name=$($dialog_exe --stdout --backtitle "Log" --fselect ./${new_ca_name}_log.tsv $(expr $(tput lines) - 12 ) $(expr $(tput cols) -10 ))
 if [ ${?} -ne 0 ]; then exit 127; fi   
 #if [ "$log_file_name" = "" ]; then
 #echo "A log file name must be given!"

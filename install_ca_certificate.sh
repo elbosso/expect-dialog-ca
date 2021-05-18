@@ -47,7 +47,7 @@ while [ $condition -eq 1 ]
 do
 condition=0
 if [ "$zip_file_location" = "" ]; then
-	zip_file_location=$($dialog_exe --stdout --backtitle "Certificate deliverables zip file location" --fselect "" 0 90)
+	zip_file_location=$($dialog_exe --stdout --backtitle "Certificate deliverables zip file location" --fselect "" $(expr $(tput lines) - 12 ) 90)
 	if [ ${?} -ne 0 ]; then exit 127; fi
 fi
 	if [ "$zip_file_location" = "" ]; then
