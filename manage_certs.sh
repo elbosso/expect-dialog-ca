@@ -30,7 +30,6 @@ then
 	exit 1
 fi
 
-zip_file_location=""
 script_dir=`dirname $0`
 ca_dir_name=""
 
@@ -41,8 +40,6 @@ if [ ! -d "${ca_dir_name}/ca" ]; then layout_error=1; fi
 if [ ! -d "${ca_dir_name}/certs" ]; then layout_error=1; fi
 if [ ! -d "${ca_dir_name}/crl" ]; then layout_error=1; fi
 if [ "$layout_error" = 1 ]; then exit 126; fi
-
-echo "weiter"
 
 ca_name=`basename ${ca_dir_name}`
 
@@ -90,16 +87,18 @@ lookedat_cert=""
 #echo "${item}"
 	ser=`openssl x509 -noout -serial -in "${item}" |cut -d "=" -f 2`
 	cname=$(openssl x509 -noout -subject -in "${item}" | sed -n '/.*/s/^.*CN\s=\s//p'|sed  's/"//g')
-	if [ "$ser$cname" = "$serialcn" ]; then
+#$dialog_exe --backtitle "name" --msgbox "$ser$cname#$serial$cn#$serial" 0 0
+	if [ "$ser$cname" = "$serial$cn" ]; then
 		lookedat_cert=${item}
 cert_expiration=`openssl x509 -noout -dates -in ${lookedat_cert}|grep notAfter|cut -d "=" -f 2`
+#$dialog_exe --backtitle "date" --msgbox "${cert_expiration}" 0 0
 	cert_expiration_ts=$(date -d "${cert_expiration}" +%Y%m%d%H%M%S)
 	cert_expiration_seconds=$(date -d "${cert_expiration}" +%s)
 		break
 	fi
 done
 
-#$dialog_exe --backtitle "date" --msgbox "#${valid_end}#${ca_expiration_seconds}#${cert_expiration_seconds}#" 9 52
+#$dialog_exe --backtitle "date" --msgbox "#${valid_end}#${ca_expiration_seconds}#${cert_expiration_seconds}#${ca_expiration}#${cert_expiration}" 9 52
 
 	echo $state $serial $cn
 	if [ "$ca_expiration_seconds" = "" ] || [ "$state" = "V" ]; then
