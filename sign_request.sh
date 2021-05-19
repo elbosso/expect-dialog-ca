@@ -327,7 +327,7 @@ if [ $? -eq 0 ]; then
 
 # output der Daten in eine tsv-Datei
 timestamp=$(date +%Y-%m-%d_%H-%M-%S)
-log_file_name=$($dialog_exe --stdout --backtitle "Log" --fselect "./${cn}_${timestamp}_log.tsv" $(expr $(tput lines) - 12 ) $(expr $(tput cols) -10 ))
+log_file_name=$($dialog_exe --stdout --backtitle "Log" --fselect "./${cn}_${timestamp}_log.tsv" $(expr $(tput lines) - 12 ) $(expr $(tput cols) - 10 ))
 if [ ${?} -ne 0 ]; then exit 127; fi   
 #if [ "$log_file_name" = "" ]; then
 #echo "A log file name must be given!"
