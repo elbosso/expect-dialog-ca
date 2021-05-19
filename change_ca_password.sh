@@ -11,6 +11,7 @@ echo -e "-h\t\tPrint this help text"
 }
 dialog_exe=dialog
 . `dirname $0`/configure_gui.sh
+. `dirname $0`/get_private_key_file.sh
 layout_error=0
 if [ ! -d "./ca" ]; then layout_error=1; fi
 if [ ! -d "./certs" ]; then layout_error=1; fi
@@ -84,13 +85,21 @@ condition=1
 fi
 done
 
-. ./ask_for_passwd.sh
+. "$script_dir"/ask_for_passwd.sh
 
 mv ${privkey_file_name} ${privkey_file_name}.bck
 
-echo "expect "${script_dir}/change_ca_password.xpct" ${privkey_file_name}.bck ${privkey_file_name} ${priv_key_pass} ${Password}" >/tmp/te
+echo "expect ${script_dir}/change_ca_password.xpct ${privkey_file_name}.bck ${privkey_file_name} ${priv_key_pass} ${Password}" >/tmp/te
 
-expect "${script_dir}/change_ca_password.xpct" ${privkey_file_name}.bck ${privkey_file_name} ${priv_key_pass} ${Password}
+expect "${script_dir}/change_ca_password.xpct" "${privkey_file_name}.bck" "${privkey_file_name}" "${priv_key_pass}" "${Password}"
+
+if [ -s "${privkey_file_name}" ]; then
+  $dialog_exe --backtitle "Success!" --msgbox "Password for ${privkey_file_name} changed to ${Password}" 0 0
+  rm "${privkey_file_name}.bck"
+else
+  $dialog_exe --backtitle "Error!" --msgbox "Password for ${privkey_file_name} not changed - maybe you did not give the correct old password?" 0 0
+  mv "${privkey_file_name}.bck" "${privkey_file_name}"
+fi
 
 Password=""
 priv_key_pass=""

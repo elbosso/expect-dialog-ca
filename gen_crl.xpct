@@ -8,6 +8,16 @@ spawn openssl ca -gencrl \
 
 expect -re "Enter pass phrase for *" {send "$pass\r"}
 expect eof
+#https://stackoverflow.com/a/23636473
+foreach {pid spawnid os_error_flag value} [wait] break
+
+if {$os_error_flag == 0} {
+    puts "exit status: $value"
+    exit $value
+} else {
+    puts "errno: $value"
+    exit $value
+}
 #expect {
 #  "Password changed." {puts stdout "\nPaßwort erfolgreich geändert"}
 #  default {puts stdout "\nHat nicht funktioniert!"}

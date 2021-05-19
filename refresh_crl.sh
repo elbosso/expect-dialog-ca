@@ -98,6 +98,8 @@ done
 ca_name=`basename ${ca_dir_name}`
 
 expect "${script_dir}/gen_crl.xpct" "etc/${ca_name}-ca.conf" "crl/${ca_name}-ca.crl" "${priv_key_pass}"
+#$dialog_exe --backtitle "Outcome:!" --msgbox "$?" 0 0
+if [ $? -eq 0 ]; then
 #openssl ca -gencrl -config etc/${ca_name}-ca.conf -out crl/${ca_name}-ca.crl
 
 priv_key_pass=""
@@ -119,5 +121,7 @@ resources="${base_url}/${ca_name}.crl"
 #infomsg
 $dialog_exe --backtitle "Resources to provide" --msgbox "You must provide the updated CRL NOW\n
 to make the changes visible:\n$resources" 14 64
-
+else
+    $dialog_exe --backtitle "Error!" --msgbox "CRL not updated - maybe you did not give the correct password?" 0 0
+fi
 clear
