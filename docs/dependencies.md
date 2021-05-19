@@ -20,6 +20,12 @@ At times apt might tell you that it does not find an installation candidate for 
 repositories (usually in _/etc/apt/sources.list_) - activate them, followed by an `apt update` and Ubuntu should know once again
 where to finde the needed packages...
 
+Because of a [bug](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=915949) in 
+the `dialog` package, enother dependency is needed: The scripts use `tput` now to
+[determine](https://stackoverflow.com/questions/263890/how-do-i-find-the-width-height-of-a-terminal-window) 
+the dimensions of the terminal they run in. To access this tool, the package `ncurses-bin` 
+must be installed.
+
 Depending on your particular flavour/version of Linux, there are
  maybe even more components/packages needed to be installed
  to get the scripts working...
