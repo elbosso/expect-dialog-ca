@@ -94,6 +94,9 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   * *-h*
     Print some help text"
 * [request_certificate_renewal.sh](../request_certificate_renewal.sh)  
+  *This script is obsolete - due to a bug in openssl, the extensions as well as the subject alternative names
+  are not copied from the certificate into the CSR - users should use standard openssl commands fro creating
+  CSRs from existing private keys for renewal of certificates!*
   This script is for end users: They can use it to renew their certificate - meaning to
   extend the validity of an already obtained certificate from the same 
   certificate authority. To do so, the user must have her old certificate as well as
