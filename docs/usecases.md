@@ -137,6 +137,11 @@ To actually use them, one has to decide what they should be used for: They can b
 extensions - in that case, the operator has to remove the comment in the corresponding line in the section
 describing the extensions - in this example
 `[ smime_reqext ]`.
+
+As a side note, custom extensions can just as well be added to the configuration of the CA - effectively changing the 
+set of extensions contained in issued certificates - further information concerning extensions in issed certificates can be found 
+[here](customizeca.md). 
+
 If the operator wants to use them for extending the DN, the comments from the appropriate line(s) in the DN
 section - in this example
 `[ smime_dn ]`
@@ -208,6 +213,11 @@ unstructuredName_default = "unstructured"
 ```
 
 `unstructuredName` is an OID that can be used to transfer arbitrary textual information along with the CSR.
+
+Furter information about attributes in CSRs can be found 
+[here](https://serverfault.com/questions/977445/generate-csr-including-certificate-template-information-with-openssl), 
+[here](https://www.openssl.org/docs/man1.0.2/man1/openssl-req.html) and 
+[here](https://www.openssl.org/docs/man1.1.0/man5/x509v3_config.html)
 
 After the script is done, you have a fully populated directory structure
 for your CA as well as a CSR you need to get signed by another CA. When this is done,

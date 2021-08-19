@@ -202,4 +202,48 @@ crlDistributionPoints   = @crl_info
 crlDistributionPoints   = @crl_info
 ```
 
+If one wanted to issue pre certificates in the context of [Certificate Transparency](),
+one had to add the Poison Extension
+```
+1.3.6.1.4.1.11129.2.4.3                = critical,ASN1:NULL:
+```
+to the corresponding extension section.
 
+There are a lot more intricate extension values possible by constructing them directly as ASN1-Structures
+as this [example](https://serverfault.com/questions/581023/openssl-custom-extension) shows - the extension is defined as
+ASN1 sequence and this sequence is then defined by two more sections (the complete documentation about definige arbitrary ASN1 structures
+can be found [here](https://www.openssl.org/docs/man1.0.2/man3/ASN1_generate_v3.html)):
+
+```
+SMIME-CAPS               = ASN1:SEQUENCE:smime_seq
+
+[ smime_seq ]
+SMIMECapability.0 = SEQWRAP,OID:sha1
+SMIMECapability.1 = SEQWRAP,OID:sha256
+SMIMECapability.2 = SEQWRAP,OID:sha1WithRSA
+SMIMECapability.3 = SEQWRAP,OID:aes-256-ecb
+SMIMECapability.4 = SEQWRAP,OID:aes-256-cbc
+SMIMECapability.5 = SEQWRAP,OID:aes-256-ofb
+SMIMECapability.6 = SEQWRAP,OID:aes-128-ecb
+SMIMECapability.7 = SEQWRAP,OID:aes-128-cbc
+SMIMECapability.8 = SEQWRAP,OID:aes-128-ecb
+SMIMECapability.9 = SEQUENCE:rsa_enc
+
+[ rsa_enc ]
+capabilityID = OID:rsaEncryption
+parameter = NULL
+```
+
+Another example can be found [here:](https://stackoverflow.com/questions/56894010/create-own-asn-1-module-for-custom-extension-in-openssl-command-line-tools)
+It adds another custom ASN1 structure as extension:
+
+```
+1.2.3.4.5.6.7.8.9 = ASN1:SEQUENCE:CustomExt
+
+[CustomExt]
+wrappingSeq = SEQUENCE:ExtOid
+key = FORMAT:HEX,BITSTRING:abcdef1234556789
+
+[ExtOid]
+oid = OID:1.3.101.110
+```
