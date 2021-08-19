@@ -96,8 +96,8 @@ S/Mime certificate as created by the `create_ca.sh` script:
 oid_section = additional_oids
 
 [ additional_oids ]
-CustomOid2 = descriptionb, 2.2.3
-CustomOid1 = descriptiona, 1.2.3
+CustomOid2 = 2.2.3
+CustomOid1 = 1.2.3
 
 [ req ]
 default_bits            = 4096                  # RSA key size
@@ -133,8 +133,8 @@ subjectAltName          = email:move
 ```
 
 We see here that there are two additional custom OIDs defined (section `[ additional_oids ]`)
-To actually use them, one has to decide, what they should be used for: They can be used as additional
-extensions - in that case, the operator has to remove the comment in the corresponding line in section
+To actually use them, one has to decide what they should be used for: They can be used as additional
+extensions - in that case, the operator has to remove the comment in the corresponding line in the section
 describing the extensions - in this example
 `[ smime_reqext ]`.
 If the operator wants to use them for extending the DN, the comments from the appropriate line(s) in the DN
@@ -142,7 +142,7 @@ section - in this example
 `[ smime_dn ]`
 must be removed.
 
-In the second case - the operator must also change the configuration file of the CA itself:
+In the second case, the operator must also change the configuration file of the CA itself:
 The policy sections therein define, what parts constitute the DN of issued certificates. In our
 example, those sections would look like this (we only show a part of the rather lengthy configuration file here):
 
@@ -172,6 +172,42 @@ emailAddress            = optional
 
 The operator has to remove the comments in the appropriate lines according to the changes in the 
 CSR configurations.
+
+There is one additional scenario where custom OIDs come in handy: Besides extensions and properties as part
+of the DN, there is the possibility to add so-called attributes to the client configuration for creation of 
+Certificate Signing Requests (CSRs). This often is used in Microsofts CAs - for example for specifying 
+certificate templates. An example for this can be seen here: An additional OID is defined in section
+`[ additional_oids ]`:
+
+```shell
+oid_section = additional_oids
+
+[ additional_oids ]
+
+certificateTemplateName = 1.3.6.1.4.1.311.20.2
+```
+
+Then, the configuration needs to be altered so that attributes are included in the CSRs and that OpenSSL
+knows where to get the actual attributes, we define a section for that in section `[ req ]`:
+
+```shell
+attributes              = smime_attributes
+```
+
+The section containing the attributes looks like this:
+
+```shell
+[ smime_attributes ]
+
+certificateTemplateName = "Template name for using a Windows PKI"
+certificateTemplateName_default = CustomUserOffline
+unstructuredName = "unstructured"
+unstructuredName_default = "unstructured"
+#in the case of prompt = no
+#certificateTemplateName = CustomUserOffline
+```
+
+`unstructuredName` is an OID that can be used to transfer arbitrary textual information along with the CSR.
 
 After the script is done, you have a fully populated directory structure
 for your CA as well as a CSR you need to get signed by another CA. When this is done,
