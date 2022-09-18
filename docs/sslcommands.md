@@ -133,6 +133,18 @@ openssl req -new -key privateKey.key -out my.csr
 openssl req -in my.csr -noout -text
 ```
 
+### HTTPS
+
+#### Dumpo Certificates PEM encoded
+```
+openssl s_client -showcerts -connect www.example.com:443
+```
+
+### STARTTLS
+```
+openssl s_client -showcerts -starttls imap -connect mail.domain.com:139
+```
+
 ### Raw
 
 #### See the raw structure of an ASN.1 file (only for DER encoded files)
@@ -148,3 +160,4 @@ openssl asn1parse -in mysterious_file.pem
 * [openssl_commands.md](https://gist.github.com/webtobesocial/5313b0d7abc25e06c2d78f8b767d4bc3)
 * [OpenSSL Essentials: Working with SSL Certificates, Private Keys and CSRs](https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs)
 * [OpenSSL tips and tricks](https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art030)
+* [Checking A Remote Certificate Chain With OpenSSL ](https://langui.sh/2009/03/14/checking-a-remote-certificate-chain-with-openssl/)
