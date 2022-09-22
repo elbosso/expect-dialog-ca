@@ -119,6 +119,18 @@ openssl ts -reply -in reply.tsr -text
 openssl ts -verify -in reply.tsr -data data.dat -CAfile chain.pem
 ```
 
+#### Extract token from reply
+
+```
+openssl ts -reply -in reply.tsr -token_out -out token.tk
+```
+
+#### Extract certificates from token
+
+```
+openssl pkcs7 -inform DER -in token.tk -print_certs -noout -text
+```
+
 ### CSR
 
 #### Create from existing key
@@ -161,3 +173,4 @@ openssl asn1parse -in mysterious_file.pem
 * [OpenSSL Essentials: Working with SSL Certificates, Private Keys and CSRs](https://www.digitalocean.com/community/tutorials/openssl-essentials-working-with-ssl-certificates-private-keys-and-csrs)
 * [OpenSSL tips and tricks](https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art030)
 * [Checking A Remote Certificate Chain With OpenSSL ](https://langui.sh/2009/03/14/checking-a-remote-certificate-chain-with-openssl/)
+* [OpenSSL: how to extract certificates and token status from RFC3161 timestamping reply?](https://stackoverflow.com/questions/66044640/openssl-how-to-extract-certificates-and-token-status-from-rfc3161-timestamping)
