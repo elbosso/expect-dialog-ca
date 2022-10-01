@@ -56,7 +56,7 @@ ca_dir_name=`realpath .`
 
 get_private_key_file "$ca_dir_name" "$privkey_file_name" "$dialog_exe"
 
-ca=`basename ${privkey_file_name}|cut -d "." -f 1 |cut -d "-" -f 1`
+ca=`basename ${privkey_file_name}|cut -d "." -f 1 |rev| cut -d "-" -f 2-|rev`
 if [ ! -d "./ca/db" ]; then layout_error=1; fi
 if [ ! -d "./ca/private" ]; then layout_error=1; fi
 if [ "$layout_error" = 1 ]; then exit 128; fi
