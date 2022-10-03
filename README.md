@@ -15,6 +15,8 @@ This repository contains scripts meant to make managing an openssl ca less painf
 [![Github All Releases](https://img.shields.io/github/downloads/elbosso/expect-dialog-ca/total.svg)](https://github.com/elbosso/expect-dialog-ca)
 [![Website elbosso.github.io](https://img.shields.io/website-up-down-green-red/https/elbosso.github.io.svg)](https://elbosso.github.io/)
 
+![expectdialogca_logo](resources/images/expectdialogca_logo.png)
+
 ---
 **NOTE**
 
