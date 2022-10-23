@@ -831,7 +831,7 @@ the script will automatically proceed to the next step" 0 0
 if [ "$ca_type" != "root" -a "$ca_type" != "network" ]; then
 for item in ${conf_files}
     do
-      sed -i -E -- "/\[ req \]/i oid_section = additional_oids\n\n[ additional_oids ]\n"  $new_ca_name/etc/$item
+      sed -i -E -- "/\[ req \]/i [ default ]\noid_section = additional_oids\n\n[ additional_oids ]\n"  $new_ca_name/etc/$item
 done
 fi
 

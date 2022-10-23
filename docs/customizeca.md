@@ -247,3 +247,7 @@ key = FORMAT:HEX,BITSTRING:abcdef1234556789
 [ExtOid]
 oid = OID:1.3.101.110
 ```
+
+Policies can (and should be) added to certificates. While the CA is free to define new ones it is poossible to use
+pre-defined ones - for example the ones found below OID arc [2.23.140.1](http://oid-info.com/get/2.23.140.1) as
+detailed [here.](https://cabforum.org/object-registry/)
