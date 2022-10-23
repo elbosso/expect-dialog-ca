@@ -248,6 +248,21 @@ key = FORMAT:HEX,BITSTRING:abcdef1234556789
 oid = OID:1.3.101.110
 ```
 
+Further information about using specific ASN1 datatypes when adding custom Extensions:
+
+```ini
+1.2.3.4.5.6.7.1		= ASN1:UTF8String:UTF8STRING
+1.2.3.4.5.6.7.2		= ASN1:PRINTABLESTRING:"PRINTABLESTRING"
+1.2.3.4.5.6.7.3		= ASN1:IA5STRING:"IA5STRING"
+1.2.3.4.5.6.7.4		= ASN1:VISIBLESTRING:"VISIBLESTRING"
+1.2.3.4.5.6.7.5		= ASN1:UTCTIME:"9604152030Z"
+1.2.3.4.5.6.7.6		= ASN1:UTCTIME:"2210101418+0400"
+1.2.3.4.5.6.7.7		= ASN1:INTEGER:0x04112233445566778899aabbccddeeff
+1.2.3.4.5.6.7.8		= ASN1:BITSTR:0x04112233445566778899aabbccddeeff #this is probably not what you want!
+1.2.3.4.5.6.7.9		= ASN1:GENERALIZEDTIME:"202210101418+0400"
+1.2.3.4.5.6.7.10	= ASN1:FORMAT:HEX,BITSTR:04112233445566778899aabbccddeeff
+```
+
 Policies can (and should be) added to certificates. While the CA is free to define new ones it is poossible to use
 pre-defined ones - for example the ones found below OID arc [2.23.140.1](http://oid-info.com/get/2.23.140.1) as
 detailed [here.](https://cabforum.org/object-registry/)
