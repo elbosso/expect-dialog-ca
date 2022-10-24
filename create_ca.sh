@@ -402,7 +402,7 @@ case $ca_type in
 		echo "authorityKeyIdentifier  = keyid:always" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 		echo "authorityInfoAccess     = @issuer_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 		echo "crlDistributionPoints   = @crl_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "certificatePolicies     = ia5org, cabforum-smime #,@softwarepolsect" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+		echo "certificatePolicies     = ia5org, cabforum-smime #,@smimepolsect" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 	  sed -i -- "s/identity/smime_multi/g"  $new_ca_name/etc/smime_multi.conf
 	  sed -i -- "s/Identity/S\/MIME-Multi/g"  $new_ca_name/etc/smime_multi.conf
 	  sed -i -E -- "s/keyUsage(.*)/keyUsage\1,keyEncipherment/g"  $new_ca_name/etc/smime_multi.conf
@@ -794,8 +794,8 @@ cpsorg=`cat $_temp |cut -d"
 cpsnumbers=`cat $_temp |cut -d"
 " -f 5`
         if [ ! "$cpsoid" = "" ]; then
-          cpsfragment="@${caconfig}CPS\n\n\
-[ ${caconfig}CPS ]\n\
+          cpsfragment="@${caconfig}polsect\n\n\
+[ ${caconfig}polsect ]\n\
 policyIdentifier=${cpsoid}\n"
           if [ ! "$cpsuri" = "" ]; then
             cpsfragment="${cpsfragment}CPS=\"${cpsuri}\"\n"
@@ -810,8 +810,8 @@ organisation=\"${cpsorg}\"\n\
 noticeNumbers=${cpsnumbers}\n"
               fi
             fi
-#            $dialog_exe --title "sed cmd line" --cr-wrap --msgbox "sed -i -- \"s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g\"  $new_ca_name/etc/$new_ca_name\"-ca.conf\"" 12 52
-            sed -i -- "s|#,@${caconfig}CPS|${cpsfragment}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+#            $dialog_exe --title "sed cmd line" --cr-wrap --msgbox "sed -i -- \"s|#,@${caconfig}polsect|,${cpsfragment}|g\"  $new_ca_name/etc/$new_ca_name\"-ca.conf\"" 12 52
+            sed -i -- "s|#,@${caconfig}polsect|,${cpsfragment}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
           fi
         fi
 done
@@ -821,8 +821,8 @@ fi
 #Policy section example
 echo "[polsect]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 echo "policyIdentifier = 1.3.5.8" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-echo "CPS.1 = $default::base_url/policy.html" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-echo "CPS.2 = $default::base_url/policy.pdf" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "CPS.1 = \${default::base_url}/policy.html" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "CPS.2 = \$default::base_url/policy.pdf" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 echo "userNotice.1 = @notice" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 echo "[notice]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
