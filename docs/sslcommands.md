@@ -1,5 +1,7 @@
 ## Some useful OpenSSL commands
 
+[[_TOC_]]
+
 ### Private Key
 
 #### Print out the private key details
@@ -46,6 +48,13 @@ openssl x509 -in certificate.crt -noout -text|more
 openssl x509 -noout -subject certificate.crt
 openssl x509 -noout -issuer certificate.crt
 openssl x509 -noout -dates certificate.crt
+```
+
+#### Inspect server certificates
+
+```
+echo | openssl s_client -servername www.openssl.org -connect www.openssl.org:443 2>/dev/null | openssl x509 -noout -text|more
+echo | openssl s_client -servername imap.arcor.de -connect imap.arcor.de:993 2>/dev/null | openssl x509 -noout -text|more
 ```
 
 ### S/Mime
