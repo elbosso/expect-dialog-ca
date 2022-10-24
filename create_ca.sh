@@ -323,19 +323,19 @@ case $ca_type in
       awk '/\[ timestamp_reqext \]/ || f == 1 && sub(/keyUsage                = critical,digitalSignature/, "keyUsage                = critical,nonRepudiation,digitalSignature") { ++f } 1' $template_dir/etc/timestamp.conf >$new_ca_name/etc/timestamp.conf.intermediate
       mv $new_ca_name/etc/timestamp.conf.intermediate $new_ca_name/etc/timestamp.conf
       cp -a "$template_dir/etc/client.conf" "$new_ca_name/etc"
-      awk '/\[ server_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = serverCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      awk '/\[ server_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = ia5org, cabforum-domain-validated #,@serverpolsect") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
-      awk '/\[ client_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = clientCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      awk '/\[ client_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = ia5org, cabforum-individual-validated #,@clientpolsect") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
-      awk '/\[ timestamp_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = timestampCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      awk '/\[ timestamp_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = ia5org, cabforum-organization-validated #,@timestamppolsect") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       awk '/\[ timestamp_ext \]/ || f == 1 && sub(/keyUsage                = critical,digitalSignature/, "keyUsage                = critical,nonRepudiation,digitalSignature") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
-      awk '/\[ ocspsign_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = ocspsignCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      awk '/\[ ocspsign_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumDevice/, "#certificatePolicies = ia5org, cabforum-organization-validated #,@ocspsignpolsect") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       ;;
@@ -363,7 +363,7 @@ case $ca_type in
 	  echo "authorityKeyIdentifier  = keyid:always" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 	  echo "authorityInfoAccess     = @issuer_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 	  echo "crlDistributionPoints   = @crl_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-	  echo "#certificatePolicies = softwareCPS" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+	  echo "#certificatePolicies = ia5org, cabforum-codesigning-requirements #,@softwarepolsect" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
       if [ "$ocsp_uri" == "" ]; then
         sed -i -E -- "/crl_url *=.*/a #ocsp_url =\t# OCSP responder URL"  $new_ca_name/etc/$new_ca_name"-ca.conf"
         sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @issuer_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
@@ -372,13 +372,13 @@ case $ca_type in
         sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @ocsp_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
         sed -i -E -- "/\[ issuer_info \]/i \[ ocsp_info \]\ncaIssuers;URI.0         = \$aia_url\nOCSP;URI.0              = \$ocsp_url\n"  $new_ca_name/etc/$new_ca_name"-ca.conf"
       fi
-     awk '/\[ identity_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = identityCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+     awk '/\[ identity_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = ia5org, cabforum-organization-validated #,@identitypolsect") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
-      awk '/\[ intermediate_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = intermediateCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      awk '/\[ intermediate_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = ia5org, cabforum-organization-validated #,@intermediatepolsect") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
-      awk '/\[ component_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = componentCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      awk '/\[ component_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = ia5org, cabforum-organization-validated #,@componentpolsect") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       ;;
@@ -402,7 +402,7 @@ case $ca_type in
 		echo "authorityKeyIdentifier  = keyid:always" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 		echo "authorityInfoAccess     = @issuer_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 		echo "crlDistributionPoints   = @crl_info" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
-		echo "certificatePolicies     = blueMediumAssurance" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+		echo "certificatePolicies     = ia5org, cabforum-smime #,@softwarepolsect" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 	  sed -i -- "s/identity/smime_multi/g"  $new_ca_name/etc/smime_multi.conf
 	  sed -i -- "s/Identity/S\/MIME-Multi/g"  $new_ca_name/etc/smime_multi.conf
 	  sed -i -E -- "s/keyUsage(.*)/keyUsage\1,keyEncipherment/g"  $new_ca_name/etc/smime_multi.conf
@@ -415,19 +415,19 @@ case $ca_type in
         sed -i -E -- "s/authorityInfoAccess     = (.*)/authorityInfoAccess     = @ocsp_info/g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
         sed -i -E -- "/\[ issuer_info \]/i \[ ocsp_info \]\ncaIssuers;URI.0         = \$aia_url\nOCSP;URI.0              = \$ocsp_url\n"  $new_ca_name/etc/$new_ca_name"-ca.conf"
       fi
-      awk '/\[ identity_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = identityCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      awk '/\[ identity_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = ia5org #,@identitypolsect") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
-      awk '/\[ encryption_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = encryptionCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      awk '/\[ encryption_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = ia5org #,@encryptionpolsect") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
-      awk '/\[ smime_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = smimeCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      awk '/\[ smime_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance/, "#certificatePolicies = ia5org, cabforum-smime #,@smimepolsect") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       ;;
     software)
       cp -a templates/codesign.conf "$new_ca_name/etc"
-      awk '/\[ codesign_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = codesignCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+      awk '/\[ codesign_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = ia5org, cabforum-codesigning-requirements #,@codesignpolsect") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
       rm $new_ca_name/etc/$new_ca_name"-ca.conf"
       mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
       if [ "$ocsp_uri" == "" ]; then
@@ -441,7 +441,7 @@ case $ca_type in
       ;;
   esac
 #falls root CA...
-awk '/\[ intermediate_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = intermediateCPS") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
+awk '/\[ intermediate_ca_ext \]/ || f == 1 && sub(/certificatePolicies     = blueMediumAssurance,blueMediumDevice/, "#certificatePolicies = ia5org, cabforum-organization-validated #,@intermediatepolsect") { ++f } 1' $new_ca_name/etc/$new_ca_name"-ca.conf" >$new_ca_name/etc/$new_ca_name"-ca.intermediate"
 rm $new_ca_name/etc/$new_ca_name"-ca.conf"
 mv $new_ca_name/etc/$new_ca_name"-ca.intermediate" $new_ca_name/etc/$new_ca_name"-ca.conf"
 
@@ -794,7 +794,7 @@ cpsorg=`cat $_temp |cut -d"
 cpsnumbers=`cat $_temp |cut -d"
 " -f 5`
         if [ ! "$cpsoid" = "" ]; then
-          cpsfragment="certificatePolicies = @${caconfig}CPS\n\n\
+          cpsfragment="@${caconfig}CPS\n\n\
 [ ${caconfig}CPS ]\n\
 policyIdentifier=${cpsoid}\n"
           if [ ! "$cpsuri" = "" ]; then
@@ -811,15 +811,36 @@ noticeNumbers=${cpsnumbers}\n"
               fi
             fi
 #            $dialog_exe --title "sed cmd line" --cr-wrap --msgbox "sed -i -- \"s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g\"  $new_ca_name/etc/$new_ca_name\"-ca.conf\"" 12 52
-            sed -i -- "s|#certificatePolicies = ${caconfig}CPS|${cpsfragment}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
+            sed -i -- "s|#,@${caconfig}CPS|${cpsfragment}|g"  $new_ca_name/etc/$new_ca_name"-ca.conf"
           fi
         fi
 done
 fi
 fi
+
+#Policy section example
+echo "[polsect]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "policyIdentifier = 1.3.5.8" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "CPS.1 = $default::base_url/policy.html" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "CPS.2 = $default::base_url/policy.pdf" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "userNotice.1 = @notice" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "[notice]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "explicitText = \"Explicit Explanation Here\"" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "#organization = \"Organisation Name\"" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "#noticeNumbers = 1, 2, 3, 4" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+
 #Custom OIDs
 echo "" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 echo "[ additional_oids ]" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "cabforum-extended-validation = Certificate issued in compliance with the Extended Validation Guidelines,2.23.140.1.1" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "cabforum-domain-validated = Certificate issued in compliance with the TLS Baseline Requirements – No entity identity asserted,2.23.140.1.2.1" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "cabforum-organization-validated = Certificate issued in compliance with the TLS Baseline Requirements – Organization identity asserted,2.23.140.1.2.2" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "cabforum-individual-validated = Certificate issued in compliance with the TLS Baseline Requirements – Individual identity asserted,2.23.140.1.2.3" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "cabforum-extended-validation-codesigning = EV Code Signing Certificate issued in compliance with the Code Signing Baseline Requirements,2.23.140.1.3" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "cabforum-codesigning-requirements = Code Signing Certificate issued in compliance with the Code Signing Baseline Requirements,2.23.140.1.4.1" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
+echo "cabforum-smime = Reserved for S/MIME Baseline Requirements, not yet approved,2.23.140.1.5" >>$new_ca_name/etc/$new_ca_name"-ca.conf"
 if [ -z ${no_custom_oids+x} ]; then
   #infomsg
 $dialog_exe --backtitle "Custom OIDs (scroll with PgUp, PgDown)" --msgbox "It is possible to give text descriptions for any \
@@ -965,7 +986,7 @@ mac_sha512=$(cat /tmp/sha512)
 $dialog_exe --backtitle "Info (scroll with PgUp, PgDown)" --msgbox "The key is in ${new_ca_name}/ca/private/${new_ca_name}-ca.key\n\nMD5-Fingerprint: ${mac_md5}\nSHA1-Fingerprint: ${mac_sha1}\nSHA256-Fingerprint: ${mac_sha256}\nSHA512-Fingerprint: ${mac_sha512}\n\nThe Cert Req is in ${new_ca_name}/ca/${new_ca_name}-ca.csr\n\nYou can now ask your CA to sign the request!\n\nThe configurations needed by clients to generate certificate signing requests are in ${new_ca_name}/ca/etc. Available are: $conf_files" 0 0
 
 #infomsg
-$dialog_exe --backtitle "Custom Policies (scroll with PgUp, PgDown)" --msgbox "At this time, two policies are defined in the CA configuration file $new_ca_name/etc/$new_ca_name-ca.conf. If you want to add more or add some of your own - feel free to add them using the one named minimal_pol as a template. You are free when naming them but if the names do not end with _pol, the script for signing CSRs will not pick them up so you will not be able to use them when actually signing CSRs!" 0 0
+$dialog_exe --backtitle "Custom DN Policies (scroll with PgUp, PgDown)" --msgbox "At this time, two matching policies for the distinguished names are defined in the CA configuration file $new_ca_name/etc/$new_ca_name-ca.conf. If you want to add more or add some of your own - feel free to add them using the one named minimal_pol as a template. You are free when naming them but if the names do not end with _pol, the script for signing CSRs will not pick them up so you will not be able to use them when actually signing CSRs!" 0 0
 
 #ca=${new_ca_name}
 cpsresources=`grep -e "^CPS\s*=.*$" ${new_ca_name}/etc/${new_ca_name}"-ca.conf"|cut -d "=" -f 2| sed s/\"//g`
