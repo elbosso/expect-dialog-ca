@@ -145,7 +145,7 @@ fi
 
 #Anschließend wird per Dialog der Request präsentiert
 
-openssl req -text -in ${sign_req_name} -out /tmp/csr.pem
+openssl req -text -in "${sign_req_name}" -out /tmp/csr.pem
 
 $dialog_exe --backtitle "Certificate Request" --textbox /tmp/csr.pem 0 0
 
@@ -223,7 +223,15 @@ fi
 
 #Nun wird der Anwender gefragt, ob er den Request signieren möchte
 
-cn=`openssl req -noout -subject -in ${sign_req_name}| sed -n '/^subject/s/^.*CN\s=\s//p'|cut -d',' -f1`
+cn=`openssl req -noout -subject -in "${sign_req_name}"| sed -n '/^subject/s/^.*CN\s=\s//p'|cut -d',' -f1`
+#$dialog_exe --msgbox "CN: >$cn<" 0 0
+#if [ -z "$cn" ]; then
+#	$dialog_exe --msgbox "sign_req_name: $sign_req_name" 0 0
+#	openssl req -noout -subject -in  "${sign_req_name}" | sed -n '/^subject/s/^.*CN\s=\s//p'>/tmp/te.txt
+#	cn=`openssl req -noout -subject -in "${sign_req_name}"| sed -n '/^subject/s/^.*CN\s=\s//p'`
+#	$dialog_exe --msgbox "CN1: $cn" 0 0
+#fi
+#$dialog_exe --msgbox "CN: $cn" 0 0
 if [ ! -z "$validityInYears" ]; then
 #  $dialog_exe --msgbox "found -y $validityInYears" 0 0
   validity_in_years="$validityInYears"
