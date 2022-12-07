@@ -10,6 +10,7 @@ echo -e "-k <file name for private key file of the CA>\t\n\tThe file containing 
 echo -e "-h\t\tPrint this help text"
 }
 dialog_exe=dialog
+. `dirname $0`/logging.sh
 . `dirname $0`/configure_gui.sh
 . `dirname $0`/get_private_key_file.sh
 layout_error=0
@@ -62,6 +63,7 @@ fi
 #	fi
 #fi
 ca_dir_name=`realpath .`
+debug2Syslog "ca_dir_name $ca_dir_name"
 #der private Schlüssel wird ausgewählt
 
 get_private_key_file "$ca_dir_name" "$privkey_file_name" "$dialog_exe"

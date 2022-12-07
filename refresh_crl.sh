@@ -10,6 +10,7 @@ echo -e "-k <file name for private key file of the CA>\tThe file\n\t\tcontaining
 echo -e "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
+. `dirname $0`/logging.sh
 . `dirname $0`/configure_gui.sh
 layout_error=0
 if [ ! -d "./ca" ]; then layout_error=1; fi
@@ -52,6 +53,7 @@ then
 fi
 
 ca_dir_name=`realpath .`
+debug2Syslog "ca_dir_name $ca_dir_name"
 #der private Schlüssel wird ausgewählt
 
 get_private_key_file "$ca_dir_name" "$privkey_file_name" "$dialog_exe"
@@ -80,6 +82,8 @@ if [ ! -d "$hyp" ]; then
 else
 	ca_confdir_name=$hyp
 fi
+
+debug2Syslog "ca_confdir_name $ca_confdir_name"
 
 condition=1
 while [ $condition -eq 1 ]

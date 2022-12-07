@@ -11,6 +11,7 @@ echo -e "-d <directory containing the CSRs to work on>\tAll files found inside\n
 echo -e "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
+. `dirname $0`/logging.sh
 . `dirname $0`/configure_gui.sh
 layout_error=0
 if [ ! -d "./ca" ]; then layout_error=1; fi
@@ -68,6 +69,7 @@ fi
 #	fi
 #fi
 ca_dir_name=`realpath .`
+debug2Syslog "ca_dir_name $ca_dir_name"
 #der private Schlüssel wird ausgewählt
 
 get_private_key_file "$ca_dir_name" "$privkey_file_name" "$dialog_exe"
@@ -80,6 +82,7 @@ if [ "$layout_error" = 1 ]; then exit 128; fi
 if [ -z ${sign_req_directory+x} ]; then
   sign_req_directory=$($dialog_exe --title "Choose a directory containing certificate signing requests" --stdout --title "CSR directory" --dselect /tmp/ $(expr $(tput lines) - 12 ) $(expr $(tput cols) - 10 ))
 fi
+debug2Syslog "sign_req_directory $sign_req_directory"
 
 if [ -d "$sign_req_directory" ]; then
   mkdir -p "$sign_req_directory/done"

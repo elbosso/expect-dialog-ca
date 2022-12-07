@@ -8,6 +8,7 @@ echo ""
 echo "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
+. `dirname $0`/logging.sh
 . `dirname $0`/configure_gui.sh
 optionerror=0
 _temp="/tmp/answer.$$"
@@ -34,6 +35,7 @@ zip_file_location=""
 script_dir=`dirname $0`
 ca_dir_name=""
 ca_dir_name=`realpath .`
+debug2Syslog "ca_dir_name $ca_dir_name"
 
 layout_error=0
 if [ ! -d "${ca_dir_name}/ca" ]; then layout_error=1; fi
@@ -45,25 +47,24 @@ echo "weiter"
 
 ca_name=`basename ${ca_dir_name}`
 
-echo $ca_name
+debug2Syslog "ca_name $ca_name"
 
 db_name=`du -a .|grep "\.db$"|cut -f 2` #cut ohne -d meint tab
 
-echo $db_name
-
+debug2Syslog "db_name $db_name""
 chain_name=`du -a .|grep "chain.pem$"|cut -f 2` #cut ohne -d meint tab
 
-echo $chain_name
+debug2Syslog "chain_name $chain_name"
 
 ca_name=`basename ${ca_dir_name}`
 
-echo "$ca_name"
+debug2Syslog "ca_name $ca_name"
 if [ ! -e "ca/${ca_name}-ca.crt" ]; then
 	echo "could not find ca/"${ca_name}"-ca.crt" 
 	ca_name=`du -a |grep "private$"|cut -f 2`
 	ca_name=`realpath ${ca_name}`
 	ca_name=`echo -n ${ca_name}|rev|cut -d "/" -f 2|rev|sed "s/-ca$//g"`
-	echo $ca_name
+	debug2Syslog "ca_name $ca_name"
 fi
 
 stem=`dirname ${chain_name}`
@@ -77,9 +78,9 @@ mkdir -p ${ts}
 cp -a ${csr_name} ${ts}
 cp -a ${crt_name} ${ts}
  
-echo $ts
+debug2Syslog "ts $ts"
 
-echo $csr_name $crt_name $key_name
+debug2Syslog "csr, crt, key $csr_name $crt_name $key_name"
 
 log_file_name=$($dialog_exe --stdout --backtitle "Log" --fselect ./${ca_name}_log.tsv $(expr $(tput lines) - 12 ) $(expr $(tput cols) - 10 ))
 if [ ${?} -ne 0 ]; then exit 127; fi   

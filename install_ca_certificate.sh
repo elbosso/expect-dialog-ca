@@ -9,6 +9,7 @@ echo "-z <location of zip file holding the certificate>\tThe file with\n\t\tthe 
 echo "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
+. `dirname $0`/logging.sh
 . `dirname $0`/configure_gui.sh
 optionerror=0
 _temp="/tmp/answer.$$"
@@ -63,6 +64,7 @@ fi
 	fi
 done
 ca_dir_name=`realpath .`
+debug2Syslog "ca_dir_name $ca_dir_name"
 
 layout_error=0
 if [ ! -d "${ca_dir_name}/ca" ]; then layout_error=1; fi
@@ -79,14 +81,14 @@ mkdir -p /tmp/ca-rollout
 unzip -o "${zip_file_location}" -d /tmp/ca-rollout 
 subject=`basename "${zip_file_location}"|rev|cut -d "." -f 2|rev`
 
-echo $subject
+debug2Syslog "subject $subject"
 . /tmp/ca-rollout/index.txt
-echo $issuer
-echo $zert
+debug2Syslog "issuer $issuer"
+debug2Syslog "zert $zert"
 
 ca_name=`basename ${ca_dir_name}`
 
-echo $ca_name
+debug2Syslog "ca_name $ca_name"
 
 timestamp=$(date +%Y-%m-%d_%H-%M-%S)
 if [ -e "ca/${ca_name}-ca.crt" ]; then

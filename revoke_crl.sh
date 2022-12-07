@@ -8,6 +8,7 @@ echo ""
 echo "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
+. `dirname $0`/logging.sh
 . `dirname $0`/configure_gui.sh
 optionerror=0
 _temp="/tmp/answer.$$"
@@ -35,6 +36,7 @@ script_dir=`dirname $0`
 ca_dir_name=""
 
 ca_dir_name=`realpath .`
+debug2Syslog "ca_dir_name $ca_dir_name"
 
 layout_error=0
 if [ ! -d "${ca_dir_name}/ca" ]; then layout_error=1; fi
@@ -46,11 +48,11 @@ echo "weiter"
 
 ca_name=`basename ${ca_dir_name}`
 
-echo $ca_name
+debug2Syslog "ca_name $ca_name"
 
 db_name=`du -a .|grep "\.db$"|cut -f 2` #cut ohne -d meint tab
 
-echo $db_name
+debug2Syslog "db_name $db_name"
 
 n=0
 menuitems=""
@@ -77,7 +79,7 @@ echo "empty"
 #if  [ "$n" = 1 ]; then break; fi
 done < "$db_name"
 if [ ! $n -eq 1 ]; then
-echo $menuitems
+debug2Syslog "menuitems $menuitems"
 #menuitems=`echo -n $menuitems | sed -e 's/.//'`
 IFS=$'%'
     $dialog_exe --backtitle "Valid Certificates in data base" \
@@ -88,7 +90,7 @@ IFS=$'%'
     else
       exit 12
     fi
-		echo $sel
+		debug2Syslog "sel $sel"
 n=0
 fi
 #           $dialog_exe --msgbox "$sel" 0 0
@@ -113,7 +115,7 @@ revoked_cert=""
 	fi
 done
 
-echo $serial
+debug2Syslog "serial $serial"
 if [ "$revoked_cert" != "" ]; then
 openssl x509 -text -in ${revoked_cert} > /tmp/cert.pem
 
@@ -123,7 +125,6 @@ $dialog_exe --backtitle "Decision" --yesno "Do You want to revoke this certifica
 if [ $? -eq 0 ]; then
 ca_name=`basename ${ca_dir_name}`
 
-echo "$ca_name"
 if [ ! -e "ca/${ca_name}-ca.crt" ]; then
 	echo "could not find ca/"${ca_name}"-ca.crt" 
 	ca_name=`du -a |grep "private$"|cut -f 2`
@@ -131,6 +132,7 @@ if [ ! -e "ca/${ca_name}-ca.crt" ]; then
 	ca_name=`echo -n ${ca_name}|rev|cut -d "/" -f 2|rev|sed "s/-ca$//g"`
 	echo $ca_name
 fi
+debug2Syslog "ca_name $ca_name"
 
 cn=`openssl x509 -noout -subject -in ca/${ca_name}-ca.crt| sed -n '/^subject/s/^.*CN\s*=\s*//p'`
 

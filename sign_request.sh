@@ -14,8 +14,11 @@ echo -e "-y the calendar dialog shows a date the given amount of years in the\n\
 echo -e "-M the calendar dialog shows a date the given amount of months in the\n\t\tfuture - taking into account the value for -d if given\n"
 echo -e "-h\t\tPrint this help text\n"
 }
+
+
 dialog_exe=dialog
 
+. `dirname $0`/logging.sh
 . `dirname $0`/configure_gui.sh
 . `dirname $0`/get_private_key_file.sh
 
@@ -91,6 +94,7 @@ fi
 #	fi
 #fi
 ca_dir_name=`realpath .`
+debug2Syslog "ca_dir_name $ca_dir_name"
 
 get_private_key_file "$ca_dir_name" "$privkey_file_name" "$dialog_exe"
 
@@ -121,6 +125,7 @@ fi
 	fi
 done
 
+debug2Syslog "sign_req_name $sign_req_name"
 # Das Konfigurationsverzeichnis der CA wird gesucht
 
 hyp=`dirname ${privkey_file_name}`/../etc
@@ -141,7 +146,7 @@ else
 	ca_confdir_name=$hyp
 fi
 
-
+debug2Syslog "ca_confdir_name $ca_confdir_name"
 
 #Anschließend wird per Dialog der Request präsentiert
 
@@ -180,7 +185,7 @@ n=0
 		fi
         n=`expr $n + 1`
     done
-#        $dialog_exe --msgbox "You choose:\nNo. $sel --> $selection" 6 42
+        debug2Syslog "You choose:\nNo. $sel --> $selection"
 	else
 		exit 255
     fi
@@ -215,7 +220,7 @@ n=0
 		fi
         n=`expr $n + 1`
     done
-#        $dialog_exe --msgbox "You choose:\nNo. $sel --> $policy" 6 42
+        debug2Syslog "You choose:\nNo. $sel --> $policy"
 	else
 		exit 255
     fi
@@ -231,9 +236,9 @@ cn=`openssl req -noout -subject -in "${sign_req_name}"| sed -n '/^subject/s/^.*C
 #	cn=`openssl req -noout -subject -in "${sign_req_name}"| sed -n '/^subject/s/^.*CN\s=\s//p'`
 #	$dialog_exe --msgbox "CN1: $cn" 0 0
 #fi
-#$dialog_exe --msgbox "CN: $cn" 0 0
+debug2Syslog "CN: $cn"
 if [ ! -z "$validityInYears" ]; then
-#  $dialog_exe --msgbox "found -y $validityInYears" 0 0
+  debug2Syslog "found -y $validityInYears"
   validity_in_years="$validityInYears"
   expiration_planned=$(date -d "+$validityInYears years")
   expiration_planned_ts=$(date -d "+$validityInYears years" +%Y%m%d%H%M%S)
@@ -241,7 +246,7 @@ if [ ! -z "$validityInYears" ]; then
 #  $dialog_exe --msgbox "$calpreset" 0 0
 else
   if [ ! -z "$validityInMonths" ]; then
-#    $dialog_exe --msgbox "found -M $validityInMonths" 0 0
+    debug2Syslog "found -M $validityInMonths"
     expiration_planned=$(date -d "+$validityInMonths months")
     expiration_planned_ts=$(date -d "+$validityInMonths months" +%Y%m%d%H%M%S)
     calpreset=$(date -d "+${validityInMonths} months" +"$validityEndDay %m %Y")
@@ -279,7 +284,7 @@ ca_expiration=`openssl x509 -noout -dates -in ${ca_cert}|grep notAfter|cut -d "=
 ca_expiration_ts=$(date -d "${ca_expiration}" +%Y%m%d%H%M%S)
 ca_expiration_seconds=$(date -d "${ca_expiration}" +%s)
 
-#$dialog_exe --backtitle "Info" --msgbox "${expiration_planned_ts} ${ca_expiration_ts}" 0 0
+debug2Syslog "${expiration_planned_ts} ${ca_expiration_ts}" 0 0
 
 if [ "$expiration_planned_seconds" -gt "$ca_expiration_seconds" ]; then
 	$dialog_exe --backtitle "Warning" --yesno "CA certificate expiration\n${ca_expiration}\nis reached before planned expiration date for new certificate\n${expiration_planned}\n- is this really what you want?" 0 0 

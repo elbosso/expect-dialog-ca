@@ -8,6 +8,7 @@ echo ""
 echo "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
+. `dirname $0`/logging.sh
 . `dirname $0`/configure_gui.sh
 optionerror=0
 _temp="/tmp/answer.$$"
@@ -34,6 +35,7 @@ script_dir=`dirname $0`
 ca_dir_name=""
 
 ca_dir_name=`realpath .`
+debug2Syslog "ca_dir_name $ca_dir_name"
 
 layout_error=0
 if [ ! -d "${ca_dir_name}/ca" ]; then layout_error=1; fi
@@ -43,17 +45,17 @@ if [ "$layout_error" = 1 ]; then exit 126; fi
 
 ca_name=`basename ${ca_dir_name}`
 
-echo $ca_name
+debug2Syslog "ca_name $ca_name"
 
 db_name=`du -a .|grep "\.db$"|cut -f 2` #cut ohne -d meint tab
 
-echo $db_name
+debug2Syslog "db_name $db_name"
 
 continue=1
 while [ $continue -ne 0 ]
 do
 ca_expiration=`LC_ALL=en_US.utf8 dialog --stdout --date-format "%B %d %H:%M:%S %Y" --calendar "Date the displayed certificates must be expired before" 0 0`
-#$dialog_exe --backtitle "date" --msgbox "#${ca_expiration}#" 9 52
+debug2Syslog "date #${ca_expiration}#"
 if [ "$ca_expiration" = "" ]; then
 ca_expiration_seconds=""
 ca_expiration_ts=""
@@ -91,7 +93,7 @@ lookedat_cert=""
 	if [ "$ser$cname" = "$serial$cn" ]; then
 		lookedat_cert=${item}
 cert_expiration=`openssl x509 -noout -dates -in ${lookedat_cert}|grep notAfter|cut -d "=" -f 2`
-#$dialog_exe --backtitle "date" --msgbox "${cert_expiration}" 0 0
+debug2Syslog "date ${cert_expiration}"
 	cert_expiration_ts=$(date -d "${cert_expiration}" +%Y%m%d%H%M%S)
 	cert_expiration_seconds=$(date -d "${cert_expiration}" +%s)
 		break
@@ -100,7 +102,7 @@ done
 
 #$dialog_exe --backtitle "date" --msgbox "#${valid_end}#${ca_expiration_seconds}#${cert_expiration_seconds}#${ca_expiration}#${cert_expiration}" 9 52
 
-	echo $state $serial $cn
+	debug2Syslog "state, serial,cn $state $serial $cn"
 	if [ "$ca_expiration_seconds" = "" ] || [ "$state" = "V" ]; then
 #$dialog_exe --backtitle "date" --msgbox "#${ca_expiration_seconds}#${cert_expiration_seconds}#" 9 52
 		if [ "$ca_expiration_seconds" = "" ] || [ "$ca_expiration_seconds" -gt "$cert_expiration_seconds" ]; then
@@ -133,7 +135,7 @@ IFS=$'%'
            "Choose one of the certificates to show detailed information" 0 0 0 $menuitems 2> $_temp
     if [ $? -eq 0 ]; then
          sel=`cat $_temp`
-		echo $sel
+		debug2Syslog "sel $sel"
 n=0
 #das folgende, weil POSIX shell!!
 IFS='
@@ -154,7 +156,7 @@ revoked_cert=""
 	fi
 done
 
-echo $serial
+debug2Syslog "serial $serial""
 if [ "$revoked_cert" != "" ]; then
 openssl x509 -text -in ${revoked_cert} > /tmp/cert.pem
 
