@@ -1,16 +1,17 @@
 #!/bin/bash
 #! -path '*tests*/*'
-certs=$(find . -type f -path '*certs*/*' -name '*.crt' ! -path '*trash*/*')
+certs=$(find . -type f -path '*certs*/*' -name '*.crt' ! -path '*trash*/*' ! -path '*revoked*/*')
 
 #Set the field separator to new line
 IFS=$'\n'
 
 revokeds=$(cat Dama11_Intermediary_Test_CA/ca/db/Dama11_Intermediary_Test_CA-ca.db|grep "^R"|cut -f 6-,4|sed 's+\t/+_+g')
 
-for revoked in ${revokeds}
-do
-  echo "$revoked"
-done
+#for revoked in ${revokeds}
+#do
+#  echo "$revoked"
+#done
+
 echo "digraph D{">graphviz.dot
 
 echo "subgraph cluster_testing{">>graphviz.dot

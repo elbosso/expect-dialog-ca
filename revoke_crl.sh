@@ -177,6 +177,13 @@ resources="${base_url}/${ca_name}.crl"
 $dialog_exe --backtitle "Resources to provide" --msgbox "You must provide the updated CRL NOW\n
 to make the changes visible:\n$resources" 14 64
 
+mkdir -p "certs/revoked"
+mv "${revoked_cert}" "certs/revoked/"
+filename=$(basename -- "$revoked_cert")
+extension="${revoked_cert##*.}"
+filename="${revoked_cert%.*}"
+#$dialog_exe --msgbox "$filename" 0 0
+mv "${filename}.der" "certs/revoked/"
 fi
 fi
 
