@@ -27,3 +27,4 @@ deliverables*
 /_priv/
 Test1_*
 logs
+/graphviz.dot
