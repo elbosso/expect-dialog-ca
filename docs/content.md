@@ -43,7 +43,7 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   * *-g*
     Generate template for ca_presets.ini and stop execution afterwards
   * *-h*
-    Print some help text"
+    Print some help text
 * [install_ca_certificate.sh](../install_ca_certificate.sh)  
   This script takes the certificate produced by the certificate authority
   for the new CA and installs it in the correct place inside the directory structure.
@@ -52,7 +52,7 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   * *-z location of zip file holding the certificate*
     The file with the deliverables in it that the CA sent back
   * *-h*
-    Print some help text"
+    Print some help text
 * [manage_certs.sh](../manage_certs.sh)  
   This script lists all certificates ever issued by this CA and their 
   current state or - if a date is given - all valid certificates with 
@@ -71,7 +71,7 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   * *-k file name for private key file of the CA*
     The file containing the private key of the CA
   * *-h*
-    Print some help text"
+    Print some help text
 * [reneq_cert_req.sh](../reneq_cert_req.sh)  
   This script issues a CSR for renewal of a soon to be expiring certificate:
   If the private key should stay the same - thats the option to choose!
@@ -92,7 +92,7 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   * *-o file name of resulting CSR*
     The file the new certificate signing request is to be saved in
   * *-h*
-    Print some help text"
+    Print some help text
 * [request_certificate_renewal.sh](../request_certificate_renewal.sh)  
   *This script is obsolete - due to a bug in openssl, the extensions as well as the subject alternative names
   are not copied from the certificate into the CSR - users should use standard openssl commands for creating
@@ -113,11 +113,16 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   * *-o file name of resulting CSR*
     The file the new certificate signing request is to be saved in
   * *-h*
-    Print some help text"
+    Print some help text
 * [revoke_crl.sh](../revoke_crl.sh)  
   This script shows all currently valid certificates. The user 
-  can choose one of them. This is then revoked and the certificate revocation list 
-  (CRL) is also updated accordingly.
+  can choose one of them. The user is then asked to choose one of the available
+  reason for the revocation. After a final display of the choosen certificate and a
+  positive answer to the security question to make sure the user
+  is aware of the consequences, this certificate is then revoked and the certificate revocation list 
+  (CRL) is also updated accordingly. The certificate itself is moved from the folder holding
+  all active issued certificates (_certs_) into a folder holding all issued and revoked certificates named
+  _certs/revoked_.
 * [sign_request.sh](../sign_request.sh)  
   This script takes a CSR and creates a certificate for it after
   presenting the CSR to the user in a human-readable form and asking
@@ -127,18 +132,26 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   Parameters for the script:
   * *-k file name for key file*
     If this file exists, the key in it is used - if it does not exist, a new key is generated and saved to it
-  * *-k file name for private key file of the CA*
-    The file containing the private key of the CA
   * *-s file name of the CSR to work on*
     A file containing the certificate signing request to be processed
+  * *-s file name of the CSR to work on*
+    A file containing the certificate\n\t\tsigning request to be processed\n"
+  * *-d*
+    The calendar dialog for choosing the validity end of the certificate is preset to this date"
+  * *-m* 
+    The calendar dialog for choosing the validity end of the certificate is preset to this date (only if -M ist *NOT* specified!)"
+  * *-y* 
+    The calendar dialog shows a date the given amount of years in the future - taking into account the values for -m and -d if given"
+  * *-M* 
+    The calendar dialog shows a date the given amount of months in the future - taking into account the value for -d if given"
   * *-h*
-    Print some help text"
+    Print some help text
 * [work_on_csrs.sh](../work_on_csrs.sh)  
   This script takes a directory and searches for all files with suffix
   ".csr" in it. With each such file found it calls [sign_request.sh](../sign_request.sh)
   and after this script has finished, it moves the CSR to a subdirectory named _done_.
   This subdirectory is created if it does not yet exist. That way, the
-  habdling of CSRs can be interrupted and continued later on.
+  handling of CSRs can be interrupted and continued later on.
   
   Parameters for the script:
   * *-k file name for private key file of the CA*
@@ -146,7 +159,7 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   * *-d directory containing the CSRs to work on*
     All files found inside this directory with suffix \".csr\" are processed as certificate signing request
   * *-h*
-    Print some help text"
+    Print some help text
 ### Linux helper scripts
 * [build_p12.sh](../build_p12.sh)  
   This script is added to all the files delivered to an end entity after creating the certificate
@@ -169,7 +182,34 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   This script is sourced by all other scripts used on the issuer side of
   things. It sets some basic environment bariables needed in all the scripts
   and does some other supporting stuff too.
-  
+* [logging.sh](../logging.sh)
+  This script is sourced by all scripts having to write log messages to syslog. It offers
+  a function to do so named `debug2Syslog`.
+* [updateCRLs.sh](../updateCRLs.sh) 
+  This script searches recursively for all CAs in or below the current directory. It changes
+  into each CA directory found and then calls [refresh_crl.sh](../refresh_crl.sh) - this 
+  updates the CRL of the CA in question - providing the correct path to the corresponding
+  private key automatically. This way, one only hass to give the matching passwords to
+  unlock each private key when needed. This can be a huge time saver when a PKI with lots of CAs
+  has to be managed
+* [copyCRLs.sh](../copyCRLs.sh)
+  This script searches recursively for all CRLs in or below the current directory. All CRLs
+  found are then copied into the target directory (to facilitate the upload of the certificates 
+  to a HTTP server for example). If no target directory is specified when starting the script,
+  a file chooser dialog is displayed. 
+  Parameters for the script:
+  * *-d target directory to copy the CRLs to*
+    All CRLs found inside any of the subdirectories of the current directory are copied to this directory.
+  * *-h*
+    Print some help text.
+* [structure_dot.sh](../structure_dot.sh)
+  This script searches recursively for all CA certificates in or below the current directory.
+  It extracts some information from them - mainly the parent child relationships between issuer 
+  and issued certificates and processes this information to write a GraphViz _.dot_ file. This
+  file when rendered provides a visual representation of the relationships of the certificates like 
+  in this example here:
+  ![](../resources/images/graphviz.svg)
+
 ### Expect scripts
 These scripts are needed to hide the complexities of calling and interacting with the openssl 
 command line program. They automate the interactive process when using the openssl

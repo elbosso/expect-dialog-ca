@@ -1,5 +1,6 @@
 # expect-dialog-ca
-This repository contains scripts meant to make managing an openssl ca less painful inside a terminal environment
+This repository contains scripts meant to make managing a Public Key 
+Infrastructure using openssl less painful inside a terminal environment.
 
 <!---
 [![start with why](https://img.shields.io/badge/start%20with-why%3F-brightgreen.svg?style=flat)](http://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action)
@@ -16,6 +17,14 @@ This repository contains scripts meant to make managing an openssl ca less painf
 [![Website elbosso.github.io](https://img.shields.io/website-up-down-green-red/https/elbosso.github.io.svg)](https://elbosso.github.io/)
 
 ![expectdialogca_logo](resources/images/expectdialogca_logo.png)
+
+With the supplied tools, even complex PKIs similar to the one in this example can be managed
+easily and effectively:
+
+![](resources/images/graphviz.svg)
+
+Scripts for automatic analysis of complex PKIs and helping in the documentation - for
+example creating diagrams like the one above - are also included here.
 
 ---
 **NOTE**
