@@ -15,6 +15,7 @@ optionerror=0
 _temp="/tmp/answer.$$"
 zip_file_location=""
 script_dir=`dirname $0`
+script=`basename $0`
 ca_dir_name=""
 while getopts ":z:h" opt; do
   case $opt in

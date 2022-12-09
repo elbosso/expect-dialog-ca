@@ -32,6 +32,7 @@ then
 fi
 
 script_dir=`dirname $0`
+script=`basename $0`
 ca_dir_name=""
 
 ca_dir_name=`realpath .`

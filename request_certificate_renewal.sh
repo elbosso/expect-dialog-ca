@@ -1,6 +1,7 @@
 #!/bin/sh
 optionerror=0
 script_dir=`dirname $0`
+script=`basename $0`
 key_file_location=""
 cert_file_location=""
 csr_file_location=""

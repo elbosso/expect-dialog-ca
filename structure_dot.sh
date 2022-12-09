@@ -1,5 +1,4 @@
 #!/bin/bash
-#! -path '*tests*/*'
 certs=$(find . -type f -path '*certs*/*' -name '*.crt' ! -path '*trash*/*' ! -path '*revoked*/*')
 
 #Set the field separator to new line
