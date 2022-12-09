@@ -9,6 +9,7 @@ function get_private_key_file {
   while [ $condition -eq 1 ]
   do
   condition=0
+
   if [ "$_privkey_file_name" == "" ]; then
     _privkey_file_name=$($dialog_exe --stdout --backtitle "CAs Private Key" --fselect "$ca_dir_name/ca/private/" $(expr $(tput lines) - 12 ) 90)
     if [ ${?} -ne 0 ]; then exit 127; fi

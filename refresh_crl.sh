@@ -12,6 +12,7 @@ echo -e "-h\t\tPrint this help text\n"
 dialog_exe=dialog
 . `dirname $0`/logging.sh
 . `dirname $0`/configure_gui.sh
+. `dirname $0`/get_private_key_file.sh
 layout_error=0
 if [ ! -d "./ca" ]; then layout_error=1; fi
 if [ ! -d "./certs" ]; then layout_error=1; fi
@@ -58,7 +59,12 @@ debug2Syslog "ca_dir_name $ca_dir_name"
 
 get_private_key_file "$ca_dir_name" "$privkey_file_name" "$dialog_exe"
 
+debug2Syslog "privkey_file_name $privkey_file_name"
+
 ca=`basename ${privkey_file_name}|cut -d "." -f 1 |rev| cut -d "-" -f 2-|rev`
+
+debug2Syslog "ca $ca"
+
 if [ ! -d "./ca/db" ]; then layout_error=1; fi
 if [ ! -d "./ca/private" ]; then layout_error=1; fi
 if [ "$layout_error" = 1 ]; then exit 128; fi
