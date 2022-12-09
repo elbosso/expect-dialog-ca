@@ -118,6 +118,37 @@ done
 
 debug2Syslog "serial $serial"
 if [ "$revoked_cert" != "" ]; then
+
+options="superseded%unspecified%keyCompromise%CACompromise%affiliationChanged%cessationOfOperation%certificateHold%removeFromCRL"
+menuitems="0%superseded%1%unspecified%2%keyCompromise%3%CACompromise%4%affiliationChanged%5%cessationOfOperation%6%certificateHold%7%removeFromCRL"
+IFS=$'%'
+
+#$dialog_exe --msgbox "$menuitems" 0 0
+$dialog_exe --backtitle "Valid Certificates in data base" \
+           --title "Select one" --menu \
+           "Choose one of the certificates to show detailed information" 0 0 0 $menuitems 2> $_temp
+    if [ $? -eq 0 ]; then
+         sel=`cat $_temp`
+    else
+      exit 13
+    fi
+		debug2Syslog "sel $sel"
+
+n=0
+    for item in ${options}
+    do
+		if [ "$sel" = "$n" ]
+		then
+        selection=${item}
+		fi
+        n=`expr $n + 1`
+    done
+        debug2Syslog "You choose: $sel --> $selection"
+revocationReason=$selection
+#das folgende, weil POSIX shell!!
+IFS='
+'
+
 openssl x509 -text -in ${revoked_cert} > /tmp/cert.pem
 
 $dialog_exe --backtitle "Certificate about to be revoked" --textbox /tmp/cert.pem 0 0
@@ -153,7 +184,7 @@ done
 
 #$dialog_exe --msgbox "_${revoked_cert}_etc/${ca_name}-ca.conf" 0 0
 
-expect "${script_dir}/revoke_cert.xpct" "etc/${ca_name}-ca.conf" "${revoked_cert}" "${priv_key_pass}"
+expect "${script_dir}/revoke_cert.xpct" "etc/${ca_name}-ca.conf" "${revoked_cert}" "${priv_key_pass}" "$revocationReason"
 
 expect "${script_dir}/gen_crl.xpct" "etc/${ca_name}-ca.conf" "crl/${ca_name}-ca.crl" "${priv_key_pass}"
 #openssl ca -gencrl -config etc/${ca_name}-ca.conf -out crl/${ca_name}-ca.crl
