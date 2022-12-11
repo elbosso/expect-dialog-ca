@@ -212,7 +212,13 @@ openssl cms -verify -in some_email_message.eml
 openssl cms -verify -in some_email_message -CAfile trust_anchor-crt
 ```
 
+#### Signed and encrypted messages need to be decrypted first:
 
+Note: the P12 file holding the digital identity must be pem-encoded! (see above)
+
+```
+openssl cms -decrypt -out decrypted_email_message  -inkey p12.pem -in some_encrypted_email_message
+```
 
 ### Raw
 
