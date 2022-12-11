@@ -156,21 +156,71 @@ openssl req -in my.csr -noout -text
 
 ### HTTPS
 
-#### Dumpo Certificates PEM encoded
+#### Dump Certificates PEM encoded
 ```
 openssl s_client -showcerts -connect www.example.com:443
 ```
 
 ### STARTTLS
+
+#### Dump Certificates PEM encoded
 ```
 openssl s_client -showcerts -starttls imap -connect mail.domain.com:139
 ```
+
+### S/MIME verification
+
+#### Possible outcomes
+
+Message was tampered with (return code 4):
+
+```
+Verification failure
+140485684135232:error:2E09A09E:CMS routines:CMS_SignerInfo_verify_content:verification failure:../crypto/cms/cms_sd.c:847:
+140485684135232:error:2E09D06D:CMS routines:CMS_verify:content verify error:../crypto/cms/cms_smime.c:393:
+```
+
+Message signature not trusted (return code 4):
+
+```
+Verification failure
+140146111432000:error:2E099064:CMS routines:cms_signerinfo_verify_cert:certificate verify error:../crypto/cms/cms_smime.c:252:Verify error:unable to get local issuer certificate
+```
+
+Message not signed (return code 2):
+
+```
+Error reading S/MIME message
+140701208487232:error:0D0D40CD:asn1 encoding routines:SMIME_read_ASN1:invalid mime type:../crypto/asn1/asn_mime.c:469:type: multipart/alternative
+```
+
+Validation successful (return code 0):
+
+```
+Verification successful
+```
+
+#### Verify the validity of an email message
+
+```
+openssl cms -verify -in some_email_message.eml
+```
+
+#### Verify the validity of an email message explicitly specifying trust
+
+```
+openssl cms -verify -in some_email_message -CAfile trust_anchor-crt
+```
+
+
 
 ### Raw
 
 #### See the raw structure of an ASN.1 file (only for DER encoded files)
 
+```
 openssl asn1parse -in mysterious_file.pem
+```
 
 ## Some resources with useful OpenSSL commands
 
