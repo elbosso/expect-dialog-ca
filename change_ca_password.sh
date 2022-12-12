@@ -17,7 +17,10 @@ layout_error=0
 if [ ! -d "./ca" ]; then layout_error=1; fi
 if [ ! -d "./certs" ]; then layout_error=1; fi
 if [ ! -d "./crl" ]; then layout_error=1; fi
-if [ "$layout_error" = 1 ]; then exit 126; fi
+if [ "$layout_error" = 1 ]; then
+  $dialog_exe --backtitle "Error" --msgbox "Script must be started from within a CA directory - containing three directories named ca, certs and crl!" 9 52
+  exit 126;
+fi
 
 script_dir=`dirname $0`
 script=`basename $0`
@@ -71,7 +74,10 @@ get_private_key_file "$ca_dir_name" "$privkey_file_name" "$dialog_exe"
 ca=`basename ${privkey_file_name}|cut -d "." -f 1 |rev| cut -d "-" -f 2-|rev`
 if [ ! -d "./ca/db" ]; then layout_error=1; fi
 if [ ! -d "./ca/private" ]; then layout_error=1; fi
-if [ "$layout_error" = 1 ]; then exit 128; fi
+if [ "$layout_error" = 1 ]; then
+  $dialog_exe --backtitle "Error" --msgbox "Script must be started from within a CA directory - containing two directories named ca/db and ca/private!" 9 52
+  exit 128;
+fi
 
 condition=1
 while [ $condition -eq 1 ]

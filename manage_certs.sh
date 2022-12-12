@@ -42,7 +42,10 @@ layout_error=0
 if [ ! -d "${ca_dir_name}/ca" ]; then layout_error=1; fi
 if [ ! -d "${ca_dir_name}/certs" ]; then layout_error=1; fi
 if [ ! -d "${ca_dir_name}/crl" ]; then layout_error=1; fi
-if [ "$layout_error" = 1 ]; then exit 126; fi
+if [ "$layout_error" = 1 ]; then
+  $dialog_exe --backtitle "Error" --msgbox "Script must be started from within a CA directory - containing three directories named ca, certs and crl!" 9 52
+  exit 126;
+fi
 
 ca_name=`basename ${ca_dir_name}`
 
