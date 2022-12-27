@@ -160,7 +160,7 @@ revoked_cert=""
 	fi
 done
 
-debug2Syslog "serial $serial""
+debug2Syslog "serial $serial"
 if [ "$revoked_cert" != "" ]; then
 openssl x509 -text -in ${revoked_cert} > /tmp/cert.pem
 

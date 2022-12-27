@@ -7,6 +7,7 @@ echo ""
 echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
 echo -e "-k <file name for private key file of the CA>\tThe file\n\t\tcontaining the private key of the CA\n"
+echo -e "-d <directory name to copy CRL to>\tThe directory\n\t\twhere the resulting CRL should be placed\n"
 echo -e "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
@@ -26,14 +27,19 @@ script_dir=`dirname $0`
 script=`basename $0`
 ca_dir_name=""
 privkey_file_name=""
+destination_dir_for_crl=""
 . ${script_dir}/preset_${script}
 _temp="/tmp/answer.$$"
 
-while getopts ":s:k:h" opt; do
+while getopts ":k:d:h" opt; do
   case $opt in
     k)
 #      echo "-k was triggered! ($OPTARG)" >&2
 		privkey_file_name=$OPTARG
+      ;;
+    d)
+#      echo "-d was triggered! ($OPTARG)" >&2
+		destination_dir_for_crl=$OPTARG
       ;;
     h)
 	  printHelp
@@ -134,6 +140,11 @@ base_url=`grep -e "^base_url\s*=\s*.*$" etc/${ca_name}"-ca.conf"|cut -d "=" -f 2
 #$dialog_exe --title "resources" --cr-wrap --msgbox "$ca \n $base_url \n ${new_ca_name}\n ${addresources}" 12 52
 resources="${base_url}/${ca_name}.crl"
 
+if [ ! -z "$destination_dir_for_crl" ] ; then
+  if [ -d "${destination_dir_for_crl}" ] ; then
+    cp "crl/${ca_name}-ca.crl" "$destination_dir_for_crl"
+  fi
+fi
 #infomsg
 $dialog_exe --backtitle "Resources to provide" --msgbox "You must provide the updated CRL NOW\n
 to make the changes visible:\n$resources" 14 64

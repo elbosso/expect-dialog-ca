@@ -51,6 +51,8 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   Parameters for the script:
   * *-z location of zip file holding the certificate*
     The file with the deliverables in it that the CA sent back
+  * *-d directory name to copy CRL to*
+    The directory where the resulting CRL should be placed
   * *-h*
     Print some help text
 * [manage_certs.sh](../manage_certs.sh)  
@@ -70,6 +72,8 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   Parameters for the script:
   * *-k file name for private key file of the CA*
     The file containing the private key of the CA
+  * *-d directory name to copy CRL to*
+    The directory where the resulting CRL should be placed
   * *-h*
     Print some help text
 * [reneq_cert_req.sh](../reneq_cert_req.sh)  
@@ -123,6 +127,12 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   (CRL) is also updated accordingly. The certificate itself is moved from the folder holding
   all active issued certificates (_certs_) into a folder holding all issued and revoked certificates named
   _certs/revoked_.
+
+  Parameters for the script:
+  * *-d directory name to copy CRL to*
+    The directory where the resulting CRL should be placed
+  * *-h*
+    Print some help text
 * [sign_request.sh](../sign_request.sh)  
   This script takes a CSR and creates a certificate for it after
   presenting the CSR to the user in a human-readable form and asking

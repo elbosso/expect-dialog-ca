@@ -6,6 +6,7 @@ echo ""
 echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
 echo "-z <location of zip file holding the certificate>\tThe file with\n\t\tthe deliverables in it that the CA sent back\n"
+echo "-d <directory name to copy CRL to>\tThe directory\n\t\twhere the resulting CRL should be placed\n"
 echo "-h\t\tPrint this help text\n"
 }
 dialog_exe=dialog
@@ -17,11 +18,17 @@ zip_file_location=""
 script_dir=`dirname $0`
 script=`basename $0`
 ca_dir_name=""
-while getopts ":z:h" opt; do
+destination_dir_for_crl=""
+
+while getopts ":z:d:h" opt; do
   case $opt in
     z)
 #      echo "-z was triggered! ($OPTARG)" >&2
 		zip_file_location=$OPTARG
+      ;;
+    d)
+#      echo "-d was triggered! ($OPTARG)" >&2
+		destination_dir_for_crl=$OPTARG
       ;;
     h)
 	  printHelp
@@ -152,6 +159,11 @@ base_url=`grep -e "^base_url\s*=\s*.*$" etc/${ca_name}"-ca.conf"|cut -d "=" -f 2
 #$dialog_exe --title "resources" --cr-wrap --msgbox "$ca \n $base_url \n ${new_ca_name}\n ${addresources}" 12 52
 resources="${base_url}/${ca_name}.crt\n${base_url}/${ca_name}.crl\n${cpsresources}"
 
+if [ ! -z "$destination_dir_for_crl" ] ; then
+  if [ -d "${destination_dir_for_crl}" ] ; then
+    cp "crl/${ca_name}-ca.crl" "$destination_dir_for_crl"
+  fi
+fi
 #infomsg
 $dialog_exe --backtitle "Resources to provide" --msgbox "You must provide the following resources NOW\n
 to make your shiny new CA fully functional:\n$resources" 0 0
