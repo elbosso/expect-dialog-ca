@@ -7,6 +7,8 @@ echo ""
 echo "https://elbosso.github.io/expect-dialog-ca/"
 echo ""
 echo -e "-k <file name for private key file of the CA>\t\n\tThe file containing the private key of the CA\n"
+echo -e "-l \trefresh CRL\n"
+echo -e "-d <directory name to copy CRL to>\tThe directory\n\t\twhere the resulting CRL should be placed\n\t\t(only used if -l is set)\n"
 echo -e "-h\t\tPrint this help text"
 }
 dialog_exe=dialog
@@ -27,12 +29,22 @@ script=`basename $0`
 ca_dir_name=""
 privkey_file_name=""
 _temp="/tmp/answer.$$"
+destination_dir_for_crl=""
+should_also_refresh_crl=""
 
-while getopts ":k:h" opt; do
+while getopts ":k:d:hl" opt; do
   case $opt in
     k)
 #      echo "-k was triggered! ($OPTARG)" >&2
 		privkey_file_name=$OPTARG
+      ;;
+    l)
+#      echo "-l was triggered!" >&2
+		should_also_refresh_crl="should_also_refresh_crl"
+      ;;
+    d)
+#      echo "-d was triggered! ($OPTARG)" >&2
+		destination_dir_for_crl=$OPTARG
       ;;
     h)
 	  printHelp
@@ -97,13 +109,22 @@ done
 
 mv ${privkey_file_name} ${privkey_file_name}.bck
 
-echo "expect ${script_dir}/change_ca_password.xpct ${privkey_file_name}.bck ${privkey_file_name} ${priv_key_pass} ${Password}" >/tmp/te
+#echo "expect ${script_dir}/change_ca_password.xpct ${privkey_file_name}.bck ${privkey_file_name} ${priv_key_pass} ${Password}" >/tmp/te
 
 expect "${script_dir}/change_ca_password.xpct" "${privkey_file_name}.bck" "${privkey_file_name}" "${priv_key_pass}" "${Password}"
 
 if [ -s "${privkey_file_name}" ]; then
   $dialog_exe --backtitle "Success!" --msgbox "Password for ${privkey_file_name} changed to ${Password}" 0 0
   rm "${privkey_file_name}.bck"
+  if [ ! -z "$should_also_refresh_crl" ] ; then
+    ca_name=`basename ${ca_dir_name}`
+    expect "${script_dir}/gen_crl.xpct" "etc/${ca_name}-ca.conf" "crl/${ca_name}-ca.crl" "${priv_key_pass}"
+    if [ ! -z "$destination_dir_for_crl" ] ; then
+      if [ -d "${destination_dir_for_crl}" ] ; then
+        cp "crl/${ca_name}-ca.crl" "$destination_dir_for_crl"
+      fi
+    fi
+  fi
 else
   $dialog_exe --backtitle "Error!" --msgbox "Password for ${privkey_file_name} not changed - maybe you did not give the correct old password?" 0 0
   mv "${privkey_file_name}.bck" "${privkey_file_name}"

@@ -15,6 +15,10 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   Parameters for the script:
   * *-k file name for private key file of the CA*
     The file containing the private key of the CA
+  * *-l*
+    refresh CRL
+  * *-d directory name to copy CRL to*
+    The directory where the resulting CRL should be placed (only used if -l is set)
   * *-h*
     Print some help text
 * [create_ca.sh](../create_ca.sh)  

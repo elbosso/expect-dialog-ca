@@ -121,10 +121,10 @@ ca_name=`basename ${ca_dir_name}`
 
 expect "${script_dir}/gen_crl.xpct" "etc/${ca_name}-ca.conf" "crl/${ca_name}-ca.crl" "${priv_key_pass}"
 #$dialog_exe --backtitle "Outcome:!" --msgbox "$?" 0 0
+priv_key_pass=""
+
 if [ $? -eq 0 ]; then
 #openssl ca -gencrl -config etc/${ca_name}-ca.conf -out crl/${ca_name}-ca.crl
-
-priv_key_pass=""
 
 openssl crl -noout -text  -in crl/${ca_name}-ca.crl > /tmp/crl.pem
 
