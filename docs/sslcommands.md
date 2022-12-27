@@ -36,6 +36,13 @@ openssl x509 -noout -modulus -in certificate.crt | openssl sha256
 openssl x509 -noout -modulus -in certificate.crt | openssl sha512
 ```
 
+Or, alternatively:
+
+```
+openssl x509 -noout -fingerprint -in certificate.crt
+openssl x509 -noout -fingerprint -sha256 -in certificate.crt
+```
+
 #### Print out the content of the certificates
 
 ```
