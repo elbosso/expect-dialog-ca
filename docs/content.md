@@ -200,8 +200,10 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   This script is sourced by all scripts having to write log messages to syslog. It offers
   a function to do so named `debug2Syslog`.
 * [updateCRLs.sh](../updateCRLs.sh) 
-  This script searches recursively for all CAs in or below the current directory. It changes
-  into each CA directory found and then calls [refresh_crl.sh](../refresh_crl.sh) - this 
+  This script searches recursively for all CAs in or below the current directory.
+It asks the user for a date - then it changes
+  into each CA directory found and checks if the validity of the current CRL
+ends before the choosen date. If this is the case, it then calls [refresh_crl.sh](../refresh_crl.sh) - this 
   updates the CRL of the CA in question - providing the correct path to the corresponding
   private key automatically. This way, one only hass to give the matching passwords to
   unlock each private key when needed. This can be a huge time saver when a PKI with lots of CAs
