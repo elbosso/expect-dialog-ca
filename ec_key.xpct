@@ -1,0 +1,13 @@
+#!/usr/bin/expect
+set new_ca_name [lindex $argv 0]
+set newpass [lindex $argv 1]
+set ecParameterSetName [lindex $argv 2]
+spawn openssl genpkey -algorithm ec -pkeyopt ec_paramgen_curve:$ecParameterSetName -out $new_ca_name/ca/private/$new_ca_name-ca.key -aes128
+expect "Enter PEM pass phrase:" {send "$newpass\r"}
+expect "Verifying - Enter PEM pass phrase:" {send "$newpass\r"}
+expect eof
+#expect {
+#  "Password changed." {puts stdout "\nPaßwort erfolgreich geändert"}
+#  default {puts stdout "\nHat nicht funktioniert!"}
+#}
+

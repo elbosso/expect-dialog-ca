@@ -61,9 +61,15 @@ And the user can afterwards change / enter the Distinguishes Name for the CA:
 
 ![DN for CA](images/screenshot_006.png)
 
-The next step is the specification of the key length:
+The next step is the specification of the key length if neither options `-e` nor `-s` are given
+(option `-l` also would skip this step):
 
 ![key length](images/screenshot_008.png)
+
+If option `-e` is given, the next step allows to choose a supported parameter set for the elliptic
+curve private key (option `-s` would skip this step):
+
+![key length](images/screenshot_008_a.png)
 
 and the hash or message digest algorithm:
 

@@ -18,11 +18,13 @@ echo "-t <offline template dir>\tThe script initially tries to download the\n\t\
 echo "-k <pre-existing key file>\tA key pair is created for the new CA unless\n\t\tthere is already a preexisting key file - in this case,\n\t\tit has to be specified here\n"
 echo "-c <type of CA>\t\tThe script skips the dialog for choosing\n\t\tthe type of CA about to be created if the value given\n\t\there is one of the types offered by the expert PKI\n\t\tproject (at the time of writing these are:\n\t\troot|component|network|identity|software)\n"
 echo "-n <name of CA>\t\tThe name of the CA about to be created.\n\t\tThis skips the dialog asking vor it. The name must not\n\t\tcontain special characters such as whitespace or umlaute etc.\n"
-echo "-l <key length>\t\tThe length in bits of the key to be\n\t\tcreated (if no preexisting key is given, see above).\n\t\tIf this value is given here as one of the supported values\n\t\t1024|2048|4096 the corresponding dialog is skipped.\n"
+echo "-l <key length>\t\tThe length in bits of the RSA key to be\n\t\tcreated (if no preexisting key is given, see above).\n\t\tIf this value is given here as one of the supported values\n\t\t1024|2048|4096 the corresponding dialog is skipped.\n"
+echo "-s <parameter set name>\t\tThe name of the parameter set for the elliptic curve\n\tto be used as private key.\n"
 echo "-a <hash algorithm>\t\tThe message digest algorithm to be used.\n\t\tIf this value is given here as one of the supported values\n\t\tmd5|sha1|sha224|sha348|sha512|sha256 the corresponding dialog\n\t\tis skipped.\n"
 echo "-p\t\tSkip specification of CPS\n"
 echo "-o\t\tSkip specification of custom OIDs\n"
 echo "-g\t\tGenerate template for ca_presets.ini and stop execution\n\t\tafterwards\n"
+echo "-e\t\tUse elliptic curve instead of RSA private key (shows a\t\tmenu for selecting the corresponding parameter set if -s is not also present).\n"
 echo "-h\t\tPrint this help text\n"
 #echo ""
 }
@@ -32,7 +34,8 @@ optionerror=0
 offline_template_dir=""
 preexisting_key_file=""
 _temp="/tmp/answer.$$"
-while getopts ":t:k:c:n:l:a:opgh" opt; do
+useec=false
+while getopts ":t:k:c:n:l:a:s:opghe" opt; do
   case $opt in
     t)
 #      echo "-t was triggered! ($OPTARG)" >&2
@@ -66,6 +69,10 @@ while getopts ":t:k:c:n:l:a:opgh" opt; do
           key_length="4096"
           ;;
       esac
+      ;;
+    s)
+      useec=true
+      ecParameterSetName="$OPTARG"
       ;;
     a)
       case $OPTARG in
@@ -120,6 +127,9 @@ while getopts ":t:k:c:n:l:a:opgh" opt; do
         $dialog_exe --backtitle "Success:" --msgbox "Wrote template ca_presets.ini!" 9 52
       fi
       exit 0
+	  ;;
+    e)
+      useec=true
 	  ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -513,11 +523,58 @@ sed -i -- 's_$dir/ca/$ca_$dir/ca_g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -- 's_$dir/ca.crt_$dir/ca/$ca.crt_g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 sed -i -E -- 's#(new_certs_dir.*)dir/ca#\1dir/certs#g' $new_ca_name/etc/$new_ca_name"-ca.conf"
 
+
+if [ -z ${ecParameterSetName+x} ]; then
+if [ "${useec}" = true ]; then
+menuitems=()
+options=$(openssl ecparam -list_curves|grep ":")
+#$dialog_exe --backtitle "Info" --msgbox "$options" 0 0
+n=0
+IFS_BAK="$IFS"
+IFS='
+'
+    for item in ${options}
+    do
+#      $dialog_exe --backtitle "Info" --msgbox "$item" 0 0
+        menuitems+=("$n" "${item}") # subst. Blanks with "_"
+        n=`expr $n + 1`
+    done
+    IFS="$IFS_BAK"
+    $dialog_exe --backtitle "Available Curves" \
+           --title "Select one" --menu \
+           "Choose one of the available pasrameter sets for elliptic curves" 16 0 8 "${menuitems[@]}" 2> $_temp
+    if [ $? -eq 0 ]; then
+         sel=`cat $_temp`
+		echo $sel
+n=0
+IFS='
+'
+    for item in ${options}
+    do
+#$dialog_exe --msgbox "sel --> $sel\nn --> $n" 6 42
+		if [ "$sel" = "$n" ]
+		then
+        selection=${item}
+		fi
+        n=`expr $n + 1`
+    done
+        debug2Syslog "You choose:\nNo. $sel --> $selection"
+	else
+		exit 255
+    fi
+    IFS="$IFS_BAK"
+#$dialog_exe --msgbox "sel --> $selection" 6 42
+ecParameterSetName=$(echo $selection|cut -d ':' -f 1)
+#$dialog_exe --msgbox "sel --> $selection" 6 42
+fi
+fi
+
 if [ -z ${key_length+x} ]; then
+if [ "${useec}" = false ]; then
 #Die Schlüssellänge und der zu benutzende Hash-Algorithmus werden festgelegt
 $dialog_exe --backtitle "Available key lengths" \
            --title "Select one" --radiolist \
-			"Choose one of the available key lengths" 16 40 8 \
+			"Choose one of the available key lengths for the RSA key!" 16 40 8 \
 			1 1024 off\
 			2 2048 off\
 			3 4096 on\
@@ -538,6 +595,7 @@ $dialog_exe --backtitle "Available key lengths" \
 	else
 		exit 255
     fi
+fi
 fi
 
 if [ -z ${hash_alg+x} ]; then
@@ -956,6 +1014,10 @@ if [ ${?} -ne 0 ]; then exit 127; fi
 #    -out $new_ca_name/${new_ca_name}-ca.csr \
 #    -keyout $new_ca_name/private/$new_ca_name"-ca.key"
 
+if [ "$useec" = true ]; then
+  expect ec_key.xpct ${new_ca_name} $Password $ecParameterSetName
+  expect ca_csr_with_key.xpct ${new_ca_name} $Password ${new_ca_name}/ca/private/${new_ca_name}-ca.key
+else
 if [ "$preexisting_key_file" = "" ]; then
 #  $dialog_exe --backtitle "Info" --msgbox "trying to build key and csr for ${new_ca_name} using $Password" 9 52
   expect ca_csr.xpct ${new_ca_name} $Password
@@ -966,6 +1028,7 @@ if [ "$preexisting_key_file" = "" ]; then
 else
 cp $preexisting_key_file ${new_ca_name}/ca/private/${new_ca_name}-ca.key
 expect ca_csr_with_key.xpct ${new_ca_name} $Password $preexisting_key_file
+fi
 fi
 #Der Anwender wird per $dialog_exe darüber informiert, dass er dem Zertifikatsrequest bei der CA, von der die Konfiguration stammte,
 #einreichen kann.

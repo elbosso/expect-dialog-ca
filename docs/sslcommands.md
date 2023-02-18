@@ -25,6 +25,18 @@ openssl rsa -noout -modulus -in privateKey.key | openssl sha512
 openssl rsa -aes256 -in privateKey.key -out newPrivateKey.key
 ```
 
+#### List available elliptic curves
+
+```
+openssl ecparam -list_curves
+```
+
+#### Create elliptic curve private key with a specific curve
+
+```
+openssl ecparam -name secp521r1 -genkey -noout -out privateKey.key
+```
+
 ### Certificate
 
 #### Print out the hashes of the certificate
@@ -153,6 +165,18 @@ openssl pkcs7 -inform DER -in token.tk -print_certs -noout -text
 
 ```
 openssl req -new -key privateKey.key -out my.csr
+```
+
+This can of course be a RSA key or one based on an elliptic curve. Available curves can be listed using
+
+```
+openssl ecparam -list_curves
+```
+
+Afterwards you chose one of the curves and create a private key like so:
+
+```
+openssl ecparam -name secp521r1 -genkey -noout -out privateKey.key
 ```
 
 #### Display

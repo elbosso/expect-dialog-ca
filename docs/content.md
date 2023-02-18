@@ -37,7 +37,9 @@ This project consists of Linux shell scripts - some of them are meant to be run 
   * *-n name of CA*
     The name of the CA about to b created. This skips the dialog asking vor it. The name must not contain special characters such as whitespace or umlaute etc.
   * *-l key length*
-    The length in bits of the key to be created (if no preexisting key is given, see above). If this value is given here as one of the supported values 1024|2048|4096 the corresponding dialog is skipped.
+    The length in bits of the RSA key to be created (if no preexisting key is given, see above). If this value is given here as one of the supported values 1024|2048|4096 the corresponding dialog is skipped.
+  * *-s parameter set name*
+    The name of the parameter set for the elliptic curve to be used as private key.
   * *-a <hash algorithm>*
     The message digest algorithm to be used. If this value is given here as one of the supported values md5|sha1|sha224|sha348|sha512|sha256 the corresponding dialog is skipped.
   * *-p*
@@ -46,6 +48,8 @@ This project consists of Linux shell scripts - some of them are meant to be run 
     Skip specification of custom OIDs
   * *-g*
     Generate template for ca_presets.ini and stop execution afterwards
+  * *-e*
+    Use elliptic curve instead of RSA private key (shows a menu for selecting the corresponding parameter set if -s is not also present).
   * *-h*
     Print some help text
 * [install_ca_certificate.sh](../install_ca_certificate.sh)  
@@ -233,6 +237,7 @@ executable to manipulate components of the PKI
 * [ca_csr.xpct](../ca_csr.xpct)
 * [ca_csr_with_key.xpct](../ca_csr_with_key.xpct)
 * [cange_ca_password.xpct](../cange_ca_password.xpct)
+* [ec_key.xpct](../ec_key.xpct)
 * [gen_crl.xpct](../gen_crl.xpct)
 * [priv_key_fingerprint.xpct](../priv_key_fingerprint.xpct)
 * [req_from_cert.xpct](../req_from_cert.xpct)
