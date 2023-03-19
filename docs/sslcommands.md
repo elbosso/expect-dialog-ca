@@ -259,6 +259,11 @@ openssl cms -decrypt -out decrypted_email_message  -inkey p12.pem -in some_encry
 openssl asn1parse -in mysterious_file.pem
 ```
 
+#### With a bit more detail
+
+```
+-dump -strictpem -dump -strictpem -in mysterious_file.pem
+
 ## Some resources with useful OpenSSL commands
 
 * [OpenSSL command cheatsheet](https://www.freecodecamp.org/news/openssl-command-cheatsheet-b441be1e8c4a/)
