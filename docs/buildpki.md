@@ -327,3 +327,34 @@ openssl req -new \
     -out multi_server.csr \
     -keyout multi_server.key
 ```
+In case more elaborate Subject Alternative Names are needed, it is also possible to adjust the config file manually. The folowing snippet shows an excerpt that creates at least one of all the supported kinds of SANS:
+
+* IP
+* Domain Names
+* General Names
+* URIs
+* EMail Addresses
+* Directory Names
+  
+```
+subjectAltName          = @alt_names
+
+[alt_names]
+IP.1 = 10.10.10.13
+IP.2 = 10.10.10.14
+IP.3 = 10.10.10.17
+DNS.1 = expect.example.com
+DNS.2 = ca.example.com
+otherName=mySubjectAlternativeName;PRINTABLESTRING:"PRINTABLESTRING"
+URI=http://my.url.here/
+email=q@q.qq
+dirName=dir_sect
+
+[dir_sect]
+C=DE
+O=EMA
+OU=Security
+CN=ServerName
+``` 
+  
+  
