@@ -262,7 +262,7 @@ openssl asn1parse -in mysterious_file.pem
 #### With a bit more detail
 
 ```
--dump -strictpem -dump -strictpem -in mysterious_file.pem
+openssl asn1parse -dump -strictpem -in mysterious_file.pem
 ```
 
 ## Some resources with useful OpenSSL commands
