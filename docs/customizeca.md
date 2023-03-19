@@ -201,9 +201,9 @@ myRDN = 1.2.3.4.5.6.7.3
 
 emailAddress            = "7. Email Address            (eg, name@fqdn)"
 emailAddress_max        = 40
-myRDN					= "8. self-defined RDN"
-myRDN_default			= "huhu"
-myRDN_min				= 2
+myRDN                   = "8. self-defined RDN"
+myRDN_default           = "huhu"
+myRDN_min               = 2
 ```
 
 If a CA admin wanted to add different sets of extensions to some of the certificates being issued,
