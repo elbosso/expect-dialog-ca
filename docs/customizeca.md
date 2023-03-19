@@ -150,7 +150,7 @@ mishaps to be fixed or general changes to be made there.
 
 This directory _etc_ does not only hold the CAs configuration but it also
 contains several configuration files that come in handy when entities want to
-create Certificate signing requests for the CA to sign - they are created along 
+create Certificate Signing Requests for the CA to sign - they are created along 
 the CAs other files when `create_ca.sh` is executed. The reason for there being more than one
 is that a CA might issue different flavours of certificates according
 to the intended usage scenario. For example - the Identity CA does generate
@@ -164,20 +164,47 @@ four different confguration files for creating CSRs:
 Each one of these are used to create the CSR fit for the according usage scenario.
 
 In the configuration file for the CA, one can find an extension section corresponding
-to the different usage scenarions - with the Identity CA again as an example, these are:
+to the different usage scenarios - with the Identity CA again as an example, these are:
 
 * `encryption_ext`
 * `identity_ext`
 * `smime_ext`
 
-These add differents sets of extensions to the certificate being created.
+These add different sets of extensions to the certificate being created.
 
-So, if a CA admin wanted to add another usage scenario, she has to think about wether
+So, if a CA admin wanted to add another usage scenario, she has to think about whether
 it would be advisable to make a new client configuration available so that
 the requests contain special information needed for that scenario (for example other
 fields in the CN). If so, she has to provide a new client configuration. One could 
 use `smime_multi.conf` as an example - it is a variant of `smime.conf`, allowing 
-to use the resulting certificate for more than one email address.
+to use the resulting certificate for more than one email address. There is also the possibility to add 
+attributes to the Certificate Signing Request - the user is queried for them as she is for the
+Relative Distinguished Names making up the Distinguished Name. The are sent to the CA as part of the CSR
+but are not integrated into the certificate - custom extensions are (if the CA allows this). For further information
+concerning non-standard extensions see the remainder of this section and also the next section.
+
+The Distinguished Name can also be tailored exactly to the needs for the targeted use case: Possible
+RDNs can be found for example [here](https://www.cryptosys.net/pki/manpki/pki_distnames.html). It is also possible to add custom RDNs 
+to a DN as is shown in this example here:
+
+```
+[ default ]
+oid_section = additional_oids
+
+[ additional_oids ]
+
+certificateTemplateName = 1.3.6.1.4.1.311.20.2
+mySubjectAlternativeName = 1.2.3.4.5.6.7.2
+myRDN = 1.2.3.4.5.6.7.3
+
+# ... some stuff omitted for brevity ...
+
+emailAddress            = "7. Email Address            (eg, name@fqdn)"
+emailAddress_max        = 40
+myRDN					= "8. self-defined RDN"
+myRDN_default			= "huhu"
+myRDN_min				= 2
+```
 
 If a CA admin wanted to add different sets of extensions to some of the certificates being issued,
 she has to add another extension section to the CAs configuration file. One
