@@ -184,6 +184,7 @@ she has to add another extension section to the CAs configuration file. One
 could use `smime_ext` as an example here: factory fresh it looks like this:
 
 ```
+[ smime_ext ]
 keyUsage                = critical,keyEncipherment,digitalSignature
 basicConstraints        = CA:false
 extendedKeyUsage        = emailProtection,msEFS,clientAuth,msSmartcardLogin
@@ -191,13 +192,17 @@ subjectKeyIdentifier    = hash
 authorityKeyIdentifier  = keyid:always
 authorityInfoAccess     = @issuer_info
 crlDistributionPoints   = @crl_info
-crlDistributionPoints   = @crl_info
+#certificatePolicies = smimeCPS
+CustomOid1		= ASN1:UTF8String:My custom extension's value
+#The ia5org option changes the type of the organization field. In RFC2459 it can only be of type DisplayText. In RFC3280 IA5String is also permissible
+certificatePolicies = ia5org, cabforum-extended-validation, @polsect
 ```
 
 One could add a new section named `smimeContentCommitment_ext` like the one
 shown below:
 
 ```
+[ smimeContentCommitment_ext ]
 keyUsage                = critical,nonRepudiation,keyEncipherment,digitalSignature
 basicConstraints        = CA:false
 extendedKeyUsage        = emailProtection,msEFS,clientAuth,msSmartcardLogin
@@ -205,7 +210,10 @@ subjectKeyIdentifier    = hash
 authorityKeyIdentifier  = keyid:always
 authorityInfoAccess     = @issuer_info
 crlDistributionPoints   = @crl_info
-crlDistributionPoints   = @crl_info
+#certificatePolicies = smimeCPS
+CustomOid1		= ASN1:UTF8String:My custom extension's value
+#The ia5org option changes the type of the organization field. In RFC2459 it can only be of type DisplayText. In RFC3280 IA5String is also permissible
+certificatePolicies = ia5org, cabforum-extended-validation, @polsect
 ```
 
 If one wanted to issue pre certificates in the context of [Certificate Transparency](),
