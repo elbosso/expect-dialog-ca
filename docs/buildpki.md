@@ -337,6 +337,15 @@ In case more elaborate Subject Alternative Names are needed, it is also possible
 * Directory Names
   
 ```
+[ default ]
+oid_section = additional_oids
+
+[ additional_oids ]
+
+mySubjectAlternativeName = 1.2.3.4.5.6.7.2
+
+# ... some stuff omitted for brevity ...
+  
 subjectAltName          = @alt_names
 
 [alt_names]
