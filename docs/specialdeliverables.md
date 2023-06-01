@@ -10,7 +10,7 @@ special case of intermediate CAs)
 3. Issuing CAs - CAs issuing end entity certificates - such CAs will never
 create certificates for other CAs.
 
-The Issuing CAs themselves can be categorized by the kind of vertificates they issue:
+The Issuing CAs themselves can be categorized by the kind of certificates they issue:
 1. Digital Identities - Certificates that play a role in ascertaining
 the identity of another party. Examples include TLS Client and Server
 certificates as well as certificates used when cryptographically 
@@ -38,7 +38,7 @@ certificate of the root CA.
 
 But it goes further: This project addresses special needs
 for different kinds of certificates: All certificates issued to be used 
-for Digital Identity Uses containn a (Bash) shell script for
+for Digital Identity Uses contain a (Bash) shell script for
 converting the certificate and the private key belonging to it 
 into a PKCS#12 container.
 
@@ -104,5 +104,5 @@ is currently being discussed.
 
 ### Code Signing
 
-The specific content for the deliverable archive for OCSP certificates
+The specific content for the deliverable archive for Code Signing certificates
 is currently being discussed.

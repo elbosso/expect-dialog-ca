@@ -282,6 +282,10 @@ This holds for all CA types this PKI structure offers. If you read
 the section about creating the PKI hierarchy again, you can see this already
 working when requesting and issuing the intermediary CA certificates.
 
+### Subject Alternative Names
+
+#### Requesting Subject Alternative Names
+
 One important thing needs to be mentioned however: the configuration 
 for the TLS server certificates slightly differ from all the others
 in one important aspect: Other than the others, it does not suffice
@@ -291,10 +295,21 @@ Because a TLS server may have many different names and the certificate has
 to be issued for all of them, these names must be specified by an
 environment variable that must be set prior to calling OpenSSL
 for creating the certificate request. The name of this
-environment variable is SAN - for example:
+environment variable is **SAN** (Subject Alternative Name) - for example:
 
 ```
 SAN=DNS:server1.example.lab,server2.example.lab,IP:127.0.0.1 \
+openssl req -new \
+    -config server.conf \
+    -out multi_server.csr \
+    -keyout multi_server.key
+```
+
+For Domain Names it is also possible to specify wildcard names here. Wildcard names begin
+with `*.` - for example:
+
+```
+SAN=DNS:*.example.lab \
 openssl req -new \
     -config server.conf \
     -out multi_server.csr \
@@ -365,5 +380,22 @@ O=EMA
 OU=Security
 CN=ServerName
 ``` 
-  
-  
+   
+#### Checking Subject Alternative Names
+
+Let's Encrypt (and other CAs) allow for automatic enrollment for TLS server certificates: They 
+issue a challenge when receiving a request for such a certificate. This challenge can be automatically
+satisfied - either by putting a file with a certain content on a HTTP server or putting a record with a certain
+content into the DNS. This is described in [RFC 8555.](https://datatracker.ietf.org/doc/html/rfc8555)
+This however is not in the scope here: To prevent fraudulently issued certificates, there is another 
+nethod besides the one just mentioned: The in [RFC 8659](https://datatracker.ietf.org/doc/html/rfc8659)
+described DNS Certification Authority Authorization (CAA) Resource Record. With it, a domain owner
+can specify which CAs are allowed to issue certificates for this domain. This information is saved
+in the DNS and thus publicly available. Any CA **should** check therefore if a name in a TLS server
+certificate request has such an entry in the DNS and if so - should check wether it is 
+listed there. If not, the CA should decline the certificate signing request and inform the domain owner.
+To facilitate this, the project brings a script that does these checks for you:
+[caa.sh](../caa.sh) takes a name as input and then does the DNS lookup for CAA records, extracts the
+information contained within and presents a human-readable summary of the constraints laid down there
+(if there are any).
+

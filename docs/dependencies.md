@@ -43,6 +43,8 @@ PKI is worked needs that connection - the content of the repository can be downl
 someplace else and then copied over (see Use Case for
 Creating a CA further down). 
 
+For working with [caa.sh,](../caa.sh) 'dig' needs to be installed.
+ 
 There is one more *optional* dependency:
 The creation of private keys needs some form of protecting them. The scripts
 in this project use passwords for that. To facilitate choosing safe

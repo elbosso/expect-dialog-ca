@@ -7,6 +7,11 @@ This project consists of Linux shell scripts - some of them are meant to be run 
 
 [//]: # (https://stackoverflow.com/questions/4823468/comments-in-markdown)
 [//]: # (https://meta.stackexchange.com/questions/72395/is-it-possible-to-have-definition-lists-in-markdown)
+* [caa.sh](../caa.sh)  
+  This script fetches the CAA records from DNS for the given name, extracts the information about constraints
+  for issuing CAs contained within and presents them in a human-readable form. It takes one parameter: 
+  the name for which the check should be executed. This name can be a fully qualified domain name as
+  well as a wildcard.
 * [change_ca_password.sh](../change_ca_password.sh)  
   This script changes the password for the private key of a certificate
   authority. The old private key is backed up prior to 
