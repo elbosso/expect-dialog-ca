@@ -28,3 +28,7 @@ deliverables*
 Test1_*
 logs
 /graphviz.dot
+id.hex
+sct.txt
+sctextvalue.txt
+signature.hex
