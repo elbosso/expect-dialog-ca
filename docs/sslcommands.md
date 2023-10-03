@@ -76,6 +76,34 @@ echo | openssl s_client -servername www.openssl.org -connect www.openssl.org:443
 echo | openssl s_client -servername imap.arcor.de -connect imap.arcor.de:993 2>/dev/null | openssl x509 -noout -text|more
 ```
 
+#### Verify certificates
+
+**OK**
+
+```
+openssl verify -verbose -x509_strict -CAfile issuer.crt Test\ Haeschen\ 1.crt
+```
+Result:
+```
+Test Haeschen 1.crt: OK
+```
+
+**Corrupted** ([for example](https://security.stackexchange.com/questions/60804/creating-an-x-509-certificate-with-an-invalid-signature))
+
+```
+openssl verify -verbose -x509_strict -CAfile issuer.crt Test\ Haeschen\ 1_corrupted.crt
+```
+Result:
+```
+C = DE, ST = Thueringen, L = Rudolstadt, O = Damaschkestr. 11, OU = Arbeitszimmer, CN = Test Haeschen 1
+error 7 at 0 depth lookup: certificate signature failure
+error Test Haeschen 1_corrupted.crt: verification failed
+40270500477F0000:error:0200008A:rsa routines:RSA_padding_check_PKCS1_type_1:invalid padding:../crypto/rsa/rsa_pk1.c:75:
+40270500477F0000:error:02000072:rsa routines:rsa_ossl_public_decrypt:padding check failed:../crypto/rsa/rsa_ossl.c:598:
+40270500477F0000:error:1C880004:Provider routines:rsa_verify:RSA lib:../providers/implementations/signature/rsa_sig.c:774:
+40270500477F0000:error:06880006:asn1 encoding routines:ASN1_item_verify_ctx:EVP lib:../crypto/asn1/a_verify.c:217:
+```
+
 ### S/Mime
 
 #### create signature
