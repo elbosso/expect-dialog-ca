@@ -31,6 +31,7 @@ example creating diagrams like the one above - are also included here.
 
 Please not that there is a restriction concerning common names (CN): They must not contain non-ascii characters and they also must not contain any special characters such as parentheses or quotes of any kind or umlaute for example
 ---
+## Table of contents
 
 * [Scope](docs/scope.md)
 * [Content](docs/content.md)
@@ -40,3 +41,7 @@ Please not that there is a restriction concerning common names (CN): They must n
 * [How can i customize my CA?](docs/customizeca.md)
 * [Special kinds of CAs (special deliverables)](docs/specialdeliverables.md)
 * [Some useful OpenSSL commands](docs/sslcommands.md)
+
+## Useful external links
+* [ASN.1 JavaScript decoder](https://lapo.it/asn1js/#)
+  
