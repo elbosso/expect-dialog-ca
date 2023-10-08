@@ -145,6 +145,17 @@ And that concludes the process - the script shows some informational messages to
 
 After a CA is created, there are several possibilities to customize it further.
 
+**But first - a warning!**
+
+_The scripts inside this document create sensible, syntactically correct configuration files for OpenSSL.
+After they are created, some of those scripts read these OpenSSL config files and parse them to
+extract information that is then displayed to the user inside forms and dialogs. Therefore, any
+tries to cut those OpenSSL configs up into individual files and referencing them using the `.include`
+directive is likely to render the scripts useless or to cause errors while executing them. So please - take caution 
+when trying to refactor the contents of the generated OpenSSL files into multiple files!_
+
+**End of warning!**
+
 One good thing is to double check the configuration files in _etc_ for any 
 mishaps to be fixed or general changes to be made there.
 
