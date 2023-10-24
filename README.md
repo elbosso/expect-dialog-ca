@@ -44,4 +44,5 @@ Please not that there is a restriction concerning common names (CN): They must n
 
 ## Useful external links
 * [ASN.1 JavaScript decoder](https://lapo.it/asn1js/#)
+* [S/MIME Example Keys and Certificates](https://datatracker.ietf.org/doc/html/rfc9216)
   
