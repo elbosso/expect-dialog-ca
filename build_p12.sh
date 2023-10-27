@@ -14,10 +14,10 @@ echo "$zert"
 scn=$(grep Subject: "../$zert" |sed -E "s/(.*?)CN=(.*?)/\2/g")
 echo "$scn"
 stmta="openssl pkcs12 -export -name \"$scn\" "
-for item in ${cns}
-    do
-		stmta="$stmta -caname \"$item\" "
-	done
+while IFS= read -r line
+do
+ stmta="$stmta -caname \"$line\" "
+done < <(printf '%s\n' "$cns")
 stmta="${stmta} -inkey \"$1\" -in \"../$zert\" -certfile issuer.crt -out \"${scn}.p12\""
 echo "$stmta"
 eval $stmta
