@@ -392,13 +392,17 @@ ca_cert=${ca_chain}
 fi
 echo "issuer=\"${cn}/issuer.crt\"" >index.txt
 cp ${ca_cert} "${cn}/issuer.crt"
-echo "zert=\"${cn}/${cn}.crt\"" >>index.txt
-cp "certs/${cn}.crt" "${cn}/"
-echo "zertDER=\"${cn}/${cn}.der\"" >>index.txt
+echo "zert (single)=\"${cn}/${cn}_single.crt\"" >>index.txt
+cp "certs/${cn}.crt" "${cn}/${cn}_single.crt"
+echo "zert (chained)=\"${cn}/${cn}.crt\"" >>index.txt
+cat "certs/${cn}.crt" "${ca_chain}" >"${cn}/${cn}.crt"
+echo "zert (single) DER=\"${cn}/${cn}.der\"" >>index.txt
 cp "certs/${cn}.der" "${cn}/"
 if [ $selection = "timestamp" ]; then
 #$dialog_exe --backtitle "Info" --msgbox "copying ${ca_chain} to ${cn}/chain.pem" 0 0
+echo "chain=\"${cn}/chain.pem\"" >>index.txt
 cp "${ca_chain}" "${cn}/chain.pem"
+echo "tsa.conf=\"${cn}/tsa.conf\"" >>index.txt
 cp "${script_dir}"/templates/tsa.conf  "${cn}"
 sed -i -- "s/##crt##/${cn}.crt/g" "${cn}"/tsa.conf
 else
