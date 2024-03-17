@@ -29,7 +29,7 @@ example creating diagrams like the one above - are also included here.
 ---
 **NOTE**
 
-Please not that there is a restriction concerning common names (CN): They must not contain non-ascii characters and they also must not contain any special characters such as parentheses or quotes of any kind or umlaute for example
+Please note that there is a restriction concerning common names (CN): They must not contain non-ascii characters and they also must not contain any special characters such as parentheses or quotes of any kind or umlaute for example
 ---
 ## Table of contents
 
